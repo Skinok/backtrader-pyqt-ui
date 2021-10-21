@@ -1,0 +1,14 @@
+pip install git+https://github.com/backtrader2/backtrader
+pip install matplotlib
+pip install finplot
+pip install requests
+pip install websocket
+pip install websocket-client
+pip install oandapy
+pip install git+https://github.com/blampe/IbPy.git
+pip install git+https://github.com/oanda/oandapy.git
+
+//Download ta-lib-0.4.0-msvc.zip and unzip to C:\ta-lib.
+//pip install TA-Lib
+pip install git+https://github.com/kernc/backtesting.py.git
+//

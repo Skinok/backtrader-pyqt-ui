@@ -1,0 +1,12 @@
+{
+    "version": "0.1.0",
+    "configurations": [
+    {
+            "name": "Python: Current File (Integrated Terminal)",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "C:/perso/trading/anaconda3/backtrader-ichimoku/"
+    }]
+}
