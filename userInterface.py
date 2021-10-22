@@ -26,11 +26,6 @@ import finplot as fplt
 
 import backtrader as bt
 
-windows = [] # no gc
-sounds = {} # no gc
-master_data = {}
-overlay_axs = [] # for keeping track of candlesticks in overlays
-
 class UserInterface:
 
     def __init__(self):
@@ -73,7 +68,6 @@ class UserInterface:
                 direction = "sell"
             
             fplt.add_order(bt.num2date(order.executed.dt), order.executed.price, direction, ax=self.ax0)
-            print(" Order dt : " + str(order.executed.dt) + " Price : " + str(order.executed.price))
 
     def show(self):
         fplt.show(qt_exec = False) # prepares plots when they're all setup

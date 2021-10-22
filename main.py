@@ -1,60 +1,31 @@
-import pandas
+###############################################################################
+#
+# Copyright (C) 2021 - Skinok
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+###############################################################################
 
-#import sys
-#sys.path.append('D:/perso/trading/anaconda3/backtrader2')
-import backtrader as bt
+from Controller import Controller
 
-import sys
-sys.path.append('C:/perso/trading/anaconda3/finplot')
-import finplot as fplt
+skinokTrader = Controller()
 
-from ichimoku_strat1 import IchimokuStart1
-from testStrategy import TestStrategy
-import userInterface as Ui
+skinokTrader.loadData(dataPath='C:/perso/trading/anaconda3/backtrader-ichimoku/data/EURUSD_M15_light.csv')
+skinokTrader.addStrategies()
 
-windows = [] # no gc
-sounds = {} # no gc
-master_data = {}
-overlay_axs = [] # for keeping track of candlesticks in overlays
+skinokTrader.run()
+#skinokTrader.generateStats()
+skinokTrader.populateOrders()
 
-cerebro = bt.Cerebro()  # create a "Cerebro" engine instance
-# Create a data feed
-
-# Get a pandas dataframe
-datapath = ('C:/perso/trading/anaconda3/backtrader-ichimoku/data/EURUSD_M15_light.csv')
-
-dataframe = pandas.read_csv(datapath,
-                            sep='\t',
-                            skiprows=0,
-                            header=0,
-                            parse_dates=True,
-                            index_col=0)
-
-# Pass it to the backtrader datafeed and add it to the cerebro
-data = bt.feeds.PandasData(dataname=dataframe)
-
-cerebro.adddata(data)  # Add the data feed
-#cerebro.addstrategy(IchimokuStart1)  # Add the trading strategy
-
-cerebro.addstrategy(TestStrategy)
-cerebro.addanalyzer(bt.analyzers.PyFolio, _name='PyFolio')
-
-results = cerebro.run()  # run it all
-strat_results = results[0] # results of the first strategy
-
-# Stats on trades
-portfolio_stats = strat_results.analyzers.getbyname('PyFolio')
-returns, positions, transactions, gross_lev = portfolio_stats.get_pf_items()
-returns.index = returns.index.tz_convert(None)
-
-#Orders filters
-myOrders = []
-data_orders = strat_results._orders
-for order in data_orders:
-    if order.status in [order.Completed]:
-        myOrders.append(order)
-
-interface = Ui.UserInterface()
-interface.drawFinPlots(dataframe)
-interface.drawOrders(myOrders)
-interface.show()
+skinokTrader.displayUI()
