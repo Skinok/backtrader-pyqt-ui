@@ -24,6 +24,8 @@ import sys
 sys.path.append('C:/perso/trading/anaconda3/finplot')
 import finplot as fplt
 
+import backtrader as bt
+
 windows = [] # no gc
 sounds = {} # no gc
 master_data = {}
@@ -64,13 +66,14 @@ class UserInterface:
 
     # trades is a list of backtrader.trade.Trade
     def drawOrders(self, orders):
-
         for order in orders:
-
-            test = order
-            if "Completed" in order.Status :
-                direction = "buy" if "Buy" in order.OrdTypes else "sell"
-                fplt.add_order(order.executed.dt, order.executed.price, direction, ax=self.ax0)
+            if order.isbuy():
+                direction = "buy"
+            elif order.issell():
+                direction = "sell"
+            
+            fplt.add_order(bt.num2date(order.executed.dt), order.executed.price, direction, ax=self.ax0)
+            print(" Order dt : " + str(order.executed.dt) + " Price : " + str(order.executed.price))
 
     def show(self):
         fplt.show(qt_exec = False) # prepares plots when they're all setup

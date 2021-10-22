@@ -47,9 +47,14 @@ portfolio_stats = strat_results.analyzers.getbyname('PyFolio')
 returns, positions, transactions, gross_lev = portfolio_stats.get_pf_items()
 returns.index = returns.index.tz_convert(None)
 
+#Orders filters
+myOrders = []
 data_orders = strat_results._orders
+for order in data_orders:
+    if order.status in [order.Completed]:
+        myOrders.append(order)
 
 interface = Ui.UserInterface()
 interface.drawFinPlots(dataframe)
-interface.drawOrders(data_orders)
+interface.drawOrders(myOrders)
 interface.show()
