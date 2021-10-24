@@ -18,6 +18,7 @@
 ###############################################################################
 
 from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QGraphicsView, QComboBox, QLabel
+from pyqtgraph.Qt import QtGui
 from pyqtgraph.dockarea import DockArea, Dock
 
 import sys
@@ -28,24 +29,137 @@ import backtrader as bt
 
 class UserInterface:
 
+    #########
+    #  
+    #########
     def __init__(self):
 
         # Qt 
         self.app = QApplication([])
         self.win = QMainWindow()
-        self.area = DockArea()
-        self.win.setCentralWidget(self.area)
-        self.win.resize(1600,800)
+
+        # Resize windows properties
+        self.win.resize(1600,1000)
         self.win.setWindowTitle("Docking charts example for finplot")
+        
         # Set width/height of QSplitter
         self.win.setStyleSheet("QSplitter { width : 20px; height : 20px; }")
 
-        # Create docks
-        self.dock_0 = Dock("dock_0", size = (1000, 100), closable = True)
-        #self.dock_1 = Dock("dock_1", size = (1000, 100), closable = True)
-        self.area.addDock(self.dock_0)
-        #self.area.addDock(self.dock_1)
+        # Docks
+        self.createDocks()
 
+    #########
+    #  
+    #########
+    def createDocks(self):
+        self.area = DockArea()
+        self.win.setCentralWidget(self.area)
+
+        # Create Chart widget      
+        self.dock_0 = Dock("dock_0", size = (1000, 500), closable = False, hideTitle=True, )
+        self.area.addDock(self.dock_0, position='above')
+
+        # Create Trade widget 
+        self.dock_trades = Dock("Trades", size = (1000, 200), closable = False)
+        self.area.addDock(self.dock_trades, position='bottom')
+
+        # Create Order widget 
+        self.dock_orders = Dock("Orders", size = (1000, 200), closable = False)
+        self.area.addDock(self.dock_orders, position='below', relativeTo=self.dock_trades)
+
+        self.dock_trades.raiseDock()
+
+        # Create Summary widget 
+        self.dock_summary = Dock("Strategy Summary", size = (200, 100), closable = False)
+        self.area.addDock(self.dock_summary, position='left')
+
+
+
+
+    #########
+    #  
+    #########
+    def createTradesUI(self, trades):
+        
+        self.tradeTableWidget = QtGui.QTableWidget(self.dock_trades)
+        self.tradeTableWidget.setColumnCount(10)
+
+        labels = [ "Date","Size", "Price", "Value" ]
+        self.tradeTableWidget.setHorizontalHeaderLabels( labels )
+
+        row = 0
+        for date,values in trades:
+            row += 1
+            #for trade in trades:
+            self.tradeTableWidget.insertRow(1)
+            self.tradeTableWidget.setItem(row,0,QtGui.QTableWidgetItem( date.strftime("%Y/%m/%d %H:%M:%S") ))
+            self.tradeTableWidget.setItem(row,1,QtGui.QTableWidgetItem( str(values[0][0]) ))
+            self.tradeTableWidget.setItem(row,2,QtGui.QTableWidgetItem( str(values[0][1]) ))
+            self.tradeTableWidget.setItem(row,3,QtGui.QTableWidgetItem( str(values[0][2]) ))
+
+        self.tradeTableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tradeTableWidget.horizontalHeader().setSectionResizeMode(QtGui.QHeaderView.Stretch)
+
+        self.dock_trades.addWidget(self.tradeTableWidget)
+
+        pass
+
+    #########
+    #  
+    #########
+    def createOrdersUI(self, orders):
+
+        self.orderTableWidget = QtGui.QTableWidget(self.dock_orders)
+        self.orderTableWidget.setColumnCount(2)
+
+        labels = [ "Order trade ID" , "Size" ]
+        self.orderTableWidget.setHorizontalHeaderLabels( labels )
+
+        for i in range(len(orders.lines)):
+            order = orders.lines[i]
+            self.tradeTableWidget.insertRow(1)
+            self.orderTableWidget.setItem(i,0,QtGui.QTableWidgetItem( str(order.tradeid ) ))
+            self.orderTableWidget.setItem(i,1,QtGui.QTableWidgetItem( str(order.size ) ))
+        
+        self.dock_orders.addWidget(self.orderTableWidget)
+
+        pass
+
+    #########
+    #  
+    #########
+    def show(self):
+        fplt.show(qt_exec = False) # prepares plots when they're all setup
+        self.win.show()
+        self.app.exec_()
+
+    #########
+    #  
+    #########
+    def createSummaryUI(self, brokerCash, brokerValue):
+        
+        self.summaryTableWidget = QtGui.QTableWidget(self.dock_summary)
+        self.summaryTableWidget.setRowCount(2)
+        self.summaryTableWidget.setColumnCount(2)
+
+        self.summaryTableWidget.setItem(0,0,QtGui.QTableWidgetItem("Cash"))
+        self.summaryTableWidget.setItem(0,1,QtGui.QTableWidgetItem(str(brokerCash)))
+
+        self.summaryTableWidget.setItem(1,0,QtGui.QTableWidgetItem("Value"))
+        self.summaryTableWidget.setItem(1,1,QtGui.QTableWidgetItem(str(brokerValue)))
+        
+        self.summaryTableWidget.horizontalHeader().setStretchLastSection(True)
+        self.summaryTableWidget.horizontalHeader().setSectionResizeMode(QtGui.QHeaderView.Stretch)
+
+        self.dock_summary.addWidget(self.summaryTableWidget)
+        
+        #Table will fit the screen horizontally
+
+        pass
+
+    #########
+    #  
+    #########
     def drawFinPlots(self, data):
         # fin plot
         self.ax0, self.ax1 = fplt.create_plot_widget(master=self.area, rows=2, init_zoom_periods=100)
@@ -59,7 +173,9 @@ class UserInterface:
         # def add_line(p0, p1, color=draw_line_color, width=1, style=None, interactive=False, ax=None):
         #fplt.add_line();
 
-    # trades is a list of backtrader.trade.Trade
+    #########
+    #  
+    #########
     def drawOrders(self, orders):
         for order in orders:
             if order.isbuy():
@@ -68,8 +184,3 @@ class UserInterface:
                 direction = "sell"
             
             fplt.add_order(bt.num2date(order.executed.dt), order.executed.price, direction, ax=self.ax0)
-
-    def show(self):
-        fplt.show(qt_exec = False) # prepares plots when they're all setup
-        self.win.show()
-        self.app.exec_()

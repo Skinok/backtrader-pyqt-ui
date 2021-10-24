@@ -35,6 +35,7 @@ class IchimokuStart1(bt.Strategy):
 
     def notify_order(self, order):
         if order.status == order.Completed:
+            #print("Order completed")
             pass
 
         if not order.alive():

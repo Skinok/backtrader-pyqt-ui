@@ -59,6 +59,18 @@ class Controller:
     def run(self):
 
         self.cerebro.addanalyzer(bt.analyzers.PyFolio, _name='PyFolio')
+        '''
+        self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer)
+        self.cerebro.addanalyzer(bt.analyzers.SharpeRatio)
+        self.cerebro.addanalyzer(bt.analyzers.Transactions)
+        self.cerebro.addanalyzer(bt.analyzers.Returns)
+        self.cerebro.addanalyzer(bt.analyzers.Position)
+
+        self.cerebro.addobserver(bt.observers.Broker)
+        self.cerebro.addobserver(bt.observers.Trades)
+        self.cerebro.addobserver(bt.observers.BuySell)
+        '''
+        self.cerebro.addanalyzer(bt.analyzers.Transactions, _name='Transactions')
 
         results = self.cerebro.run()  # run it all
         self.strat_results = results[0] # results of the first strategy
@@ -66,19 +78,30 @@ class Controller:
     def generateStats(self):
         # Stats on trades
         portfolio_stats = self.strat_results.analyzers.getbyname('PyFolio')
-        returns, positions, transactions, gross_lev = portfolio_stats.get_pf_items()
-        self.returns.index = returns.index.tz_convert(None)
+        self.returns, self.positions, self.transactions, self.gross_lev = portfolio_stats.get_pf_items()
+
+        self.portfolio_transactions = self.strat_results.analyzers.Transactions.get_analysis().items()
+
+        self.interface.createTradesUI(self.portfolio_transactions)
+        #self.interface.createOrdersUI(self.myOrders)
+
+        self.returns.index = self.returns.index.tz_convert(None)
 
     def populateOrders(self):  # todo : rename this functions later
         #Orders filters
         self.myOrders = []
-        data_orders = self.strat_results._orders
-        for order in data_orders:
+        for order in self.strat_results._orders:
             if order.status in [order.Completed]:
                 self.myOrders.append(order)
 
+        self.trades = []
+        for trade in self.strat_results._trades:
+            self.trades.append(trade)
+
     def displayUI(self):
 
+        self.interface.createSummaryUI(self.strat_results.stats.broker.cash[0],self.strat_results.stats.broker.value[0])
         self.interface.drawFinPlots(self.dataframe)
         self.interface.drawOrders(self.myOrders)
+
         self.interface.show()
