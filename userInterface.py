@@ -73,32 +73,37 @@ class UserInterface:
         self.dock_summary = Dock("Strategy Summary", size = (200, 100), closable = False)
         self.area.addDock(self.dock_summary, position='left')
 
-
-
-
     #########
     #  
     #########
     def createTradesUI(self, trades):
         
         self.tradeTableWidget = QtGui.QTableWidget(self.dock_trades)
-        self.tradeTableWidget.setColumnCount(10)
+        self.tradeTableWidget.setRowCount(len(trades)) 
+        self.tradeTableWidget.setColumnCount(4)
+
+        self.tradeTableWidget.setSortingEnabled(True)
 
         labels = [ "Date","Size", "Price", "Value" ]
         self.tradeTableWidget.setHorizontalHeaderLabels( labels )
 
         row = 0
         for date,values in trades:
-            row += 1
             #for trade in trades:
-            self.tradeTableWidget.insertRow(1)
             self.tradeTableWidget.setItem(row,0,QtGui.QTableWidgetItem( date.strftime("%Y/%m/%d %H:%M:%S") ))
             self.tradeTableWidget.setItem(row,1,QtGui.QTableWidgetItem( str(values[0][0]) ))
             self.tradeTableWidget.setItem(row,2,QtGui.QTableWidgetItem( str(values[0][1]) ))
             self.tradeTableWidget.setItem(row,3,QtGui.QTableWidgetItem( str(values[0][2]) ))
 
+            row += 1
+
         self.tradeTableWidget.horizontalHeader().setStretchLastSection(True)
         self.tradeTableWidget.horizontalHeader().setSectionResizeMode(QtGui.QHeaderView.Stretch)
+
+        self.tradeTableWidget.setStyleSheet("alternate-background-color: #AAAAAA;background-color: #CCCCCC;")
+        self.tradeTableWidget.setAlternatingRowColors(True)
+        self.tradeTableWidget.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.tradeTableWidget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
 
         self.dock_trades.addWidget(self.tradeTableWidget)
 
@@ -147,9 +152,13 @@ class UserInterface:
 
         self.summaryTableWidget.setItem(1,0,QtGui.QTableWidgetItem("Value"))
         self.summaryTableWidget.setItem(1,1,QtGui.QTableWidgetItem(str(brokerValue)))
-        
+
         self.summaryTableWidget.horizontalHeader().setStretchLastSection(True)
         self.summaryTableWidget.horizontalHeader().setSectionResizeMode(QtGui.QHeaderView.Stretch)
+
+        self.summaryTableWidget.verticalHeader().hide()
+        self.summaryTableWidget.horizontalHeader().hide()
+        self.summaryTableWidget.setShowGrid(False)
 
         self.dock_summary.addWidget(self.summaryTableWidget)
         
