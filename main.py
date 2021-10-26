@@ -25,7 +25,7 @@ skinokTrader.loadData(dataPath='C:/perso/trading/anaconda3/backtrader-ichimoku/d
 skinokTrader.addStrategies()
 
 skinokTrader.run()
-skinokTrader.generateStats()
 skinokTrader.populateOrders()
+skinokTrader.generateStats()
 
 skinokTrader.displayUI()

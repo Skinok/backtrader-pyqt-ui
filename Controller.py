@@ -77,15 +77,14 @@ class Controller:
 
     def generateStats(self):
         # Stats on trades
-        portfolio_stats = self.strat_results.analyzers.getbyname('PyFolio')
-        self.returns, self.positions, self.transactions, self.gross_lev = portfolio_stats.get_pf_items()
+        #portfolio_stats = self.strat_results.analyzers.getbyname('PyFolio')
+        #self.returns, self.positions, self.transactions, self.gross_lev = portfolio_stats.get_pf_items()
+        #self.portfolio_transactions = self.strat_results.analyzers.Transactions.get_analysis().items()
+        #self.returns.index = self.returns.index.tz_convert(None)
 
-        self.portfolio_transactions = self.strat_results.analyzers.Transactions.get_analysis().items()
+        #self.interface.createTransactionsUI(self.portfolio_transactions)
 
-        self.interface.createTradesUI(self.portfolio_transactions)
-        #self.interface.createOrdersUI(self.myOrders)
-
-        self.returns.index = self.returns.index.tz_convert(None)
+        self.interface.createTradesUI(self.strat_results._trades.items())
 
     def populateOrders(self):  # todo : rename this functions later
         #Orders filters
@@ -93,15 +92,12 @@ class Controller:
         for order in self.strat_results._orders:
             if order.status in [order.Completed]:
                 self.myOrders.append(order)
-
-        self.trades = []
-        for trade in self.strat_results._trades:
-            self.trades.append(trade)
+        self.interface.createOrdersUI(self.myOrders)
 
     def displayUI(self):
 
         self.interface.createSummaryUI(self.strat_results.stats.broker.cash[0],self.strat_results.stats.broker.value[0])
         self.interface.drawFinPlots(self.dataframe)
         self.interface.drawOrders(self.myOrders)
-
+        
         self.interface.show()
