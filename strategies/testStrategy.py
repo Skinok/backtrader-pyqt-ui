@@ -4,7 +4,7 @@ sys.path.append('D:/perso/trading/anaconda3/backtrader2')
 import backtrader as bt
 
 # Create a Stratey
-class TestStrategy(bt.Strategy):
+class testStrategy(bt.Strategy):
 
     def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''

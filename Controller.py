@@ -23,13 +23,14 @@ import pandas
 #sys.path.append('D:/perso/trading/anaconda3/backtrader2')
 import backtrader as bt
 
-import sys
-sys.path.append('C:/perso/trading/anaconda3/finplot')
+
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/strategies')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../finplot')
+
 import finplot as fplt
 
 # local files
-from ichimoku_strat1 import IchimokuStart1
-from testStrategy import TestStrategy
 import userInterface as Ui
 
 class Controller:
@@ -38,7 +39,7 @@ class Controller:
 
         self.cerebro = bt.Cerebro()  # create a "Cerebro" engine instance
 
-        self.interface = Ui.UserInterface()
+        self.interface = Ui.UserInterface(self)
 
         pass
 
@@ -51,16 +52,17 @@ class Controller:
 
         self.cerebro.adddata(self.data)  # Add the data feed
 
-    def addStrategies(self):
-
-        self.cerebro.addstrategy(IchimokuStart1)  # Add the trading strategy
-        #self.cerebro.addstrategy(TestStrategy)
+    def addStrategy(self, strategyName):
+        mod = __import__(strategyName, fromlist=[strategyName]) # first strategyName is the file name, and second (fromlist) is the class name
+        klass = getattr(mod, strategyName) # class name in the file
+        self.cerebro.addstrategy(klass)
     
     def run(self):
 
-        self.cerebro.addanalyzer(bt.analyzers.PyFolio, _name='PyFolio')
+        self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name = "ta")
+
         '''
-        self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer)
+        self.cerebro.addanalyzer(bt.analyzers.PyFolio, _name='PyFolio')
         self.cerebro.addanalyzer(bt.analyzers.SharpeRatio)
         self.cerebro.addanalyzer(bt.analyzers.Transactions)
         self.cerebro.addanalyzer(bt.analyzers.Returns)
@@ -69,11 +71,15 @@ class Controller:
         self.cerebro.addobserver(bt.observers.Broker)
         self.cerebro.addobserver(bt.observers.Trades)
         self.cerebro.addobserver(bt.observers.BuySell)
-        '''
         self.cerebro.addanalyzer(bt.analyzers.Transactions, _name='Transactions')
+
+        '''
 
         results = self.cerebro.run()  # run it all
         self.strat_results = results[0] # results of the first strategy
+
+        self.populateOrders()
+        self.generateStats()
 
     def generateStats(self):
         # Stats on trades
@@ -85,7 +91,12 @@ class Controller:
         #self.interface.createTransactionsUI(self.portfolio_transactions)
 
         self.interface.createTradesUI(self.strat_results._trades.items())
+        self.interface.createSummaryUI(self.strat_results.stats.broker.cash[0], self.strat_results.stats.broker.value[0], self.strat_results.analyzers.ta.get_analysis())
+        self.interface.drawFinPlots(self.dataframe)
+        self.interface.drawOrders(self.myOrders)
 
+        pass
+    
     def populateOrders(self):  # todo : rename this functions later
         #Orders filters
         self.myOrders = []
@@ -94,10 +105,8 @@ class Controller:
                 self.myOrders.append(order)
         self.interface.createOrdersUI(self.myOrders)
 
-    def displayUI(self):
+        pass
 
-        self.interface.createSummaryUI(self.strat_results.stats.broker.cash[0],self.strat_results.stats.broker.value[0])
-        self.interface.drawFinPlots(self.dataframe)
-        self.interface.drawOrders(self.myOrders)
+    def displayUI(self):
         
         self.interface.show()

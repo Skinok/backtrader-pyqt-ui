@@ -21,11 +21,4 @@ from Controller import Controller
 
 skinokTrader = Controller()
 
-skinokTrader.loadData(dataPath='C:/perso/trading/anaconda3/backtrader-ichimoku/data/EURUSD_M15_light.csv')
-skinokTrader.addStrategies()
-
-skinokTrader.run()
-skinokTrader.populateOrders()
-skinokTrader.generateStats()
-
-skinokTrader.displayUI()
+skinokTrader.displayUI()  

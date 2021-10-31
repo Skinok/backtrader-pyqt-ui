@@ -26,27 +26,31 @@ sys.path.append('C:/perso/trading/anaconda3/finplot')
 import finplot as fplt
 
 import backtrader as bt
+import strategyTesterUI
 
 class UserInterface:
 
     #########
     #  
     #########
-    def __init__(self):
+    def __init__(self,controller):
+
+        self.controller = controller
 
         # Qt 
         self.app = QApplication([])
         self.win = QMainWindow()
 
         # Resize windows properties
-        self.win.resize(1600,1000)
-        self.win.setWindowTitle("Docking charts example for finplot")
+        self.win.resize(1600,1100)
+        self.win.setWindowTitle("Skinok Backtrader UI")
         
         # Set width/height of QSplitter
         self.win.setStyleSheet("QSplitter { width : 20px; height : 20px; }")
 
         # Docks
         self.createDocks()
+        self.createStrategyTesterUI()
 
     #########
     #  
@@ -59,23 +63,23 @@ class UserInterface:
         self.dock_chart = Dock("dock_chart", size = (1000, 500), closable = False, hideTitle=True, )
         self.area.addDock(self.dock_chart, position='above')
 
-        # Create Summary widget 
-        self.dock_summary = Dock("Strategy Summary", size = (200, 100), closable = False)
-        self.area.addDock(self.dock_summary, position='left', relativeTo=self.dock_chart)
-
         # Create Trade widget 
         self.dock_trades = Dock("Trades", size = (1000, 200), closable = False)
         self.area.addDock(self.dock_trades, position='bottom')
 
-        # Create Transaction widget 
-        #self.dock_transactions = Dock("Transactions", size = (1000, 200), closable = False)
-        #self.area.addDock(self.dock_transactions, position='bottom', relativeTo=self.dock_trades)
+        # Create Summary widget 
+        self.dock_summary = Dock("Strategy Summary", size = (200, 100), closable = False)
+        self.area.addDock(self.dock_summary, position='left', relativeTo=self.dock_trades)
+
+        # Create Strategy Tester Tab
+        self.dock_strategyTester = Dock("Strategy Tester", size = (1000, 80), closable = False)
+        self.area.addDock(self.dock_strategyTester, position='top')
 
         # Create Order widget 
         self.dock_orders = Dock("Orders", size = (1000, 200), closable = False)
         self.area.addDock(self.dock_orders, position='below', relativeTo=self.dock_trades)
 
-
+        self.dock_trades.raiseDock()
 
     #########
     #  
@@ -165,7 +169,7 @@ class UserInterface:
         self.orderTableWidget.setRowCount(len(orders))
         self.orderTableWidget.setColumnCount(8)
         
-        labels = [ "Order ID" , "Size",  ]
+        labels = [ "Order ref" , "Direction", "Date Open", "Date Close", "Execution Type", "Size", "Price", "Profit" ]
         self.orderTableWidget.setHorizontalHeaderLabels( labels )
 
         for i in range(len(orders)):
@@ -196,6 +200,13 @@ class UserInterface:
 
         pass
 
+
+    def createStrategyTesterUI(self):
+
+        self.dock_strategyTester.addWidget(strategyTesterUI.StrategyTesterUI(self.controller))
+
+        pass
+
     #########
     #  
     #########
@@ -207,10 +218,10 @@ class UserInterface:
     #########
     #  
     #########
-    def createSummaryUI(self, brokerCash, brokerValue):
+    def createSummaryUI(self, brokerCash, brokerValue, tradeAnalysis):
         
         self.summaryTableWidget = QtGui.QTableWidget(self.dock_summary)
-        self.summaryTableWidget.setRowCount(2)
+        self.summaryTableWidget.setRowCount(8)
         self.summaryTableWidget.setColumnCount(2)
 
         self.summaryTableWidget.setItem(0,0,QtGui.QTableWidgetItem("Cash"))
@@ -218,6 +229,24 @@ class UserInterface:
 
         self.summaryTableWidget.setItem(1,0,QtGui.QTableWidgetItem("Value"))
         self.summaryTableWidget.setItem(1,1,QtGui.QTableWidgetItem(str(brokerValue)))
+
+        self.summaryTableWidget.setItem(2,0,QtGui.QTableWidgetItem("Profit total"))
+        self.summaryTableWidget.setItem(2,1,QtGui.QTableWidgetItem(str(tradeAnalysis["pnl"]["net"]["total"])))
+
+        self.summaryTableWidget.setItem(3,0,QtGui.QTableWidgetItem("Number of trades"))
+        self.summaryTableWidget.setItem(3,1,QtGui.QTableWidgetItem(str(tradeAnalysis["total"]["total"])))
+
+        self.summaryTableWidget.setItem(4,0,QtGui.QTableWidgetItem("Won"))
+        self.summaryTableWidget.setItem(4,1,QtGui.QTableWidgetItem(str(tradeAnalysis["won"]['total'])))
+
+        self.summaryTableWidget.setItem(5,0,QtGui.QTableWidgetItem("Lost"))
+        self.summaryTableWidget.setItem(5,1,QtGui.QTableWidgetItem(str(tradeAnalysis["lost"]['total'])))
+
+        self.summaryTableWidget.setItem(6,0,QtGui.QTableWidgetItem("Long"))
+        self.summaryTableWidget.setItem(6,1,QtGui.QTableWidgetItem(str(tradeAnalysis["long"]["total"])))
+
+        self.summaryTableWidget.setItem(7,0,QtGui.QTableWidgetItem("Short"))
+        self.summaryTableWidget.setItem(7,1,QtGui.QTableWidgetItem(str(tradeAnalysis["short"]["total"])))
 
         self.summaryTableWidget.horizontalHeader().setStretchLastSection(True)
         self.summaryTableWidget.horizontalHeader().setSectionResizeMode(QtGui.QHeaderView.Stretch)

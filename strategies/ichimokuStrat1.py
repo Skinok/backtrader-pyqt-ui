@@ -20,7 +20,7 @@ import sys
 import backtrader as bt
 
 # Create a subclass of Strategy to define the indicators and logic
-class IchimokuStart1(bt.Strategy):
+class ichimokuStrat1(bt.Strategy):
 
     params = (
         ('atrperiod', 14),  # ATR Period (standard)
@@ -68,6 +68,7 @@ class IchimokuStart1(bt.Strategy):
                             (self.tkcross == -1))
 
     def start(self):
+        print(" Starting IchimokuStart1 strategy")
         self.order = None  # sentinel to avoid operrations on pending order
 
     def next(self):
