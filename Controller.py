@@ -41,6 +41,21 @@ class Controller:
 
         self.interface = Ui.UserInterface(self)
 
+        self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name = "ta")
+        '''
+        self.cerebro.addanalyzer(bt.analyzers.PyFolio, _name='PyFolio')
+        self.cerebro.addanalyzer(bt.analyzers.SharpeRatio)
+        self.cerebro.addanalyzer(bt.analyzers.Transactions)
+        self.cerebro.addanalyzer(bt.analyzers.Returns)
+        self.cerebro.addanalyzer(bt.analyzers.Position)
+
+        self.cerebro.addobserver(bt.observers.Broker)
+        self.cerebro.addobserver(bt.observers.Trades)
+        self.cerebro.addobserver(bt.observers.BuySell)
+        self.cerebro.addanalyzer(bt.analyzers.Transactions, _name='Transactions')
+
+        '''
+
         pass
 
     def loadData(self, dataPath):
@@ -56,25 +71,8 @@ class Controller:
         mod = __import__(strategyName, fromlist=[strategyName]) # first strategyName is the file name, and second (fromlist) is the class name
         klass = getattr(mod, strategyName) # class name in the file
         self.cerebro.addstrategy(klass)
-    
+
     def run(self):
-
-        self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name = "ta")
-
-        '''
-        self.cerebro.addanalyzer(bt.analyzers.PyFolio, _name='PyFolio')
-        self.cerebro.addanalyzer(bt.analyzers.SharpeRatio)
-        self.cerebro.addanalyzer(bt.analyzers.Transactions)
-        self.cerebro.addanalyzer(bt.analyzers.Returns)
-        self.cerebro.addanalyzer(bt.analyzers.Position)
-
-        self.cerebro.addobserver(bt.observers.Broker)
-        self.cerebro.addobserver(bt.observers.Trades)
-        self.cerebro.addobserver(bt.observers.BuySell)
-        self.cerebro.addanalyzer(bt.analyzers.Transactions, _name='Transactions')
-
-        '''
-
         results = self.cerebro.run()  # run it all
         self.strat_results = results[0] # results of the first strategy
 
@@ -90,8 +88,9 @@ class Controller:
 
         #self.interface.createTransactionsUI(self.portfolio_transactions)
 
-        self.interface.createTradesUI(self.strat_results._trades.items())
-        self.interface.createSummaryUI(self.strat_results.stats.broker.cash[0], self.strat_results.stats.broker.value[0], self.strat_results.analyzers.ta.get_analysis())
+        self.interface.fillTradesUI(self.strat_results._trades.items())
+        self.interface.fillSummaryUI(self.strat_results.stats.broker.cash[0], self.strat_results.stats.broker.value[0], self.strat_results.analyzers.ta.get_analysis())
+
         self.interface.drawFinPlots(self.dataframe)
         self.interface.drawOrders(self.myOrders)
 
@@ -103,7 +102,8 @@ class Controller:
         for order in self.strat_results._orders:
             if order.status in [order.Completed]:
                 self.myOrders.append(order)
-        self.interface.createOrdersUI(self.myOrders)
+
+        self.interface.fillOrdersUI(self.myOrders)
 
         pass
 
