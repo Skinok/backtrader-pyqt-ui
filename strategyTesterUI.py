@@ -23,6 +23,8 @@ class StrategyTesterUI(QtWidgets.QWidget):
 
         self.loadDataFileLE = self.findChild(QtWidgets.QLineEdit, "loadDataFileLE")
 
+        self.runningStratPB = self.findChild(QtWidgets.QProgressBar, "runningStratPB")
+
         self.strategyNameCB = self.findChild(QtWidgets.QComboBox, "strategyNameCB")
         self.strategyNameCB.currentIndexChanged.connect(self.strategyNameActivated)
 

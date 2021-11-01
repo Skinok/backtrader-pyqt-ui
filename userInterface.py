@@ -193,7 +193,8 @@ class UserInterface:
     #########
     def createStrategyTesterUI(self):
 
-        self.dock_strategyTester.addWidget(strategyTesterUI.StrategyTesterUI(self.controller))
+        self.strategyTesterUI = strategyTesterUI.StrategyTesterUI(self.controller)
+        self.dock_strategyTester.addWidget(self.strategyTesterUI)
 
         pass
 
@@ -290,6 +291,13 @@ class UserInterface:
         self.win.show()
         self.app.exec_()
 
+
+    #########
+    # Get strategy running progress bar
+    #########
+    def getProgressBar(self):
+    
+        return self.strategyTesterUI.runningStratPB
 
 
     #########

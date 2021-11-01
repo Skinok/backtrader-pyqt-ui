@@ -25,6 +25,7 @@ import backtrader as bt
 
 
 import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/observers')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/strategies')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../finplot')
 
@@ -33,13 +34,17 @@ import finplot as fplt
 # local files
 import userInterface as Ui
 
+from observers.progressBarObserver import ProgressBarObserver
+
 class Controller:
 
     def __init__(self):
 
         self.cerebro = bt.Cerebro()  # create a "Cerebro" engine instance
 
-        self.interface = Ui.UserInterface(self)
+        global interface
+        interface = Ui.UserInterface(self)
+        self.interface = interface
 
         self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name = "ta")
         '''
@@ -55,6 +60,10 @@ class Controller:
         self.cerebro.addanalyzer(bt.analyzers.Transactions, _name='Transactions')
 
         '''
+
+        # Add an observer to watch the strat running and update the progress bar values
+        #uiProgressBar = self.interface.getProgressBar()
+        self.cerebro.addobserver( ProgressBarObserver )
 
         pass
 

@@ -18,6 +18,7 @@ class testStrategy(bt.Strategy):
         # To keep track of pending orders
         self.order = None
 
+
     def notify_order(self, order):
         if order.status in [order.Submitted, order.Accepted]:
             # Buy/Sell order submitted/accepted to/by broker - Nothing to do
