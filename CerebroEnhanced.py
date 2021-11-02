@@ -18,22 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from backtrader import Cerebro
 
-from backtrader import Observer
+class CerebroEnhanced(Cerebro):
 
-import Controller
-
-class ProgressBarObserver(Observer):
-
-    lines = ('max', 'value',)
-    
     def __init__(self):
-        self.progressBar = Controller.interface.getProgressBar()
-        self.progressBar.setMaximum(self.datas[0].close.buflen())
-        self.progressBar.setValue(0)
+        super().__init__()
+        pass
 
-    def next(self):
-        self.progressBar.setValue( self.progressBar.value() + 1 )
-        Controller.interface.app.processEvents()
+    def clearStrategies(self):
+        self.strats.clear()
+
+        pass

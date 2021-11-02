@@ -20,5 +20,4 @@
 from Controller import Controller
 
 skinokTrader = Controller()
-
 skinokTrader.displayUI()

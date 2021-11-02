@@ -22,7 +22,7 @@ import pandas
 #import sys
 #sys.path.append('D:/perso/trading/anaconda3/backtrader2')
 import backtrader as bt
-
+from CerebroEnhanced import *
 
 import sys, os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/observers')
@@ -40,8 +40,10 @@ class Controller:
 
     def __init__(self):
 
-        self.cerebro = bt.Cerebro()  # create a "Cerebro" engine instance
+        # create a "Cerebro" engine instance
+        self.cerebro = CerebroEnhanced()  
 
+        # Global is here to update the Ui in observers easily, if you find a better way, don't hesistate to tell me (Skinok)
         global interface
         interface = Ui.UserInterface(self)
         self.interface = interface
@@ -62,7 +64,6 @@ class Controller:
         '''
 
         # Add an observer to watch the strat running and update the progress bar values
-        #uiProgressBar = self.interface.getProgressBar()
         self.cerebro.addobserver( ProgressBarObserver )
 
         pass
@@ -77,6 +78,10 @@ class Controller:
         self.cerebro.adddata(self.data)  # Add the data feed
 
     def addStrategy(self, strategyName):
+        
+        #For now, only one strategy is allowed at a time
+        self.cerebro.clearStrategies()
+
         mod = __import__(strategyName, fromlist=[strategyName]) # first strategyName is the file name, and second (fromlist) is the class name
         klass = getattr(mod, strategyName) # class name in the file
         self.cerebro.addstrategy(klass)
