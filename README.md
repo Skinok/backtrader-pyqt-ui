@@ -1,4 +1,4 @@
-# backtrader-ichimoku
+# Skinok backtrader UI build with PyQt and finplot
 
 **PyQt User interface for backtrader2**
 
