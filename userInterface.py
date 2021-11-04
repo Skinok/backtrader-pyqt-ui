@@ -28,6 +28,8 @@ import finplot as fplt
 import backtrader as bt
 import strategyTesterUI
 
+import pandas as pd
+
 class UserInterface:
 
     #########
@@ -253,10 +255,29 @@ class UserInterface:
 
         pass
 
+
+    #########
+    #  Finplot configuration functions : maybe it should be in a different file
+    #########    
+    def update_legend_text(self, x, y, ax, data):
+        row = data.loc[data.TimeInt==x]
+
+        # format html with the candle and set legend
+        fmt = '<span style="color:#%s">%%.2f</span>' % ('0b0' if (row.Open<row.Close).all() else 'a00')
+        rawtxt = '<span style="font-size:13px">%%s %%s</span> &nbsp; O%s C%s H%s L%s' % (fmt, fmt, fmt, fmt)
+        self.hover_label.setText(rawtxt % ("EUR", "M15", row.Open, row.Close, row.High, row.Low))
+
+    def update_crosshair_text(self,x, y, xtext, ytext):
+        ytext = '%s (Close%+.2f)' % (ytext, (y - self.data.iloc[x].Close))
+        return xtext, ytext
+
     #########
     #  Draw chart
     #########
     def drawFinPlots(self, data):
+
+        self.data = data
+
         # fin plot
         self.ax0, self.ax1 = fplt.create_plot_widget(master=self.area, rows=2, init_zoom_periods=100)
         self.area.axs = [self.ax0, self.ax1]
@@ -266,6 +287,10 @@ class UserInterface:
         fplt.candlestick_ochl(data['Open Close High Low'.split()], ax=self.ax0)
         fplt.volume_ocv(data['Open Close Volume'.split()], ax=self.ax0.overlay())
 
+        self.hover_label = fplt.add_legend('', ax=self.ax0)
+        fplt.set_time_inspector(self.update_legend_text, ax=self.ax0, when='hover', data=data)
+        #fplt.add_crosshair_info(self.update_crosshair_text, ax=self.ax0)
+
         # def add_line(p0, p1, color=draw_line_color, width=1, style=None, interactive=False, ax=None):
         #fplt.add_line();
 
@@ -273,6 +298,7 @@ class UserInterface:
     #  Draw orders on charts (with arrows)
     #########
     def drawOrders(self, orders):
+        
         for order in orders:
             if order.isbuy():
                 direction = "buy"
@@ -288,9 +314,10 @@ class UserInterface:
     #########
     def show(self):
         fplt.show(qt_exec = False) # prepares plots when they're all setup
+        fplt.autoviewrestore()
+
         self.win.show()
         self.app.exec_()
-
 
     #########
     # Get strategy running progress bar
@@ -334,3 +361,12 @@ class UserInterface:
         self.dock_transactions.addWidget(self.transactionTableWidget)
 
         pass
+
+
+
+    
+
+
+
+
+    

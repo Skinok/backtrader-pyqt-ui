@@ -31,6 +31,8 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../finplot')
 
 import finplot as fplt
 
+import pandas as pd
+
 # local files
 import userInterface as Ui
 
@@ -70,10 +72,15 @@ class Controller:
 
     def loadData(self, dataPath):
 
-        self.dataframe = pandas.read_csv(dataPath,sep='\t',skiprows=0,header=0,parse_dates=True,index_col=0)
+        #self.dataframe = pandas.read_csv(dataPath,sep='\t',skiprows=0,header=0,index_col=0)
 
+        self.dataframe = pd.read_csv(dataPath, sep='\t', parse_dates=[0], date_parser=lambda x: pd.to_datetime(x, format='%Y-%m-%d %H:%M:%S'),skiprows=0,header=0,index_col=0)
+
+        # Datetime first column : 2012-12-28 17:45:00
+        self.dataframe['TimeInt'] = pd.to_datetime(self.dataframe.index).astype('int64') # use finplot's internal representation, which is ns
+        
         # Pass it to the backtrader datafeed and add it to the cerebro
-        self.data = bt.feeds.PandasData(dataname=self.dataframe)
+        self.data = bt.feeds.PandasData(dataname=self.dataframe, timeframe=bt.TimeFrame.Minutes)
 
         self.cerebro.adddata(self.data)  # Add the data feed
 
@@ -106,6 +113,9 @@ class Controller:
         self.interface.fillSummaryUI(self.strat_results.stats.broker.cash[0], self.strat_results.stats.broker.value[0], self.strat_results.analyzers.ta.get_analysis())
 
         self.interface.drawFinPlots(self.dataframe)
+
+        # Orders need to be stuied to know if an order is an open or a close order, or both...
+        # It depends on the order volume and the currently opened positions volume
         self.interface.drawOrders(self.myOrders)
 
         pass
@@ -114,8 +124,12 @@ class Controller:
         #Orders filters
         self.myOrders = []
         for order in self.strat_results._orders:
+
             if order.status in [order.Completed]:
                 self.myOrders.append(order)
+
+
+        
 
         self.interface.fillOrdersUI(self.myOrders)
 
