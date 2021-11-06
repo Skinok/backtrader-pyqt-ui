@@ -25,6 +25,7 @@ import backtrader as bt
 from CerebroEnhanced import *
 
 import sys, os
+from backtrader.order import BuyOrder, SellOrder
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/observers')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/strategies')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../finplot')
@@ -67,12 +68,9 @@ class Controller:
 
         # Add an observer to watch the strat running and update the progress bar values
         self.cerebro.addobserver( ProgressBarObserver )
-
         pass
 
     def loadData(self, dataPath):
-
-        #self.dataframe = pandas.read_csv(dataPath,sep='\t',skiprows=0,header=0,index_col=0)
 
         self.dataframe = pd.read_csv(dataPath, sep='\t', parse_dates=[0], date_parser=lambda x: pd.to_datetime(x, format='%Y-%m-%d %H:%M:%S'),skiprows=0,header=0,index_col=0)
 
@@ -83,6 +81,7 @@ class Controller:
         self.data = bt.feeds.PandasData(dataname=self.dataframe, timeframe=bt.TimeFrame.Minutes)
 
         self.cerebro.adddata(self.data)  # Add the data feed
+        pass
 
     def addStrategy(self, strategyName):
         
@@ -92,13 +91,14 @@ class Controller:
         mod = __import__(strategyName, fromlist=[strategyName]) # first strategyName is the file name, and second (fromlist) is the class name
         klass = getattr(mod, strategyName) # class name in the file
         self.cerebro.addstrategy(klass)
+        pass
 
     def run(self):
         results = self.cerebro.run()  # run it all
         self.strat_results = results[0] # results of the first strategy
 
-        self.populateOrders()
         self.generateStats()
+        pass
 
     def generateStats(self):
         # Stats on trades
@@ -109,18 +109,11 @@ class Controller:
 
         #self.interface.createTransactionsUI(self.portfolio_transactions)
 
-        self.interface.fillTradesUI(self.strat_results._trades.items())
-        self.interface.fillSummaryUI(self.strat_results.stats.broker.cash[0], self.strat_results.stats.broker.value[0], self.strat_results.analyzers.ta.get_analysis())
-
         self.interface.drawFinPlots(self.dataframe)
-
-        # Orders need to be stuied to know if an order is an open or a close order, or both...
-        # It depends on the order volume and the currently opened positions volume
-        self.interface.drawOrders(self.myOrders)
-
-        pass
-    
-    def populateOrders(self):  # todo : rename this functions later
+        self.interface.fillSummaryUI(self.strat_results.stats.broker.cash[0], self.strat_results.stats.broker.value[0], self.strat_results.analyzers.ta.get_analysis())
+        self.interface.fillTradesUI(self.strat_results._trades.items())        
+        
+        #self.interface.drawTrades(self.strat_results._trades.items())
         #Orders filters
         self.myOrders = []
         for order in self.strat_results._orders:
@@ -128,13 +121,13 @@ class Controller:
             if order.status in [order.Completed]:
                 self.myOrders.append(order)
 
-
-        
-
         self.interface.fillOrdersUI(self.myOrders)
+        self.interface.drawOrders(self.myOrders)
 
         pass
+    
 
     def displayUI(self):
         
         self.interface.show()
+        pass
