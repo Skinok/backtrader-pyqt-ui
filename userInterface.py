@@ -319,11 +319,19 @@ class UserInterface:
                     
                     # Réduction, cloture, ou invertion de la position
                     if order.size == abs(currentPositionSize): # it's a buy so order.size > 0
+                        
                         # Cloture de la position
-                        posOpen = (open_orders[-1].executed.dt,open_orders[-1].executed.price)
+                        last_order = open_orders.pop()
+                        posOpen = (bt.num2date(last_order.executed.dt),last_order.executed.price)
                         posClose = (bt.num2date(order.executed.dt), order.executed.price)
-                        fplt.add_line(posOpen, posClose, "#30FF30", 2, style="--" )
-                        pass
+
+                        color =  "#555555"
+                        if order.executed.pnl > 0:
+                            color =  "#30FF30"
+                        elif order.executed.pnl < 0:
+                            color = "#FF3030"
+
+                        fplt.add_line(posOpen, posClose, color, 2, style="--" )
 
                     elif order.size > abs(currentPositionSize):
                         # Fermeture de la position précédente + ouverture d'une position inverse

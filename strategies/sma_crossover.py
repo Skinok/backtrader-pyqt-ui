@@ -68,7 +68,7 @@ class sma_crossover(bt.Strategy):
     def next(self):
         if self.position.size:
             if self.buysig < 0:
-                self.sell()
+                self.sell(size=1000)
 
         elif self.buysig > 0:
-            self.buy()
+            self.buy(size=1000)
