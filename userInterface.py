@@ -22,8 +22,13 @@ from pyqtgraph.Qt import QtGui
 from pyqtgraph.dockarea import DockArea, Dock
 
 import sys
-sys.path.append('C:/perso/trading/anaconda3/finplot')
+from backtrader import indicator
+
+sys.path.append('../finplot')
 import finplot as fplt
+
+from indicators import fin_macd
+from indicators import ichimoku
 
 import backtrader as bt
 import strategyTesterUI
@@ -93,8 +98,6 @@ class UserInterface:
         self.createSummaryUI()
 
         pass
-
-    
 
     #########
     #  
@@ -282,8 +285,8 @@ class UserInterface:
         self.data = data
 
         # fin plot
-        self.ax0, self.ax1 = fplt.create_plot_widget(master=self.area, rows=2, init_zoom_periods=100)
-        self.area.axs = [self.ax0, self.ax1]
+        self.ax0, self.ax1, self.ax2, self.ax3 = fplt.create_plot_widget(master=self.area, rows=4, init_zoom_periods=100)
+        self.area.axs = [self.ax0, self.ax1, self.ax2, self.ax3]
         self.dock_chart.addWidget(self.ax0.ax_widget, 1, 0, 1, 2)
 
         fplt.candlestick_ochl(data['Open Close High Low'.split()], ax=self.ax0)
@@ -292,6 +295,9 @@ class UserInterface:
         self.hover_label = fplt.add_legend('', ax=self.ax0)
         fplt.set_time_inspector(self.update_legend_text, ax=self.ax0, when='hover', data=data)
         #fplt.add_crosshair_info(self.update_crosshair_text, ax=self.ax0)
+
+        # Should be on a button click
+        self.addIndicator()
 
         pass
 
@@ -407,7 +413,6 @@ class UserInterface:
 
         pass
     
-
     #########
     #  Show all
     #########
@@ -459,6 +464,23 @@ class UserInterface:
         self.transactionTableWidget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
 
         self.dock_transactions.addWidget(self.transactionTableWidget)
+
+        pass
+
+    #############
+    #  Indicators
+    #############
+    def addIndicator(self):
+
+        #it should be dynamic
+        #self.dock_indicator = Dock("dock_indi", size = (1000, 500), closable = False, hideTitle=True, )
+        #self.area.addDock(self.dock_indicator, position='below', relativeTo=self.dock_chart)
+
+        #self.dock_chart.addWidget(self.ax1.ax_widget, 2, 0, 1, 2)
+        #self.dock_indicator.addWidget(self.ax1.ax_widget, 1, 0, 1, 2)
+
+        ichimoku_indicator = ichimoku.Ichimoku(self.data)
+        ichimoku_indicator.draw(self.ax0)
 
         pass
 

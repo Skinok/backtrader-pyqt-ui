@@ -81,6 +81,10 @@ class Controller:
         self.data = bt.feeds.PandasData(dataname=self.dataframe, timeframe=bt.TimeFrame.Minutes)
 
         self.cerebro.adddata(self.data)  # Add the data feed
+
+        # Draw charts based on input data
+        self.interface.drawFinPlots(self.dataframe)
+
         pass
 
     def addStrategy(self, strategyName):
@@ -94,13 +98,16 @@ class Controller:
         pass
 
     def run(self):
+
+        # Compute strategy results
         results = self.cerebro.run()  # run it all
         self.strat_results = results[0] # results of the first strategy
 
-        self.generateStats()
+        # Display results
+        self.displayStrategyResults()
         pass
 
-    def generateStats(self):
+    def displayStrategyResults(self):
         # Stats on trades
         #portfolio_stats = self.strat_results.analyzers.getbyname('PyFolio')
         #self.returns, self.positions, self.transactions, self.gross_lev = portfolio_stats.get_pf_items()
@@ -108,8 +115,6 @@ class Controller:
         #self.returns.index = self.returns.index.tz_convert(None)
 
         #self.interface.createTransactionsUI(self.portfolio_transactions)
-
-        self.interface.drawFinPlots(self.dataframe)
         self.interface.fillSummaryUI(self.strat_results.stats.broker.cash[0], self.strat_results.stats.broker.value[0], self.strat_results.analyzers.ta.get_analysis())
         self.interface.fillTradesUI(self.strat_results._trades.items())        
         
@@ -126,7 +131,6 @@ class Controller:
 
         pass
     
-
     def displayUI(self):
         
         self.interface.show()
