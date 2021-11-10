@@ -63,11 +63,11 @@ class Ichimoku():
 
     def draw(self, ax, tenkan_color = "magenta", kijun_color = "blue", senkou_a_color = "gray", senkou_b_color = "gray", chikou_color = "yellow"):
 
-        self.tenkan_sen_plot = fplt.plot(self.tenkan_sen, ax = ax, color=tenkan_color, width=2 )
-        self.kijun_sen_plot = fplt.plot(self.kijun_sen, ax = ax, color=kijun_color, width=3 )
+        self.tenkan_sen_plot = fplt.plot(self.tenkan_sen, ax = ax, color=tenkan_color, width=1 )
+        self.kijun_sen_plot = fplt.plot(self.kijun_sen, ax = ax, color=kijun_color, width=2 )
         self.senkou_span_a_plot = fplt.plot(self.senkou_span_a, ax = ax, color=senkou_a_color )
         self.senkou_span_b_plot = fplt.plot(self.senkou_span_b, ax = ax, color=senkou_b_color )
-        self.chikou_span_plot = fplt.plot(self.chikou_span, ax = ax, color=chikou_color, width=3 )
+        self.chikou_span_plot = fplt.plot(self.chikou_span, ax = ax, color=chikou_color, width=2 )
 
         fplt.fill_between( self.senkou_span_a_plot, self.senkou_span_b_plot, color = Color("darkGray") )
 

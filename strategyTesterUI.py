@@ -14,14 +14,8 @@ class StrategyTesterUI(QtWidgets.QWidget):
 
         uic.loadUi( self.current_dir_path + "/ui/strategyTester.ui", self)
         
-        # find and connect the widgets in the XML file
-        self.openDataPB = self.findChild(QtWidgets.QPushButton, "openDataPB")
-        self.openDataPB.clicked.connect(self.openDataFile)
-
         self.runBacktestPB = self.findChild(QtWidgets.QPushButton, "runBacktestPB")
         self.runBacktestPB.clicked.connect(self.run)
-
-        self.loadDataFileLE = self.findChild(QtWidgets.QLineEdit, "loadDataFileLE")
 
         self.runningStratPB = self.findChild(QtWidgets.QProgressBar, "runningStratPB")
 
@@ -38,11 +32,6 @@ class StrategyTesterUI(QtWidgets.QWidget):
 
         self.strategyNameCB.addItems(self.strategyBaseName)
  
-    def openDataFile(self):
-        dataFileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Open data file', self.current_dir_path + "/data","CSV files (*.csv)")[0]
-        self.loadDataFileLE.setText(dataFileName)
-        self.controller.loadData(dataFileName)
-
     def run(self):
         self.controller.run()
 

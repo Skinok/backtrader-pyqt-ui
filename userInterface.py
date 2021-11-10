@@ -17,24 +17,22 @@
 #
 ###############################################################################
 
-from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QGraphicsView, QComboBox, QLabel
+from PyQt5.QtWidgets import QAction, QActionGroup, QApplication, QMainWindow, QFileDialog
 from pyqtgraph.Qt import QtGui
 from pyqtgraph.dockarea import DockArea, Dock
+from pyqtgraph import mkColor
 
-import sys
-from backtrader import indicator
+import sys, os
 
 sys.path.append('../finplot')
 import finplot as fplt
 
-from indicators import fin_macd
 from indicators import ichimoku
 
 import backtrader as bt
 import strategyTesterUI
 
-import pandas as pd
-import math
+import qdarkstyle
 
 class UserInterface:
 
@@ -45,6 +43,9 @@ class UserInterface:
 
         self.controller = controller
 
+        # It does not finish by a "/"
+        self.current_dir_path = os.path.dirname(os.path.realpath(__file__))
+
         # Qt 
         self.app = QApplication([])
         self.win = QMainWindow()
@@ -54,13 +55,11 @@ class UserInterface:
         self.win.setWindowTitle("Skinok Backtrader UI")
         
         # Set width/height of QSplitter
-        self.win.setStyleSheet("QSplitter { width : 20px; height : 20px; }")
+        self.app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
         # Docks
         self.createDocks()
         self.createUIs()
-
-        self.createStrategyTesterUI()
 
     #########
     #  
@@ -70,34 +69,88 @@ class UserInterface:
         self.win.setCentralWidget(self.area)
 
         # Create Chart widget      
-        self.dock_chart = Dock("dock_chart", size = (1000, 500), closable = False, hideTitle=True, )
+        self.dock_chart = Dock("dock_chart", size = (1000, 500), closable = False, hideTitle=True )
         self.area.addDock(self.dock_chart, position='above')
 
         # Create Trade widget 
-        self.dock_trades = Dock("Trades", size = (1000, 200), closable = False)
+        self.dock_trades = Dock("Trades", size = (1000, 200), closable = False, hideTitle=True)
         self.area.addDock(self.dock_trades, position='bottom')
 
         # Create Summary widget 
-        self.dock_summary = Dock("Strategy Summary", size = (200, 100), closable = False)
+        self.dock_summary = Dock("Strategy Summary", size = (200, 100), closable = False, hideTitle=True)
         self.area.addDock(self.dock_summary, position='left', relativeTo=self.dock_trades)
 
         # Create Strategy Tester Tab
-        self.dock_strategyTester = Dock("Strategy Tester", size = (1000, 80), closable = False)
-        self.area.addDock(self.dock_strategyTester, position='top')
+        self.dock_strategyTester = Dock("Strategy Tester", size = (200, 500), closable = False, hideTitle=True)
+        self.area.addDock(self.dock_strategyTester, position='left', relativeTo=self.dock_chart)
 
-        # Create Order widget 
-        self.dock_orders = Dock("Orders", size = (1000, 200), closable = False)
-        self.area.addDock(self.dock_orders, position='below', relativeTo=self.dock_trades)
-
-        self.dock_trades.raiseDock()
+        # Create Order widget
+        #self.dock_orders = Dock("Orders", size = (1000, 200), closable = False)
+        #self.area.addDock(self.dock_orders, position='below', relativeTo=self.dock_trades)
+        #self.dock_trades.raiseDock()
 
     def createUIs(self):
         
+        self.createActions()
+        self.createMenuBar()
+
+        self.createStrategyTesterUI()
         self.createTradesUI()
-        self.createOrdersUI()
+        #self.createOrdersUI()
         self.createSummaryUI()
 
         pass
+
+    def createActions(self):
+
+        # Indicators
+        self.indicatorsActionGroup = QActionGroup(self.win)
+
+            # Ichimoku
+        self.addIchimokuAction = QAction(QtGui.QIcon(""),"Add Ichimoku", self.indicatorsActionGroup)
+        self.addIchimokuAction.triggered.connect( self.addIndicator )
+        #self.indicatorsActionGroup.addAction(self.addIchimokuAction)
+
+        # Data sources
+        self.backtestDataActionGroup = QActionGroup(self.win)
+        
+        self.openCSVAction = QAction(QtGui.QIcon(""),"Open CSV File", self.backtestDataActionGroup)
+        self.openCSVAction.triggered.connect( self.openDataFile )
+
+        #self.DataSourceAction = QAction(QtGui.QIcon(""),"Choose Data Source", self.toolbar)
+        #self.DataSourceAction.triggered.connect( self.l )
+        #self.toolbar.addAction(self.addIchimokuAction)
+
+        # Options
+        self.optionsActionGroup = QActionGroup(self.win)
+
+        self.darkModeAction = QAction(QtGui.QIcon(""),"Switch Color Mode", self.optionsActionGroup)
+        self.darkModeAction.triggered.connect( self.dark_mode_toggle )
+        self.darkModeActivated = False
+
+        #self.optionsActionGroup.addAction(self.darkModeAction)
+
+        pass
+
+    def createMenuBar(self):
+
+        self.menubar = self.win.menuBar()
+
+        self.indicatorsMenu = self.menubar.addMenu("Indicators")
+        self.indicatorsMenu.addActions(self.indicatorsActionGroup.actions())
+
+        
+        self.backtestDataMenu = self.menubar.addMenu("Backtest Data")
+        self.backtestDataMenu.addActions(self.backtestDataActionGroup.actions())
+
+        self.optionsMenu = self.menubar.addMenu("Options")
+        self.optionsMenu.addActions(self.optionsActionGroup.actions())
+
+        pass
+
+    def openDataFile(self):
+        dataFileName = QFileDialog.getOpenFileName(self.win, 'Open data file', self.current_dir_path + "/data","CSV files (*.csv)")[0]
+        self.controller.loadData(dataFileName)
 
     #########
     #  
@@ -282,6 +335,12 @@ class UserInterface:
     #########
     def drawFinPlots(self, data):
 
+        # Rest previous draws
+        if hasattr(self, 'axo'):
+            self.ax0.reset()
+        if hasattr(self, 'ax1'):
+            self.ax1.reset()
+
         self.data = data
 
         # fin plot
@@ -295,9 +354,6 @@ class UserInterface:
         self.hover_label = fplt.add_legend('', ax=self.ax0)
         fplt.set_time_inspector(self.update_legend_text, ax=self.ax0, when='hover', data=data)
         #fplt.add_crosshair_info(self.update_crosshair_text, ax=self.ax0)
-
-        # Should be on a button click
-        self.addIndicator()
 
         pass
 
@@ -485,7 +541,76 @@ class UserInterface:
         pass
 
 
+    def dark_mode_toggle(self):
 
+        '''Digs into the internals of finplot and pyqtgraph to change the colors of existing
+        plots, axes, backgronds, etc.'''
+        self.darkModeActivated = not self.darkModeActivated
+
+        # first set the colors we'll be using
+        if self.darkModeActivated:
+            fplt.foreground = '#777'
+            fplt.background = '#090c0e'
+            fplt.candle_bull_color = fplt.candle_bull_body_color = '#0b0'
+            fplt.candle_bear_color = '#a23'
+            volume_transparency = '6'
+        else:
+            fplt.foreground = '#444'
+            fplt.background = fplt.candle_bull_body_color = '#fff'
+            fplt.candle_bull_color = '#380'
+            fplt.candle_bear_color = '#c50'
+            volume_transparency = 'c'
+        fplt.volume_bull_color = fplt.volume_bull_body_color = fplt.candle_bull_color + volume_transparency
+        fplt.volume_bear_color = fplt.candle_bear_color + volume_transparency
+        fplt.cross_hair_color = fplt.foreground+'8'
+        fplt.draw_line_color = '#888'
+        fplt.draw_done_color = '#555'
+
+        #pg.setConfigOptions(foreground=fplt.foreground, background=fplt.background)
+        # control panel color
+        #if ctrl_panel is not None:
+        #    p = ctrl_panel.palette()
+        #    p.setColor(ctrl_panel.darkmode.foregroundRole(), pg.mkColor(fplt.foreground))
+        #    ctrl_panel.darkmode.setPalette(p)
+
+        # window background
+        for win in fplt.windows:
+            for ax in win.axs:
+                ax.vb.setBackgroundColor(fplt.background)
+
+        # axis, crosshair, candlesticks, volumes
+        axs = [ax for win in fplt.windows for ax in win.axs]
+        vbs = set([ax.vb for ax in axs])
+        axs += fplt.overlay_axs
+        axis_pen = fplt._makepen(color=fplt.foreground)
+        for ax in axs:
+            ax.axes['left']['item'].setPen(axis_pen)
+            ax.axes['left']['item'].setTextPen(axis_pen)
+            ax.axes['bottom']['item'].setPen(axis_pen)
+            ax.axes['bottom']['item'].setTextPen(axis_pen)
+            if ax.crosshair is not None:
+                ax.crosshair.vline.pen.setColor(mkColor(fplt.foreground))
+                ax.crosshair.hline.pen.setColor(mkColor(fplt.foreground))
+                ax.crosshair.xtext.setColor(fplt.foreground)
+                ax.crosshair.ytext.setColor(fplt.foreground)
+            for item in ax.items:
+                if isinstance(item, fplt.FinPlotItem):
+                    isvolume = ax in fplt.overlay_axs
+                    if not isvolume:
+                        item.colors.update(
+                            dict(bull_shadow      = fplt.candle_bull_color,
+                                bull_frame       = fplt.candle_bull_color,
+                                bull_body        = fplt.candle_bull_body_color,
+                                bear_shadow      = fplt.candle_bear_color,
+                                bear_frame       = fplt.candle_bear_color,
+                                bear_body        = fplt.candle_bear_color))
+                    else:
+                        item.colors.update(
+                            dict(bull_frame       = fplt.volume_bull_color,
+                                bull_body        = fplt.volume_bull_body_color,
+                                bear_frame       = fplt.volume_bear_color,
+                                bear_body        = fplt.volume_bear_color))
+                    item.repaint()
     
 
 

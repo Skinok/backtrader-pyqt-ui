@@ -15,6 +15,7 @@ pip install requests
 pip install websocket  
 pip install websocket-client  
 pip install oandapy  
+pip install qdarkstyle
 pip install git+https://github.com/blampe/IbPy.git  
 pip install git+https://github.com/oanda/oandapy.git  
 pip install git+https://github.com/Skinok/finplot.git  
