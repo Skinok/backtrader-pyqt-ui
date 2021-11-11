@@ -126,7 +126,7 @@ class Controller:
             if order.status in [order.Completed]:
                 self.myOrders.append(order)
 
-        self.interface.fillOrdersUI(self.myOrders)
+        #self.interface.fillOrdersUI(self.myOrders)
         self.interface.drawOrders(self.myOrders)
 
         pass

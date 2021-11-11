@@ -31,6 +31,7 @@ from indicators import ichimoku
 
 import backtrader as bt
 import strategyTesterUI
+import strategyResultsUI
 
 import qdarkstyle
 
@@ -73,16 +74,20 @@ class UserInterface:
         self.area.addDock(self.dock_chart, position='above')
 
         # Create Trade widget 
-        self.dock_trades = Dock("Trades", size = (1000, 200), closable = False, hideTitle=True)
-        self.area.addDock(self.dock_trades, position='bottom')
+        #self.dock_trades = Dock("Trades", size = (1000, 200), closable = False, hideTitle=True)
+        #self.area.addDock(self.dock_trades, position='bottom')
 
         # Create Summary widget 
-        self.dock_summary = Dock("Strategy Summary", size = (200, 100), closable = False, hideTitle=True)
-        self.area.addDock(self.dock_summary, position='left', relativeTo=self.dock_trades)
+        #self.dock_summary = Dock("Strategy Summary", size = (200, 100), closable = False, hideTitle=True)
+        #self.area.addDock(self.dock_summary, position='left', relativeTo=self.dock_trades)
 
         # Create Strategy Tester Tab
         self.dock_strategyTester = Dock("Strategy Tester", size = (200, 500), closable = False, hideTitle=True)
         self.area.addDock(self.dock_strategyTester, position='left', relativeTo=self.dock_chart)
+
+        # Create Strategy Tester Tab
+        self.dock_strategyResultsUI = Dock("Strategy Tester", size = (1000, 250), closable = False, hideTitle=True)
+        self.area.addDock(self.dock_strategyResultsUI, position='bottom')
 
         # Create Order widget
         #self.dock_orders = Dock("Orders", size = (1000, 200), closable = False)
@@ -157,7 +162,7 @@ class UserInterface:
     #########
     def createTradesUI(self):
         
-        self.tradeTableWidget = QtGui.QTableWidget(self.dock_trades)
+        self.tradeTableWidget = QtGui.QTableWidget(self.strategyResultsUI.TradesGB)
         self.tradeTableWidget.setColumnCount(7)
 
         labels = [ "Trade Ref","Direction", "Date Open", "Date Close", "Price", "Commission", "Profit Net" ]
@@ -172,7 +177,7 @@ class UserInterface:
         self.tradeTableWidget.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.tradeTableWidget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
 
-        self.dock_trades.addWidget(self.tradeTableWidget)
+        self.strategyResultsUI.TradesGB.layout().addWidget(self.tradeTableWidget)
 
     def fillTradesUI(self, trades):
 
@@ -255,6 +260,10 @@ class UserInterface:
         self.strategyTesterUI = strategyTesterUI.StrategyTesterUI(self.controller)
         self.dock_strategyTester.addWidget(self.strategyTesterUI)
 
+        self.strategyResultsUI = strategyResultsUI.StrategyResultsUI(self.controller)
+        self.dock_strategyResultsUI.addWidget(self.strategyResultsUI)
+        
+
         pass
 
     #########
@@ -262,7 +271,7 @@ class UserInterface:
     #########
     def createSummaryUI(self):
         
-        self.summaryTableWidget = QtGui.QTableWidget(self.dock_summary)
+        self.summaryTableWidget = QtGui.QTableWidget(self.strategyResultsUI.SummaryGB)
         
         self.summaryTableWidget.setColumnCount(2)
 
@@ -270,7 +279,7 @@ class UserInterface:
         self.summaryTableWidget.horizontalHeader().hide()
         self.summaryTableWidget.setShowGrid(False)
 
-        self.dock_summary.addWidget(self.summaryTableWidget)
+        self.strategyResultsUI.SummaryGB.layout().addWidget(self.summaryTableWidget)
 
         pass
 
@@ -550,7 +559,7 @@ class UserInterface:
         # first set the colors we'll be using
         if self.darkModeActivated:
             fplt.foreground = '#777'
-            fplt.background = '#090c0e'
+            fplt.background = '#19232D'
             fplt.candle_bull_color = fplt.candle_bull_body_color = '#0b0'
             fplt.candle_bear_color = '#a23'
             volume_transparency = '6'
@@ -560,6 +569,7 @@ class UserInterface:
             fplt.candle_bull_color = '#380'
             fplt.candle_bear_color = '#c50'
             volume_transparency = 'c'
+
         fplt.volume_bull_color = fplt.volume_bull_body_color = fplt.candle_bull_color + volume_transparency
         fplt.volume_bear_color = fplt.candle_bear_color + volume_transparency
         fplt.cross_hair_color = fplt.foreground+'8'
@@ -576,7 +586,7 @@ class UserInterface:
         # window background
         for win in fplt.windows:
             for ax in win.axs:
-                ax.vb.setBackgroundColor(fplt.background)
+                ax.ax_widget.setBackground(fplt.background)
 
         # axis, crosshair, candlesticks, volumes
         axs = [ax for win in fplt.windows for ax in win.axs]
