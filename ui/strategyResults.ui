@@ -18,22 +18,28 @@
     <widget class="QGroupBox" name="SummaryGB">
      <property name="maximumSize">
       <size>
-       <width>200</width>
+       <width>250</width>
        <height>16777215</height>
       </size>
      </property>
-     <property name="title">
-      <string>Summary</string>
+     <property name="styleSheet">
+      <string notr="true">border: 0px;</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_5">
+     <property name="title">
+      <string>Strategy summary</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout"/>
+       <layout class="QGridLayout" name="gridLayout_2"/>
       </item>
      </layout>
     </widget>
    </item>
    <item row="0" column="1">
     <widget class="QGroupBox" name="TradesGB">
+     <property name="styleSheet">
+      <string notr="true">border: 0px;</string>
+     </property>
      <property name="title">
       <string>Trades</string>
      </property>

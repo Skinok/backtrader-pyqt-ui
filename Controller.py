@@ -30,8 +30,6 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/observers')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/strategies')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../finplot')
 
-import finplot as fplt
-
 import pandas as pd
 
 # local files
@@ -83,7 +81,7 @@ class Controller:
         self.cerebro.adddata(self.data)  # Add the data feed
 
         # Draw charts based on input data
-        self.interface.drawFinPlots(self.dataframe)
+        self.interface.drawChart(self.dataframe)
 
         pass
 
@@ -126,8 +124,8 @@ class Controller:
             if order.status in [order.Completed]:
                 self.myOrders.append(order)
 
-        #self.interface.fillOrdersUI(self.myOrders)
-        self.interface.drawOrders(self.myOrders)
+
+        self.interface.setOrders(self.myOrders)
 
         pass
     
