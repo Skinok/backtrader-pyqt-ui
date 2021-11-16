@@ -23,7 +23,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">border: 0px;</string>
+      <string notr="true"/>
      </property>
      <property name="title">
       <string>Strategy summary</string>
@@ -38,7 +38,7 @@
    <item row="0" column="1">
     <widget class="QGroupBox" name="TradesGB">
      <property name="styleSheet">
-      <string notr="true">border: 0px;</string>
+      <string notr="true"/>
      </property>
      <property name="title">
       <string>Trades</string>

@@ -396,7 +396,7 @@ class UserInterface:
     def setOrders(self, orders):
 
         #self.fillOrdersUI(self.myOrders)
-        self.fpltWindow.drawOrders(self.myOrders)
+        self.fpltWindow.drawOrders(orders)
 
         pass
 

@@ -248,14 +248,6 @@ class FinplotWindow():
 
         pass
 
-    def activate_volumes(self, activated):
-        
-        if activated:
-            fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
-        else:
-            self.ax0.overlay().reset()
-        pass
-
     #############
     #  Indicators
     #############
@@ -267,8 +259,30 @@ class FinplotWindow():
                 self.ichimoku_indicator = ichimoku.Ichimoku(self.data)
                 self.ichimoku_indicator.draw(self.ax0)
             else:
-                self.ax0.clearPlots()
 
+                for item in list(self.ax0.items):
+                    self.ax0.removeItem(item)
+
+                self.drawFinPlots(self.data)
+
+        # Refresh view
+        self.ax0.vb.refresh_all_y_zoom()
+        pass
+
+    def activate_volumes(self, activated):
+        
+        if activated:
+            fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
+        else:
+            #self.ax0.vb.reset()
+            for item in list(self.ax0.items):
+                self.ax0.removeItem(item)
+
+            self.drawFinPlots(self.data)
+            #self.ax0.overlay().reset()
+
+        # Refresh view
+        self.ax0.vb.refresh_all_y_zoom()
         pass
 
     #############
@@ -276,7 +290,8 @@ class FinplotWindow():
     #############
     def show(self):
 
-        fplt.show()
-        
+        #qt_exec create a whole qt context : we dont need it here
+        fplt.show(qt_exec=False)
+
         pass
     
