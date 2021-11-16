@@ -9,16 +9,9 @@ You should have python installed on your machine (obvisously)
 Please run the following commands : 
 
 ```
-pip install git+https://github.com/backtrader2/backtrader  
-pip install matplotlib  
-pip install requests  
-pip install websocket  
-pip install websocket-client  
-pip install oandapy  
-pip install qdarkstyle
-pip install git+https://github.com/blampe/IbPy.git  
-pip install git+https://github.com/oanda/oandapy.git  
-pip install git+https://github.com/Skinok/finplot.git  
+pip install git+https://github.com/backtrader2/backtrader matplotlib requests \
+            websocket websocket-client oandapy qdarkstyle git+https://github.com/blampe/IbPy.git \
+            git+https://github.com/oanda/oandapy.git git+https://github.com/Skinok/finplot.git  
 ```
 
 # How to use it ?
