@@ -29,8 +29,6 @@ class FinplotWindow():
     #########
     def createPlotWidgets(self):
 
-
-
         # fin plot
         self.ax0, self.ax1, self.ax2, self.ax3 = fplt.create_plot_widget(master=self.dockArea, rows=4, init_zoom_periods=100)
         self.dockArea.axs = [self.ax0, self.ax1, self.ax2, self.ax3]
@@ -256,9 +254,11 @@ class FinplotWindow():
     #############
 
     def resetPlots(self):
+        
         # Entirely reset graph
         if (hasattr(self,"ax0")):
             self.ax0.reset()
+            self.ax0.overlay().reset()
         if (hasattr(self,"ax1")):
             self.ax1.reset()
         if (hasattr(self,"ax2")):
@@ -284,11 +284,11 @@ class FinplotWindow():
                 self.ichimoku_indicator = ichimoku.Ichimoku(self.data)
                 self.ichimoku_indicator.draw(self.ax0)
 
-            if self.IndVolumesActivated:
-                fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
-
             # Finally draw candles
             self.drawCandles()
+
+            #if self.IndVolumesActivated:
+            #    fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
 
             # Refresh view : auto zoom
             fplt.refresh()
