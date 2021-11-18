@@ -110,6 +110,7 @@ class UserInterface:
 
         # Create finplot Window
         self.createFinplotWindow()
+        self.createControlPanel()
 
         pass
 
@@ -361,6 +362,7 @@ class UserInterface:
     def createFinplotWindow(self):
 
         self.fpltWindow = finplotWindow.FinplotWindow(self.dockArea, self.dock_chart)
+        self.fpltWindow.createPlotWidgets()
 
         pass
 
@@ -385,19 +387,16 @@ class UserInterface:
     # Draw chart
     #########
     def drawChart(self, data):
-        self.fpltWindow.drawFinPlots(data)
-        self.createControlPanel()
-
+        self.fpltWindow.setChartData(data)
+        self.fpltWindow.updateChart()
         pass
 
     #########
     # Draw orders on chart
     #########
     def setOrders(self, orders):
-
         #self.fillOrdersUI(self.myOrders)
         self.fpltWindow.drawOrders(orders)
-
         pass
 
 
@@ -466,16 +465,15 @@ class UserInterface:
         self.fpltWindow.activateDarkMode(self.darkmodeCB.isChecked())
         pass
 
-    def volumes_toggle(self):
-        self.fpltWindow.activate_volumes(self.volumesCB.isChecked())
-        pass
-    
 
     ##########
     # INDICATORS
     ##########
     def addIchimoku(self):
-        self.fpltWindow.setIndicator( "Ichimoku", self.IchimokuPB.isChecked() )
+        self.fpltWindow.setIndicator("Ichimoku", self.IchimokuPB.isChecked() )
+        pass
+    def volumes_toggle(self):
+        self.fpltWindow.setIndicator("Volumes", self.volumesCB.isChecked())
         pass
 
     #########

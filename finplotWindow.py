@@ -15,28 +15,31 @@ class FinplotWindow():
         self.dockArea = dockArea
         self.dockChart = dockChart
 
+        self.IndIchimokuActivated = False
+        self.IndRSIActivated = False
+        self.IndStochasticActivated = False
+        self.IndMAActivated = False
+
+        self.IndVolumesActivated = False
+
         pass
 
     #########
-    #  Draw chart
+    #  Prepare the plot widgets
     #########
-    def drawFinPlots(self, data):
+    def createPlotWidgets(self):
 
-        # Rest previous draws
-        if hasattr(self, 'axo'):
-            self.ax0.reset()
-        if hasattr(self, 'ax1'):
-            self.ax1.reset()
 
-        self.data = data
 
         # fin plot
         self.ax0, self.ax1, self.ax2, self.ax3 = fplt.create_plot_widget(master=self.dockArea, rows=4, init_zoom_periods=100)
         self.dockArea.axs = [self.ax0, self.ax1, self.ax2, self.ax3]
         self.dockChart.addWidget(self.ax0.ax_widget, 1, 0, 1, 1)
+        pass
 
-        fplt.candlestick_ochl(data['Open Close High Low'.split()], ax=self.ax0)
-        #fplt.volume_ocv(data['Open Close Volume'.split()], ax=self.ax0.overlay())
+    def drawCandles(self):
+
+        fplt.candlestick_ochl(self.data['Open Close High Low'.split()], ax=self.ax0)
 
         #self.hover_label = fplt.add_legend('', ax=self.ax0)
         #fplt.set_time_inspector(self.update_legend_text, ax=self.ax0, when='hover', data=data)
@@ -251,38 +254,58 @@ class FinplotWindow():
     #############
     #  Indicators
     #############
+
+    def resetPlots(self):
+        # Entirely reset graph
+        if (hasattr(self,"ax0")):
+            self.ax0.reset()
+        if (hasattr(self,"ax1")):
+            self.ax1.reset()
+        if (hasattr(self,"ax2")):
+            self.ax2.reset()
+        if (hasattr(self,"ax3")):
+            self.ax3.reset()
+
+        pass
+
+    def setChartData(self, data):
+        self.data = data
+        pass
+
+    def updateChart(self):
+
+        # Entirely reset graph
+        self.resetPlots()
+
+        if (hasattr(self,"data")):
+
+            # Start plotting indicators
+            if self.IndIchimokuActivated:
+                self.ichimoku_indicator = ichimoku.Ichimoku(self.data)
+                self.ichimoku_indicator.draw(self.ax0)
+
+            if self.IndVolumesActivated:
+                fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
+
+            # Finally draw candles
+            self.drawCandles()
+
+            # Refresh view : auto zoom
+            fplt.refresh()
+
+        pass
+
+
     def setIndicator(self, indicatorName, activated):
 
         if (indicatorName == "Ichimoku"):
+            self.IndIchimokuActivated = activated
 
-            if activated:
-                self.ichimoku_indicator = ichimoku.Ichimoku(self.data)
-                self.ichimoku_indicator.draw(self.ax0)
-            else:
+        if (indicatorName == "Volumes"):
+            self.IndVolumesActivated = activated
 
-                for item in list(self.ax0.items):
-                    self.ax0.removeItem(item)
+        self.updateChart()
 
-                self.drawFinPlots(self.data)
-
-        # Refresh view
-        self.ax0.vb.refresh_all_y_zoom()
-        pass
-
-    def activate_volumes(self, activated):
-        
-        if activated:
-            fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
-        else:
-            #self.ax0.vb.reset()
-            for item in list(self.ax0.items):
-                self.ax0.removeItem(item)
-
-            self.drawFinPlots(self.data)
-            #self.ax0.overlay().reset()
-
-        # Refresh view
-        self.ax0.vb.refresh_all_y_zoom()
         pass
 
     #############
