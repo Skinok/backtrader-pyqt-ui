@@ -73,7 +73,7 @@ class Controller:
         self.dataframe = pd.read_csv(dataPath, sep='\t', parse_dates=[0], date_parser=lambda x: pd.to_datetime(x, format='%Y-%m-%d %H:%M:%S'),skiprows=0,header=0,index_col=0)
 
         # Datetime first column : 2012-12-28 17:45:00
-        self.dataframe['TimeInt'] = pd.to_datetime(self.dataframe.index).astype('int64') # use finplot's internal representation, which is ns
+        #self.dataframe['TimeInt'] = pd.to_datetime(self.dataframe.index).astype('int64') # use finplot's internal representation, which is ns
         
         # Pass it to the backtrader datafeed and add it to the cerebro
         self.data = bt.feeds.PandasData(dataname=self.dataframe, timeframe=bt.TimeFrame.Minutes)
@@ -126,6 +126,8 @@ class Controller:
 
 
         self.interface.setOrders(self.myOrders)
+
+        self.interface.displayPnL( self.strat_results._trades.items() )
 
         pass
     

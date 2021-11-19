@@ -36,6 +36,8 @@ import finplotWindow
 
 import qdarkstyle
 
+import pandas as pd
+
 class UserInterface:
 
     #########
@@ -399,6 +401,36 @@ class UserInterface:
         self.fpltWindow.drawOrders(orders)
         pass
 
+
+    #########
+    # Draw PnL chart
+    #########
+    def displayPnL(self, trades):
+
+        pnl_data = {}
+        pnl_data['time'] = []
+        pnl_data['pnlcomm'] = []
+
+        # Prepare data before plotting Pnl 
+        for key, values in trades:
+
+            row = 0
+            for trade in values[0]:
+
+                if not trade.isopen:
+
+                    pnl_data['time'].append( bt.num2date(trade.dtclose) )
+                    pnl_data['pnlcomm'].append(trade.pnlcomm)
+
+                row += 1
+
+        # index is X axis ?
+        pnl_data['time'] = pd.to_datetime(pnl_data['time'])
+
+        df = pd.DataFrame(data=pnl_data)
+
+        self.fpltWindow.drawPnL(df)
+        pass
 
     #########
     # Control panel overlay on top/above of the finplot window

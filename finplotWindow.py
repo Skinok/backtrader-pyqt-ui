@@ -30,9 +30,16 @@ class FinplotWindow():
     def createPlotWidgets(self):
 
         # fin plot
-        self.ax0, self.ax1, self.ax2, self.ax3 = fplt.create_plot_widget(master=self.dockArea, rows=4, init_zoom_periods=100)
-        self.dockArea.axs = [self.ax0, self.ax1, self.ax2, self.ax3]
+        self.ax0, self.ax1, self.ax2, self.axPnL = fplt.create_plot_widget(master=self.dockArea, rows=4, init_zoom_periods=200)
+        self.dockArea.axs = [self.ax0, self.ax1, self.ax2, self.axPnL]
         self.dockChart.addWidget(self.ax0.ax_widget, 1, 0, 1, 1)
+        self.dockChart.addWidget(self.ax1.ax_widget, 2, 0, 1, 1)
+        self.dockChart.addWidget(self.ax2.ax_widget, 3, 0, 1, 1)
+        self.dockChart.addWidget(self.axPnL.ax_widget, 4, 0, 1, 1)
+
+        self.ax1.ax_widget.hide()
+        self.ax2.ax_widget.hide()
+        self.axPnL.ax_widget.hide()
         pass
 
     def drawCandles(self):
@@ -254,7 +261,7 @@ class FinplotWindow():
     #############
 
     def resetPlots(self):
-        
+
         # Entirely reset graph
         if (hasattr(self,"ax0")):
             self.ax0.reset()
@@ -263,8 +270,8 @@ class FinplotWindow():
             self.ax1.reset()
         if (hasattr(self,"ax2")):
             self.ax2.reset()
-        if (hasattr(self,"ax3")):
-            self.ax3.reset()
+        if (hasattr(self,"axPnL")):
+            self.axPnL.reset()
 
         pass
 
@@ -287,8 +294,8 @@ class FinplotWindow():
             # Finally draw candles
             self.drawCandles()
 
-            #if self.IndVolumesActivated:
-            #    fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
+            if self.IndVolumesActivated:
+                fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
 
             # Refresh view : auto zoom
             fplt.refresh()
@@ -315,6 +322,15 @@ class FinplotWindow():
 
         #qt_exec create a whole qt context : we dont need it here
         fplt.show(qt_exec=False)
+
+        pass
+
+    def drawPnL(self, pln_data):
+
+        # put an MA on the close price
+        fplt.plot(pln_data['time'], pln_data['pnlcomm'], ax = self.axPnL)
+        self.axPnL.ax_widget.show()
+        self.axPnL.show()
 
         pass
     
