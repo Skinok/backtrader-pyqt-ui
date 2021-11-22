@@ -6,7 +6,7 @@ sys.path.append('../finplot')
 import finplot as fplt
 
 import backtrader as bt
-from pyqtgraph import mkColor
+from pyqtgraph import mkColor, mkBrush
 
 class FinplotWindow():
 
@@ -57,112 +57,117 @@ class FinplotWindow():
     #########
     #  Draw orders on charts (with arrows)
     #########
-    def drawOrders(self, orders):
+    def drawOrders(self, orders = None):
         
         # Orders need to be stuied to know if an order is an open or a close order, or both...
         # It depends on the order volume and the currently opened positions volume
         currentPositionSize = 0
         open_orders = []
 
-        for order in orders:
+        if orders != None:
+            self.orders = orders
 
-            ##############
-            # Buy
-            ##############
-            if order.isbuy():
+        if hasattr(self,"orders"):
+            
+            for order in self.orders:
 
-                direction = "buy"
+                ##############
+                # Buy
+                ##############
+                if order.isbuy():
 
-                # Tracer les traites allant des ouvertures de positions vers la fermeture de position
-                if currentPositionSize < 0:
-                    
-                    # Réduction, cloture, ou invertion de la position
-                    if order.size == abs(currentPositionSize): # it's a buy so order.size > 0
+                    direction = "buy"
+
+                    # Tracer les traites allant des ouvertures de positions vers la fermeture de position
+                    if currentPositionSize < 0:
                         
-                        # Cloture de la position
-                        last_order = open_orders.pop()
-                        posOpen = (bt.num2date(last_order.executed.dt),last_order.executed.price)
-                        posClose = (bt.num2date(order.executed.dt), order.executed.price)
+                        # Réduction, cloture, ou invertion de la position
+                        if order.size == abs(currentPositionSize): # it's a buy so order.size > 0
+                            
+                            # Cloture de la position
+                            last_order = open_orders.pop()
+                            posOpen = (bt.num2date(last_order.executed.dt),last_order.executed.price)
+                            posClose = (bt.num2date(order.executed.dt), order.executed.price)
 
-                        color =  "#555555"
-                        if order.executed.pnl > 0:
-                            color =  "#30FF30"
-                        elif order.executed.pnl < 0:
-                            color = "#FF3030"
+                            color =  "#555555"
+                            if order.executed.pnl > 0:
+                                color =  "#30FF30"
+                            elif order.executed.pnl < 0:
+                                color = "#FF3030"
 
-                        fplt.add_line(posOpen, posClose, color, 2, style="--", ax = self.ax0 )
+                            fplt.add_line(posOpen, posClose, color, 2, style="--", ax = self.ax0 )
 
-                    elif order.size > abs(currentPositionSize):
-                        # Fermeture de la position précédente + ouverture d'une position inverse
+                        elif order.size > abs(currentPositionSize):
+                            # Fermeture de la position précédente + ouverture d'une position inverse
+                            pass
+
+                        elif order.size < abs(currentPositionSize):
+                            # Réduction de la position courante
+                            pass
+
+                    elif currentPositionSize > 0:
+                        # Augmentation de la postion
+                        # on enregistre la position pour pouvoir tracer un trait de ce point vers l'ordre de cloture du trade.
+                        open_orders.append(order)
+
+                    else:
+                        # Ouverture d'une nouvelle position
+                        open_orders.append(order)
                         pass
 
-                    elif order.size < abs(currentPositionSize):
-                        # Réduction de la position courante
-                        pass
+                ##############
+                # Sell
+                ##############
+                elif order.issell():
+                    direction = "sell"
 
-                elif currentPositionSize > 0:
-                    # Augmentation de la postion
-                    # on enregistre la position pour pouvoir tracer un trait de ce point vers l'ordre de cloture du trade.
-                    open_orders.append(order)
+
+                    if currentPositionSize < 0:
+                        # Augmentation de la postion
+                        
+                        # on enregistre la position pour pouvoir tracer un trait de ce point vers l'ordre de cloture du trade.
+                        open_orders.append(order)
+
+                    elif currentPositionSize > 0:
+                        # Réduction, cloture, ou invertion de la position
+
+                        if abs(order.size) == abs(currentPositionSize): # it's a buy so order.size > 0
+                            # Cloture de la position
+                            last_order = open_orders.pop()
+                            posOpen = (bt.num2date(last_order.executed.dt),last_order.executed.price)
+                            posClose = (bt.num2date(order.executed.dt), order.executed.price)
+
+                            color =  "#555555"
+                            if order.executed.pnl > 0:
+                                color =  "#30FF30"
+                            elif order.executed.pnl < 0:
+                                color = "#FF3030"
+
+                            fplt.add_line(posOpen, posClose, color, 2, style="--" )
+                            
+                            pass
+
+                        elif order.size > abs(currentPositionSize):
+                            # Réduction de la position courante
+                            pass
+
+                        elif order.size < abs(currentPositionSize):
+                            # Fermeture de la position précédente + ouverture d'une position inverse
+                            pass
+
+                    else:
+                        # Ouverture d'une nouvelle position
+                        open_orders.append(order)
+                        pass
 
                 else:
-                    # Ouverture d'une nouvelle position
-                    open_orders.append(order)
-                    pass
+                    print("Unknown order")
 
-            ##############
-            # Sell
-            ##############
-            elif order.issell():
-                direction = "sell"
+                # Cumul des positions
+                currentPositionSize += order.size
 
-
-                if currentPositionSize < 0:
-                    # Augmentation de la postion
-                    
-                    # on enregistre la position pour pouvoir tracer un trait de ce point vers l'ordre de cloture du trade.
-                    open_orders.append(order)
-
-                elif currentPositionSize > 0:
-                    # Réduction, cloture, ou invertion de la position
-
-                    if abs(order.size) == abs(currentPositionSize): # it's a buy so order.size > 0
-                        # Cloture de la position
-                        last_order = open_orders.pop()
-                        posOpen = (bt.num2date(last_order.executed.dt),last_order.executed.price)
-                        posClose = (bt.num2date(order.executed.dt), order.executed.price)
-
-                        color =  "#555555"
-                        if order.executed.pnl > 0:
-                            color =  "#30FF30"
-                        elif order.executed.pnl < 0:
-                            color = "#FF3030"
-
-                        fplt.add_line(posOpen, posClose, color, 2, style="--" )
-                        
-                        pass
-
-                    elif order.size > abs(currentPositionSize):
-                        # Réduction de la position courante
-                        pass
-
-                    elif order.size < abs(currentPositionSize):
-                        # Fermeture de la position précédente + ouverture d'une position inverse
-                        pass
-
-                else:
-                    # Ouverture d'une nouvelle position
-                    open_orders.append(order)
-                    pass
-
-            else:
-                print("Unknown order")
-
-            # Cumul des positions
-            currentPositionSize += order.size
-
-            # Todo: We could display the size of the order with a label on the chart
-            fplt.add_order(bt.num2date(order.executed.dt), order.executed.price, direction, ax=self.ax0)
+                # Todo: We could display the size of the order with a label on the chart
+                fplt.add_order(bt.num2date(order.executed.dt), order.executed.price, direction, ax=self.ax0)
 
         pass
     
@@ -219,6 +224,7 @@ class FinplotWindow():
         for win in fplt.windows:
             for ax in win.axs:
                 ax.ax_widget.setBackground(fplt.background)
+                ax.vb.background.setBrush(mkBrush(fplt.background))
 
         # axis, crosshair, candlesticks, volumes
         axs = [ax for win in fplt.windows for ax in win.axs]
@@ -293,6 +299,9 @@ class FinplotWindow():
 
             # Finally draw candles
             self.drawCandles()
+
+            # Draw orders
+            self.drawOrders()
 
             if self.IndVolumesActivated:
                 fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())

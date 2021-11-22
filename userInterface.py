@@ -21,6 +21,7 @@ from PyQt5 import QtWidgets
 
 from PyQt5 import QtGui
 from PyQt5 import QtCore
+from numpy import NaN
 
 from pyqtgraph.dockarea import DockArea, Dock
 
@@ -33,6 +34,8 @@ import backtrader as bt
 import strategyTesterUI
 import strategyResultsUI
 import finplotWindow
+
+import datetime
 
 import qdarkstyle
 
@@ -362,10 +365,8 @@ class UserInterface:
     #  Fin plot Window
     #########
     def createFinplotWindow(self):
-
         self.fpltWindow = finplotWindow.FinplotWindow(self.dockArea, self.dock_chart)
         self.fpltWindow.createPlotWidgets()
-
         pass
 
     #########
@@ -404,12 +405,18 @@ class UserInterface:
 
     #########
     # Draw PnL chart
+    # A python expert could do waaaaay better optimized on this function
+    # But anyway... it works...
     #########
-    def displayPnL(self, trades):
+    def displayPnL(self, trades, df):
 
         pnl_data = {}
         pnl_data['time'] = []
         pnl_data['pnlcomm'] = []
+        
+        # temporary
+        tradesDatetimeIndex = []
+        tradesPnl = []
 
         # Prepare data before plotting Pnl 
         for key, values in trades:
@@ -419,17 +426,36 @@ class UserInterface:
 
                 if not trade.isopen:
 
-                    pnl_data['time'].append( bt.num2date(trade.dtclose) )
-                    pnl_data['pnlcomm'].append(trade.pnlcomm)
+                    tradesDatetimeIndex.append( bt.num2date(trade.dtclose) )
+                    #tradesDatetimeIndex.append( pd.to_datetime(trade.dtclose) )
+                    tradesPnl.append(trade.pnlcomm)
 
                 row += 1
 
-        # index is X axis ?
-        pnl_data['time'] = pd.to_datetime(pnl_data['time'])
+        # Re-index : 
+        # Trades are only few times on all the datetime index
+        current_pnl = 0
+        for i,timeIndex in enumerate(df.index):
 
-        df = pd.DataFrame(data=pnl_data)
+            # Convert Timestamp to datetime
+            timeIndex_datetime = pd.to_datetime(timeIndex)
 
-        self.fpltWindow.drawPnL(df)
+            # is the current datetime in the trade closed times ?
+            # if so : register a 
+            if timeIndex_datetime in tradesDatetimeIndex:
+                pnl_index = tradesDatetimeIndex.index(timeIndex_datetime)
+                current_pnl = tradesPnl[pnl_index]
+
+            pnl_data['pnlcomm'].append(current_pnl)
+            pnl_data['time'].append(timeIndex)
+
+            pass
+
+        # Data prepared
+        pnl_df = pd.DataFrame(pnl_data)
+
+        # draw charts
+        self.fpltWindow.drawPnL(pnl_df)
         pass
 
     #########
@@ -489,14 +515,12 @@ class UserInterface:
 
         return self.panel
 
-
     #########
     # Toggle anther UI Theme
     #########
     def dark_mode_toggle(self):
         self.fpltWindow.activateDarkMode(self.darkmodeCB.isChecked())
         pass
-
 
     ##########
     # INDICATORS

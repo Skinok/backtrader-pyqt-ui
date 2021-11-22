@@ -37,3 +37,5 @@ class ProgressBarObserver(Observer):
     def next(self):
         self.progressBar.setValue( self.progressBar.value() + 1 )
         Controller.interface.app.processEvents()
+
+    

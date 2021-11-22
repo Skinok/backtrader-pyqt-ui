@@ -127,7 +127,7 @@ class Controller:
 
         self.interface.setOrders(self.myOrders)
 
-        self.interface.displayPnL( self.strat_results._trades.items() )
+        self.interface.displayPnL( self.strat_results._trades.items(), self.dataframe )
 
         pass
     
