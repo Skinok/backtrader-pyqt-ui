@@ -408,12 +408,13 @@ class UserInterface:
     # A python expert could do waaaaay better optimized on this function
     # But anyway... it works...
     #########
-    def displayPnL(self, trades, df):
+    def displayPnL(self, trades, df, wallet):
 
         pnl_data = {}
+
+        '''
         pnl_data['time'] = []
-        pnl_data['pnlcomm'] = []
-        
+        #pnl_data['pnlcomm'] = []
         # temporary
         tradesDatetimeIndex = []
         tradesPnl = []
@@ -446,12 +447,24 @@ class UserInterface:
                 pnl_index = tradesDatetimeIndex.index(timeIndex_datetime)
                 current_pnl = tradesPnl[pnl_index]
 
-            pnl_data['pnlcomm'].append(current_pnl)
+            #pnl_data['cash'].append(broker.value.array[i])
             pnl_data['time'].append(timeIndex)
 
             pass
 
+        '''
+
+        #pnl_data['cash'] = broker.value.array.tolist()
+        pnl_data['value'] = wallet.value_list
+        pnl_data['equity'] = wallet.equity_list
+        pnl_data['cash'] = wallet.cash_list
+        pnl_data['time'] = df.index
+
         # Data prepared
+        #pnl_data['broker'] = broker.plotlines._getvalues()
+        #taille_cash = len(pnl_data['cash'])
+        #taille_time = len(pnl_data['time'])
+
         pnl_df = pd.DataFrame(pnl_data)
 
         # draw charts

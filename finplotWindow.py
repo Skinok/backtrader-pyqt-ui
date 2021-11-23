@@ -1,5 +1,7 @@
 import sys, os
 
+from pyqtgraph.graphicsItems.LegendItem import LegendItem
+
 from indicators import ichimoku
 
 sys.path.append('../finplot')
@@ -337,7 +339,10 @@ class FinplotWindow():
     def drawPnL(self, pln_data):
 
         # put an MA on the close price
-        fplt.plot(pln_data['time'], pln_data['pnlcomm'], ax = self.axPnL)
+        #fplt.plot(pln_data['time'], pln_data['pnlcomm'], ax = self.axPnL)
+        #fplt.plot(pln_data['time'], pln_data['cash'], ax = self.axPnL, legend="Cash")
+        fplt.plot(pln_data['time'], pln_data['value'], ax = self.axPnL, legend="value")
+        fplt.plot(pln_data['time'], pln_data['equity'], ax = self.axPnL, legend="equity")
         self.axPnL.ax_widget.show()
         self.axPnL.show()
 

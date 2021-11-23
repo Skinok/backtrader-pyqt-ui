@@ -35,7 +35,8 @@ import pandas as pd
 # local files
 import userInterface as Ui
 
-from observers.progressBarObserver import ProgressBarObserver
+from observers.SkinokObserver import SkinokObserver
+from wallet import Wallet
 
 class Controller:
 
@@ -49,7 +50,14 @@ class Controller:
         interface = Ui.UserInterface(self)
         self.interface = interface
 
+        # Strategie testing wallet (a little bit different from backtrader broker class)
+        global wallet
+        wallet = Wallet()
+        self.wallet = wallet
+
+        # Then add obersers and analyzers
         self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name = "ta")
+        
         '''
         self.cerebro.addanalyzer(bt.analyzers.PyFolio, _name='PyFolio')
         self.cerebro.addanalyzer(bt.analyzers.SharpeRatio)
@@ -65,7 +73,8 @@ class Controller:
         '''
 
         # Add an observer to watch the strat running and update the progress bar values
-        self.cerebro.addobserver( ProgressBarObserver )
+        self.cerebro.addobserver( SkinokObserver )
+
         pass
 
     def loadData(self, dataPath):
@@ -127,7 +136,7 @@ class Controller:
 
         self.interface.setOrders(self.myOrders)
 
-        self.interface.displayPnL( self.strat_results._trades.items(), self.dataframe )
+        self.interface.displayPnL( self.strat_results._trades.items(), self.dataframe, self.wallet )
 
         pass
     

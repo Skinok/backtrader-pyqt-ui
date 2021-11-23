@@ -25,16 +25,45 @@ from backtrader import Observer
 
 import Controller
 
-class ProgressBarObserver(Observer):
+class SkinokObserver(Observer):
 
-    lines = ('max', 'value',)
-    
+    lines = ('wallet_value', 'wallet_equity', 'wallet_cash')
+
     def __init__(self):
+        
+        # Ui following
         self.progressBar = Controller.interface.getProgressBar()
         self.progressBar.setMaximum(self.datas[0].close.buflen())
         self.progressBar.setValue(0)
 
+        # Wallet Management
+        Controller.wallet.reset()
+
     def next(self):
+
+        # Watch trades
+        pnl = 0
+        for trade in self._owner._tradespending:
+
+            if trade.data not in self.ddatas:
+                continue
+
+            if not trade.isclosed:
+                continue
+
+            pnl += trade.pnl # trade.pnlcomm if self.p.pnlcomm else trade.pnl
+
+        # Portfolio update
+        Controller.wallet.current_value = self.wallet_value = Controller.wallet.current_value + pnl
+        Controller.wallet.value_list.append( Controller.wallet.current_value )
+
+        Controller.wallet.current_equity = self.wallet_equity = self._owner.broker.getvalue()
+        Controller.wallet.equity_list.append(self._owner.broker.getvalue())
+
+        Controller.wallet.current_cash = self.wallet_cash = self._owner.broker.getcash()
+        Controller.wallet.cash_list.append(self._owner.broker.getcash())
+
+        # Progress bar update
         self.progressBar.setValue( self.progressBar.value() + 1 )
         Controller.interface.app.processEvents()
 
