@@ -302,7 +302,6 @@ class UserInterface:
 
         self.strategyResultsUI = strategyResultsUI.StrategyResultsUI(self.controller)
         self.dock_strategyResultsUI.addWidget(self.strategyResultsUI)
-        
 
         pass
 
@@ -368,6 +367,14 @@ class UserInterface:
         self.fpltWindow = finplotWindow.FinplotWindow(self.dockArea, self.dock_chart, self)
         self.fpltWindow.createPlotWidgets()
         pass
+
+    #
+    def initialize(self):
+
+        self.strategyTesterUI.initialize()
+
+        pass
+
 
     #########
     #  Show all
@@ -522,4 +529,19 @@ class UserInterface:
 
         pass
     
-    
+    def fillStrategyParameters(self, items):
+
+        # Rest widget rows
+        for indexRow in range(self.strategyTesterUI.parametersLayout.rowCount()):
+            self.strategyTesterUI.parametersLayout.removeRow(indexRow)
+
+        # Insert parameters
+        row = 0
+        for parameterName, parameterValue in items:
+            label = QtWidgets.QLabel(parameterName)
+            lineEdit = QtWidgets.QLineEdit(str(parameterValue))
+            self.strategyTesterUI.parametersLayout.addRow(label, lineEdit )
+            row = row + 1
+            pass
+
+        pass

@@ -22,6 +22,8 @@ class StrategyTesterUI(QtWidgets.QWidget):
         self.strategyNameCB = self.findChild(QtWidgets.QComboBox, "strategyNameCB")
         self.strategyNameCB.currentIndexChanged.connect(self.strategyNameActivated)
 
+    def initialize(self):
+
         # adding list of items to combo box
         self.strategyNames = list(QtCore.QDir(self.current_dir_path + "/strategies").entryList(QtCore.QDir.Files))
 
@@ -31,6 +33,8 @@ class StrategyTesterUI(QtWidgets.QWidget):
             self.strategyBaseName.append(QtCore.QFileInfo(stratName).baseName())
 
         self.strategyNameCB.addItems(self.strategyBaseName)
+        
+        pass
  
     def run(self):
         self.controller.run()

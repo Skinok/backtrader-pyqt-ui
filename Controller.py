@@ -75,6 +75,9 @@ class Controller:
         # Add an observer to watch the strat running and update the progress bar values
         self.cerebro.addobserver( SkinokObserver )
 
+        # Once everything is created, initialize data
+        self.interface.initialize()
+
         pass
 
     def loadData(self, dataPath):
@@ -101,6 +104,10 @@ class Controller:
 
         mod = __import__(strategyName, fromlist=[strategyName]) # first strategyName is the file name, and second (fromlist) is the class name
         klass = getattr(mod, strategyName) # class name in the file
+
+        # Add strategy parameters
+        self.interface.fillStrategyParameters(klass.params._getitems())
+
         self.cerebro.addstrategy(klass)
         pass
 
