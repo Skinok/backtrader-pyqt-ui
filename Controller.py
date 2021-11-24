@@ -78,6 +78,8 @@ class Controller:
         # Once everything is created, initialize data
         self.interface.initialize()
 
+
+
         pass
 
     def loadData(self, dataPath):

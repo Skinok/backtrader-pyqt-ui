@@ -303,6 +303,10 @@ class UserInterface:
         self.strategyResultsUI = strategyResultsUI.StrategyResultsUI(self.controller)
         self.dock_strategyResultsUI.addWidget(self.strategyResultsUI)
 
+        #
+        self.strategyTesterUI.startingCashLE.setText(str(self.controller.cerebro.broker.cash))
+        # self.interface.tradesSizeLE.setValue(self.cerebro.broker.cash)
+
         pass
 
     #########
@@ -533,7 +537,7 @@ class UserInterface:
 
         # Rest widget rows
         for indexRow in range(self.strategyTesterUI.parametersLayout.rowCount()):
-            self.strategyTesterUI.parametersLayout.removeRow(indexRow)
+            self.strategyTesterUI.parametersLayout.removeRow(0)
 
         # Insert parameters
         row = 0
@@ -545,3 +549,5 @@ class UserInterface:
             pass
 
         pass
+
+    

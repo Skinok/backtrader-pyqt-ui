@@ -52,11 +52,13 @@ class sma_crossover(bt.Strategy):
 
     params = (
         # period for the fast Moving Average
-        ('fast', 10),
+        ('fast', 15),
         # period for the slow moving average
         ('slow', 30),
         # moving average to use
-        ('_movav', btind.MovAv.SMA)
+        ('_movav', btind.MovAv.SMA),
+        # Trade size
+        ('tradeSize', 2000)
     )
 
     def __init__(self):
@@ -68,7 +70,7 @@ class sma_crossover(bt.Strategy):
     def next(self):
         if self.position.size:
             if self.buysig < 0:
-                self.sell(size=1000)
+                self.sell(size=self.p.tradeSize)
 
         elif self.buysig > 0:
-            self.buy(size=1000)
+            self.buy(size=self.p.tradeSize)
