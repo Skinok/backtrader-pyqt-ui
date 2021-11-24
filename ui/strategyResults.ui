@@ -16,6 +16,12 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QGroupBox" name="SummaryGB">
+     <property name="minimumSize">
+      <size>
+       <width>200</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
        <width>250</width>
@@ -36,22 +42,30 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QGroupBox" name="TradesGB">
-     <property name="styleSheet">
-      <string notr="true"/>
+    <widget class="QTabWidget" name="ResultsTabWidget">
+     <property name="currentIndex">
+      <number>1</number>
      </property>
-     <property name="title">
-      <string>Trades</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-       </layout>
-      </item>
-     </layout>
+     <widget class="QWidget" name="tradeTab">
+      <attribute name="title">
+       <string>Trades</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="walletTab">
+      <attribute name="title">
+       <string>Wallet</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>

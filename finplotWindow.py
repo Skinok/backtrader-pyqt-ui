@@ -12,10 +12,11 @@ from pyqtgraph import mkColor, mkBrush
 
 class FinplotWindow():
 
-    def __init__(self, dockArea, dockChart):
+    def __init__(self, dockArea, dockChart, interface):
 
         self.dockArea = dockArea
         self.dockChart = dockChart
+        self.interface = interface
 
         self.IndIchimokuActivated = False
         self.IndRSIActivated = False
@@ -37,7 +38,9 @@ class FinplotWindow():
         self.dockChart.addWidget(self.ax0.ax_widget, 1, 0, 1, 1)
         self.dockChart.addWidget(self.ax1.ax_widget, 2, 0, 1, 1)
         self.dockChart.addWidget(self.ax2.ax_widget, 3, 0, 1, 1)
-        self.dockChart.addWidget(self.axPnL.ax_widget, 4, 0, 1, 1)
+
+        self.interface.strategyResultsUI.ResultsTabWidget.widget(1).layout().addWidget(self.axPnL.ax_widget)
+        #self.dockChart.addWidget(self.axPnL.ax_widget, 4, 0, 1, 1)
 
         self.ax1.ax_widget.hide()
         self.ax2.ax_widget.hide()

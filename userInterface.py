@@ -197,7 +197,7 @@ class UserInterface:
         self.tradeTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.tradeTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
-        self.strategyResultsUI.TradesGB.layout().addWidget(self.tradeTableWidget)
+        self.strategyResultsUI.ResultsTabWidget.widget(0).layout().addWidget(self.tradeTableWidget)
 
     def fillTradesUI(self, trades):
 
@@ -365,7 +365,7 @@ class UserInterface:
     #  Fin plot Window
     #########
     def createFinplotWindow(self):
-        self.fpltWindow = finplotWindow.FinplotWindow(self.dockArea, self.dock_chart)
+        self.fpltWindow = finplotWindow.FinplotWindow(self.dockArea, self.dock_chart, self)
         self.fpltWindow.createPlotWidgets()
         pass
 
@@ -440,7 +440,6 @@ class UserInterface:
         panel.interval.currentTextChanged.connect(change_asset)
 
         layout.setColumnMinimumWidth(3, 30)
-        
         '''
 
         # Ichimoku
