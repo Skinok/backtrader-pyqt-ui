@@ -408,67 +408,10 @@ class UserInterface:
     # A python expert could do waaaaay better optimized on this function
     # But anyway... it works...
     #########
-    def displayPnL(self, trades, df, wallet):
-
-        pnl_data = {}
-
-        '''
-        pnl_data['time'] = []
-        #pnl_data['pnlcomm'] = []
-        # temporary
-        tradesDatetimeIndex = []
-        tradesPnl = []
-
-        # Prepare data before plotting Pnl 
-        for key, values in trades:
-
-            row = 0
-            for trade in values[0]:
-
-                if not trade.isopen:
-
-                    tradesDatetimeIndex.append( bt.num2date(trade.dtclose) )
-                    #tradesDatetimeIndex.append( pd.to_datetime(trade.dtclose) )
-                    tradesPnl.append(trade.pnlcomm)
-
-                row += 1
-
-        # Re-index : 
-        # Trades are only few times on all the datetime index
-        current_pnl = 0
-        for i,timeIndex in enumerate(df.index):
-
-            # Convert Timestamp to datetime
-            timeIndex_datetime = pd.to_datetime(timeIndex)
-
-            # is the current datetime in the trade closed times ?
-            # if so : register a 
-            if timeIndex_datetime in tradesDatetimeIndex:
-                pnl_index = tradesDatetimeIndex.index(timeIndex_datetime)
-                current_pnl = tradesPnl[pnl_index]
-
-            #pnl_data['cash'].append(broker.value.array[i])
-            pnl_data['time'].append(timeIndex)
-
-            pass
-
-        '''
-
-        #pnl_data['cash'] = broker.value.array.tolist()
-        pnl_data['value'] = wallet.value_list
-        pnl_data['equity'] = wallet.equity_list
-        pnl_data['cash'] = wallet.cash_list
-        pnl_data['time'] = df.index
-
-        # Data prepared
-        #pnl_data['broker'] = broker.plotlines._getvalues()
-        #taille_cash = len(pnl_data['cash'])
-        #taille_time = len(pnl_data['time'])
-
-        pnl_df = pd.DataFrame(pnl_data)
+    def displayPnL(self, pnl_dataframe):
 
         # draw charts
-        self.fpltWindow.drawPnL(pnl_df)
+        self.fpltWindow.drawPnL(pnl_dataframe)
         pass
 
     #########

@@ -136,7 +136,16 @@ class Controller:
 
         self.interface.setOrders(self.myOrders)
 
-        self.interface.displayPnL( self.strat_results._trades.items(), self.dataframe, self.wallet )
+        # Profit and Loss
+        pnl_data = {}
+
+        pnl_data['value'] = self.wallet.value_list
+        pnl_data['equity'] = self.wallet.equity_list
+        pnl_data['cash'] = self.wallet.cash_list
+        pnl_data['time'] = self.dataframe.index
+
+        # draw charts
+        self.interface.displayPnL( pd.DataFrame(pnl_data) )
 
         pass
     
