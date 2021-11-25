@@ -51,9 +51,12 @@ class Controller:
         self.interface = interface
 
         # Strategie testing wallet (a little bit different from backtrader broker class)
+        self.startingcash = 10000.0
+
         global wallet
-        wallet = Wallet()
+        wallet = Wallet(self.startingcash)
         self.wallet = wallet
+        
 
         # Then add obersers and analyzers
         self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name = "ta")
@@ -114,6 +117,10 @@ class Controller:
 
     def run(self):
 
+        # Wallet Management : reset between each run
+        self.cerebro.broker.setcash(self.startingcash)
+        self.wallet.reset(self.startingcash)
+
         # Compute strategy results
         results = self.cerebro.run()  # run it all
         self.strat_results = results[0] # results of the first strategy
@@ -142,7 +149,6 @@ class Controller:
             if order.status in [order.Completed]:
                 self.myOrders.append(order)
 
-
         self.interface.setOrders(self.myOrders)
 
         # Profit and Loss
@@ -165,7 +171,10 @@ class Controller:
         pass
 
     
-    def cashChanged(self, cash):
-        if len(cash) > 0:
-            self.cerebro.broker.setcash(float(cash))
+    def cashChanged(self, cashString):
+
+        if len(cashString) > 0:
+            self.startingcash = float(cashString)
+            self.cerebro.broker.setcash(self.startingcash)
+
         pass

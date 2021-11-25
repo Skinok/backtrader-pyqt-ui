@@ -20,17 +20,17 @@
 ###############################################################################
 class Wallet():
 
-    def __init__(self):
+    def __init__(self, startingCash):
 
-        self.reset()
+        self.reset(startingCash)
 
         pass
 
-    def reset(self):
+    def reset(self, startingCash):
 
-        self.current_value = 10000 # todo: change it by initial cash settings
-        self.current_cash = 10000 # todo: change it by initial cash settings
-        self.current_equity = 10000 # todo: change it by initial cash settings
+        self.current_value = startingCash # todo: change it by initial cash settings
+        self.current_cash = startingCash # todo: change it by initial cash settings
+        self.current_equity = startingCash # todo: change it by initial cash settings
 
         self.value_list = []
         self.cash_list = []

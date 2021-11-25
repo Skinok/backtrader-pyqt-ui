@@ -36,9 +36,6 @@ class SkinokObserver(Observer):
         self.progressBar.setMaximum(self.datas[0].close.buflen())
         self.progressBar.setValue(0)
 
-        # Wallet Management
-        Controller.wallet.reset()
-
     def next(self):
 
         # Watch trades
