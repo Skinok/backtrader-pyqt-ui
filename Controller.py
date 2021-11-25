@@ -77,10 +77,8 @@ class Controller:
 
         # Once everything is created, initialize data
         self.interface.initialize()
-
-
-
         pass
+
 
     def loadData(self, dataPath):
 
@@ -96,8 +94,8 @@ class Controller:
 
         # Draw charts based on input data
         self.interface.drawChart(self.dataframe)
-
         pass
+
 
     def addStrategy(self, strategyName):
         
@@ -113,6 +111,7 @@ class Controller:
         self.cerebro.addstrategy(klass)
         pass
 
+
     def run(self):
 
         # Compute strategy results
@@ -122,6 +121,7 @@ class Controller:
         # Display results
         self.displayStrategyResults()
         pass
+
 
     def displayStrategyResults(self):
         # Stats on trades
@@ -157,8 +157,15 @@ class Controller:
         self.interface.displayPnL( pd.DataFrame(pnl_data) )
 
         pass
+
     
     def displayUI(self):
         
         self.interface.show()
+        pass
+
+    
+    def cashChanged(self, cash):
+        if len(cash) > 0:
+            self.cerebro.broker.setcash(float(cash))
         pass

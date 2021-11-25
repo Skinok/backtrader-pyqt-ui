@@ -305,6 +305,13 @@ class UserInterface:
 
         #
         self.strategyTesterUI.startingCashLE.setText(str(self.controller.cerebro.broker.cash))
+
+        validator = QtGui.QDoubleValidator(-9999999, 9999999, 6, self.strategyTesterUI.startingCashLE)
+        validator.setLocale(QtCore.QLocale("en"))
+        self.strategyTesterUI.startingCashLE.setValidator( validator )
+        
+        self.strategyTesterUI.startingCashLE.textChanged.connect( self.controller.cashChanged )
+
         # self.interface.tradesSizeLE.setValue(self.cerebro.broker.cash)
 
         pass
@@ -339,28 +346,31 @@ class UserInterface:
         self.summaryTableWidget.setItem(1,0,QtWidgets.QTableWidgetItem("Value"))
         self.summaryTableWidget.setItem(1,1,QtWidgets.QTableWidgetItem(str(brokerValue)))
 
-        self.summaryTableWidget.setItem(2,0,QtWidgets.QTableWidgetItem("Profit total"))
-        self.summaryTableWidget.setItem(2,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["pnl"]["net"]["total"])))
+        # if there are some trades
+        if len(tradeAnalysis) > 1:
 
-        self.summaryTableWidget.setItem(3,0,QtWidgets.QTableWidgetItem("Number of trades"))
-        self.summaryTableWidget.setItem(3,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["total"]["total"])))
+            self.summaryTableWidget.setItem(2,0,QtWidgets.QTableWidgetItem("Profit total"))
+            self.summaryTableWidget.setItem(2,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["pnl"]["net"]["total"])))
 
-        self.summaryTableWidget.setItem(4,0,QtWidgets.QTableWidgetItem("Won"))
-        self.summaryTableWidget.setItem(4,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["won"]['total'])))
+            self.summaryTableWidget.setItem(3,0,QtWidgets.QTableWidgetItem("Number of trades"))
+            self.summaryTableWidget.setItem(3,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["total"]["total"])))
 
-        self.summaryTableWidget.setItem(5,0,QtWidgets.QTableWidgetItem("Lost"))
-        self.summaryTableWidget.setItem(5,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["lost"]['total'])))
+            self.summaryTableWidget.setItem(4,0,QtWidgets.QTableWidgetItem("Won"))
+            self.summaryTableWidget.setItem(4,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["won"]['total'])))
 
-        self.summaryTableWidget.setItem(6,0,QtWidgets.QTableWidgetItem("Long"))
-        self.summaryTableWidget.setItem(6,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["long"]["total"])))
+            self.summaryTableWidget.setItem(5,0,QtWidgets.QTableWidgetItem("Lost"))
+            self.summaryTableWidget.setItem(5,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["lost"]['total'])))
 
-        self.summaryTableWidget.setItem(7,0,QtWidgets.QTableWidgetItem("Short"))
-        self.summaryTableWidget.setItem(7,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["short"]["total"])))
+            self.summaryTableWidget.setItem(6,0,QtWidgets.QTableWidgetItem("Long"))
+            self.summaryTableWidget.setItem(6,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["long"]["total"])))
 
-        self.summaryTableWidget.horizontalHeader().setStretchLastSection(True)
-        self.summaryTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+            self.summaryTableWidget.setItem(7,0,QtWidgets.QTableWidgetItem("Short"))
+            self.summaryTableWidget.setItem(7,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["short"]["total"])))
 
-        self.summaryTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+            self.summaryTableWidget.horizontalHeader().setStretchLastSection(True)
+            self.summaryTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+
+            self.summaryTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         pass
 
