@@ -54,7 +54,7 @@ class Controller:
         self.startingcash = 10000.0
 
         global wallet
-        wallet = Wallet(self.startingcash)
+        wallet = Wallet(self.startingcash )
         self.wallet = wallet
         
 
@@ -106,12 +106,14 @@ class Controller:
         self.cerebro.clearStrategies()
 
         mod = __import__(strategyName, fromlist=[strategyName]) # first strategyName is the file name, and second (fromlist) is the class name
-        klass = getattr(mod, strategyName) # class name in the file
+        self.strategyClass = getattr(mod, strategyName) # class name in the file
 
         # Add strategy parameters
-        self.interface.fillStrategyParameters(klass.params._getitems())
+        self.interface.fillStrategyParameters(self.strategyClass.params)
 
-        self.cerebro.addstrategy(klass)
+        # Add strategy to the cerebro
+        self.cerebro.addstrategy(self.strategyClass)
+
         pass
 
 
