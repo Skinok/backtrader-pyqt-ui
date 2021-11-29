@@ -25,8 +25,9 @@ from __future__ import (absolute_import, division, print_function,
 import backtrader as bt
 import backtrader.indicators as btind
 
+import metaStrategy as mt
 
-class sma_crossover(bt.Strategy):
+class sma_crossover(mt.MetaStrategy):
     '''This is a long-only strategy which operates on a moving average cross
 
     Note:
@@ -55,15 +56,17 @@ class sma_crossover(bt.Strategy):
         ('fast', 15),
         # period for the slow moving average
         ('slow', 30),
-        # moving average to use
-        ('_movav', btind.MovAv.SMA),
         # Trade size
         ('tradeSize', 2000)
     )
 
-    def __init__(self):
-        sma_fast = self.p._movav(period=self.p.fast)
-        sma_slow = self.p._movav(period=self.p.slow)
+    def __init__(self, *argv):
+
+        # used to modify parameters
+        super().__init__(argv[0])
+
+        sma_fast = btind.MovAv.SMA(period=self.p.fast)
+        sma_slow = btind.MovAv.SMA(period=self.p.slow)
 
         self.buysig = btind.CrossOver(sma_fast, sma_slow)
 

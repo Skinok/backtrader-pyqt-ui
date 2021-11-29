@@ -19,8 +19,10 @@
 import sys
 import backtrader as bt
 
+import metaStrategy as mt
+
 # Create a subclass of Strategy to define the indicators and logic
-class ichimokuStrat1(bt.Strategy):
+class ichimokuStrat1(mt.MetaStrategy):
 
     params = (
         ('atrperiod', 14),  # ATR Period (standard)
@@ -41,12 +43,10 @@ class ichimokuStrat1(bt.Strategy):
         if not order.alive():
             self.order = None  # indicate no order is pending
 
-    def __init__(self, parameters = None):
+    def __init__(self, *argv):
 
-        # Set UI modified parameters
-        if parameters != None:
-            for parameterName, parameterValue in parameters.items():
-                setattr(self.params, parameterName, parameterValue)
+        # used to modify parameters
+        super().__init__(argv[0])
 
         # Ichi indicator
         self.ichi = bt.indicators.Ichimoku(self.datas[0],
