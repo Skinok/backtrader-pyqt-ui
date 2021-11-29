@@ -1,6 +1,6 @@
 # Skinok backtrader UI (PyQt and finplot)
 
-IMAGE HERE
+![Backtrader PyQt Ui](./images/overview.png "Backtrader PyQt Ui")
 
 # How to install ?
 
