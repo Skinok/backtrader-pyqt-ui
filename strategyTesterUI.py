@@ -22,6 +22,8 @@ class StrategyTesterUI(QtWidgets.QWidget):
         self.strategyNameCB = self.findChild(QtWidgets.QComboBox, "strategyNameCB")
         self.strategyNameCB.currentIndexChanged.connect(self.strategyNameActivated)
 
+        self.runBacktestPB.setEnabled(False)
+
     def initialize(self):
 
         # adding list of items to combo box

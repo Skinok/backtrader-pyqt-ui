@@ -83,6 +83,8 @@ class Controller:
 
         # Once everything is created, initialize data
         self.interface.initialize()
+
+
         pass
 
 
@@ -100,6 +102,10 @@ class Controller:
 
         # Draw charts based on input data
         self.interface.drawChart(self.dataframe)
+
+        # Enable run button
+        self.interface.strategyTesterUI.runBacktestPB.setEnabled(True)
+
         pass
 
 

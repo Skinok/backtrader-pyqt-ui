@@ -69,6 +69,11 @@ class UserInterface:
         self.createDocks()
         self.createUIs()
 
+        # Enable run button
+        self.strategyTesterUI.runBacktestPB.setEnabled(False)
+
+        pass
+
     #########
     #  Create all main window docks
     #########
