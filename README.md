@@ -2,6 +2,9 @@
 
 ![Backtrader PyQt Ui](./images/overview.png "Backtrader PyQt Ui")
 
+![Backtrader PyQt Ui 2](./images/overview2.png "Backtrader PyQt Ui")
+
+
 # How to install ?
 
 You should have python installed on your machine (obvisously)
