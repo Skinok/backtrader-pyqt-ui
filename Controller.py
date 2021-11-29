@@ -42,6 +42,9 @@ class Controller:
 
     def __init__(self):
 
+        # Init attributes
+        self.strategyParameters = {}
+
         # create a "Cerebro" engine instance
         self.cerebro = CerebroEnhanced()  
 
@@ -104,20 +107,43 @@ class Controller:
         
         #For now, only one strategy is allowed at a time
         self.cerebro.clearStrategies()
+        
+        # Reset strategy parameters
+        self.strategyParameters = {}
 
         mod = __import__(strategyName, fromlist=[strategyName]) # first strategyName is the file name, and second (fromlist) is the class name
         self.strategyClass = getattr(mod, strategyName) # class name in the file
 
         # Add strategy parameters
-        self.interface.fillStrategyParameters(self.strategyClass.params)
-
-        # Add strategy to the cerebro
-        self.cerebro.addstrategy(self.strategyClass)
+        self.interface.fillStrategyParameters(self.strategyClass)
 
         pass
 
+    def strategyParametersChanged(self, lineEdit, parameterName, parameterOldValue):
+
+        # todo something
+        if len(lineEdit.text()) > 0:
+
+            param = self.strategyClass.params._get(self.strategyClass.params,parameterName)
+
+            if isinstance(param, int):
+                self.strategyParameters[parameterName] = int(lineEdit.text())
+            elif isinstance(param, float):
+                self.strategyParameters[parameterName] = int(lineEdit.text())
+            else:
+                self.strategyParameters[parameterName] = lineEdit.text()
+
+        pass
+
+    def strategyParametersSave(self, parameterName, parameterValue):
+        self.strategyParameters[parameterName] = parameterValue
+        pass
 
     def run(self):
+
+        # Add strategy here to get modified parameters
+        test = self.strategyParameters
+        self.strategyIndex = self.cerebro.addstrategy(self.strategyClass, test)
 
         # Wallet Management : reset between each run
         self.cerebro.broker.setcash(self.startingcash)
@@ -165,10 +191,8 @@ class Controller:
         self.interface.displayPnL( pd.DataFrame(pnl_data) )
 
         pass
-
     
     def displayUI(self):
-        
         self.interface.show()
         pass
 

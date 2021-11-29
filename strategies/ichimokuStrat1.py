@@ -41,8 +41,14 @@ class ichimokuStrat1(bt.Strategy):
         if not order.alive():
             self.order = None  # indicate no order is pending
 
-    def __init__(self):
+    def __init__(self, parameters = None):
 
+        # Set UI modified parameters
+        if parameters != None:
+            for parameterName, parameterValue in parameters.items():
+                setattr(self.params, parameterName, parameterValue)
+
+        # Ichi indicator
         self.ichi = bt.indicators.Ichimoku(self.datas[0],
                                            tenkan=self.params.tenkan,
                                            kijun=self.params.kijun,

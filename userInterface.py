@@ -544,7 +544,7 @@ class UserInterface:
 
         pass
     
-    def fillStrategyParameters(self, parameters):
+    def fillStrategyParameters(self, strategy):
 
         # Rest widget rows
         for indexRow in range(self.strategyTesterUI.parametersLayout.rowCount()):
@@ -552,10 +552,15 @@ class UserInterface:
 
         # Insert parameters
         row = 0
-        for parameterName, parameterValue in parameters._getitems():
+        for parameterName, parameterValue in strategy.params._getitems():
             label = QtWidgets.QLabel(parameterName)
             lineEdit = QtWidgets.QLineEdit(str(parameterValue))
-            lineEdit.textChanged.connect(functools.partial(self.parameterChanged, lineEdit, parameters, parameterName, parameterValue))
+
+            # Save the parameter to inject it in the addStrategy method
+            self.controller.strategyParametersSave(parameterName, parameterValue)
+
+            # Connect the parameter changed slot
+            lineEdit.textChanged.connect(functools.partial(self.controller.strategyParametersChanged, lineEdit, parameterName, parameterValue))
 
             self.strategyTesterUI.parametersLayout.addRow(label, lineEdit )
             row = row + 1
@@ -564,18 +569,5 @@ class UserInterface:
         pass
 
 
-    def parameterChanged(self, lineEdit, parameters, parameterName, parameterOldValue):
-
-        # todo something
-        if len(lineEdit.text()) > 0:
-
-            try:
-                setattr(parameters,parameterName,float(lineEdit.text()))
-            except ValueError:
-                try:
-                    setattr(parameters,parameterName,int(lineEdit.text()))
-                except ValueError:
-                    setattr(parameters,parameterName,lineEdit.text())
-
-        pass
+    
     
