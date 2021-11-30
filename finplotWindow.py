@@ -286,6 +286,11 @@ class FinplotWindow():
 
         pass
 
+    def refreshChart(self):
+
+        fplt.refresh()
+        pass
+
     def setChartData(self, data):
         self.data = data
         pass

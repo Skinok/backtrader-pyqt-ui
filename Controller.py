@@ -59,7 +59,6 @@ class Controller:
         global wallet
         wallet = Wallet(self.startingcash )
         self.wallet = wallet
-        
 
         # Then add obersers and analyzers
         self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name = "ta")
@@ -147,6 +146,11 @@ class Controller:
 
     def run(self):
 
+        # UI label
+        self.interface.strategyTesterUI.runLabel.setText("Running strategy...")
+
+        self.interface.resetChart()
+
         # Add strategy here to get modified parameters
         test = self.strategyParameters
         self.strategyIndex = self.cerebro.addstrategy(self.strategyClass, test)
@@ -161,6 +165,10 @@ class Controller:
 
         # Display results
         self.displayStrategyResults()
+
+        # UI label
+        self.interface.strategyTesterUI.runLabel.setText("Strategy backtest completed.")
+        
         pass
 
 

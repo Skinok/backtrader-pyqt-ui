@@ -429,7 +429,6 @@ class UserInterface:
         self.fpltWindow.drawOrders(orders)
         pass
 
-
     #########
     # Draw PnL chart
     # A python expert could do waaaaay better optimized on this function
@@ -469,6 +468,14 @@ class UserInterface:
         layout.setColumnMinimumWidth(3, 30)
         '''
 
+        # Rest
+        self.ResetPB = QtWidgets.QPushButton(self.panel)
+        self.ResetPB.setText("Reset")
+        self.ResetPB.setCheckable(True)
+        self.ResetPB.setMaximumWidth(100)
+        self.ResetPB.toggled.connect(self.resetChart)
+        layout.addWidget(self.ResetPB)
+
         # Ichimoku
         self.IchimokuPB = QtWidgets.QPushButton(self.panel)
         self.IchimokuPB.setText("Ichimoku")
@@ -507,12 +514,21 @@ class UserInterface:
     ##########
     # INDICATORS
     ##########
+    def resetChart(self):
+        self.fpltWindow.updateChart()
+        #self.fpltWindow.resetPlots()
+        #self.fpltWindow.drawCandles()
+        #self.fpltWindow.refreshChart()
+        pass
+
     def addIchimoku(self):
         self.fpltWindow.setIndicator("Ichimoku", self.IchimokuPB.isChecked() )
         pass
     def volumes_toggle(self):
         self.fpltWindow.setIndicator("Volumes", self.volumesCB.isChecked())
         pass
+
+    
 
     #########
     #  Obsolete (Strategy results : transcations tab)
@@ -570,6 +586,10 @@ class UserInterface:
             self.strategyTesterUI.parametersLayout.addRow(label, lineEdit )
             row = row + 1
             pass
+
+        # Parameter box size
+        self.strategyTesterUI.parametersLayout.update()
+        self.strategyTesterUI.parametersScrollArea.adjustSize()
 
         pass
 
