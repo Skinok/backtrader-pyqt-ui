@@ -205,11 +205,10 @@ class Controller:
         self.interface.displayPnL( pd.DataFrame(pnl_data) )
 
         pass
-    
+
     def displayUI(self):
         self.interface.show()
         pass
-
     
     def cashChanged(self, cashString):
 

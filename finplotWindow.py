@@ -276,13 +276,18 @@ class FinplotWindow():
         # Entirely reset graph
         if (hasattr(self,"ax0")):
             self.ax0.reset()
-            self.ax0.overlay().reset()
+            #self.ax0.reset()
         if (hasattr(self,"ax1")):
             self.ax1.reset()
         if (hasattr(self,"ax2")):
             self.ax2.reset()
         if (hasattr(self,"axPnL")):
             self.axPnL.reset()
+
+        # Reset overylays too
+        axs = fplt.overlay_axs
+        for ax_overlay in axs:
+            ax_overlay.reset()
 
         pass
 
