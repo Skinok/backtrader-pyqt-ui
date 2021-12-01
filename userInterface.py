@@ -392,7 +392,7 @@ class UserInterface:
 
         # Enable run button
         self.strategyTesterUI.runBacktestPB.setEnabled(False)
-        
+
         self.strategyTesterUI.initialize()
 
         pass
@@ -517,10 +517,8 @@ class UserInterface:
     # INDICATORS
     ##########
     def resetChart(self):
+        self.fpltWindow.resetChart()
         self.fpltWindow.updateChart()
-        #self.fpltWindow.resetPlots()
-        #self.fpltWindow.drawCandles()
-        #self.fpltWindow.refreshChart()
         pass
 
     def addIchimoku(self):

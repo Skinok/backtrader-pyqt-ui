@@ -148,7 +148,7 @@ class FinplotWindow():
                             elif order.executed.pnl < 0:
                                 color = "#FF3030"
 
-                            fplt.add_line(posOpen, posClose, color, 2, style="--" )
+                            fplt.add_line(posOpen, posClose, color, 2, ax=self.ax0, style="--" )
                             
                             pass
 
@@ -298,6 +298,13 @@ class FinplotWindow():
 
     def setChartData(self, data):
         self.data = data
+        pass
+
+    def resetChart(self):
+
+        # Remove all previous orders arrows and informations
+        self.orders = []
+
         pass
 
     def updateChart(self):
