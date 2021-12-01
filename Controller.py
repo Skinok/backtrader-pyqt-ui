@@ -42,23 +42,34 @@ class Controller:
 
     def __init__(self):
 
+        # init variables
+        self.data = None
+        self.startingcash = 10000.0
+
         # Init attributes
         self.strategyParameters = {}
-
-        # create a "Cerebro" engine instance
-        self.cerebro = CerebroEnhanced()  
 
         # Global is here to update the Ui in observers easily, if you find a better way, don't hesistate to tell me (Skinok)
         global interface
         interface = Ui.UserInterface(self)
         self.interface = interface
 
-        # Strategie testing wallet (a little bit different from backtrader broker class)
-        self.startingcash = 10000.0
-
         global wallet
         wallet = Wallet(self.startingcash )
         self.wallet = wallet
+
+        self.resetCerebro()
+
+        # Once everything is created, initialize data
+        self.interface.initialize()
+
+        pass
+
+
+    def resetCerebro(self):
+
+        # create a "Cerebro" engine instance
+        self.cerebro = CerebroEnhanced()  
 
         # Then add obersers and analyzers
         self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name = "ta")
@@ -80,9 +91,9 @@ class Controller:
         # Add an observer to watch the strat running and update the progress bar values
         self.cerebro.addobserver( SkinokObserver )
 
-        # Once everything is created, initialize data
-        self.interface.initialize()
-
+        # Add data to cerebro
+        if self.data is not None: 
+            self.cerebro.adddata(self.data)  # Add the data feed
 
         pass
 
@@ -97,6 +108,7 @@ class Controller:
         # Pass it to the backtrader datafeed and add it to the cerebro
         self.data = bt.feeds.PandasData(dataname=self.dataframe, timeframe=bt.TimeFrame.Minutes)
 
+        # Add data to cerebro
         self.cerebro.adddata(self.data)  # Add the data feed
 
         # Draw charts based on input data
@@ -145,6 +157,9 @@ class Controller:
         pass
 
     def run(self):
+
+        #Reset cerebro internal variables
+        self.resetCerebro()
 
         # UI label
         self.interface.strategyTesterUI.runLabel.setText("Running strategy...")
@@ -202,7 +217,8 @@ class Controller:
         pnl_data['time'] = self.dataframe.index
 
         # draw charts
-        self.interface.displayPnL( pd.DataFrame(pnl_data) )
+        df = pd.DataFrame(pnl_data)
+        self.interface.displayPnL( df )
 
         pass
 

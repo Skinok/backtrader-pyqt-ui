@@ -65,12 +65,7 @@ class UserInterface:
         # Set width/height of QSplitter
         self.app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
-        # Docks
-        self.createDocks()
-        self.createUIs()
 
-        # Enable run button
-        self.strategyTesterUI.runBacktestPB.setEnabled(False)
 
         pass
 
@@ -391,6 +386,13 @@ class UserInterface:
     #
     def initialize(self):
 
+        # Docks
+        self.createDocks()
+        self.createUIs()
+
+        # Enable run button
+        self.strategyTesterUI.runBacktestPB.setEnabled(False)
+        
         self.strategyTesterUI.initialize()
 
         pass
