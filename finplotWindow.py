@@ -3,6 +3,7 @@ import sys, os
 from pyqtgraph.graphicsItems.LegendItem import LegendItem
 
 from indicators import ichimoku
+from indicators import rsi
 
 sys.path.append('../finplot')
 import finplot as fplt
@@ -19,9 +20,9 @@ class FinplotWindow():
         self.interface = interface
 
         self.IndIchimokuActivated = False
-        self.IndRSIActivated = False
+        self.IndRsiActivated = False
         self.IndStochasticActivated = False
-        self.IndMAActivated = False
+        self.IndStochasticRsiActivated = False
 
         self.IndVolumesActivated = False
 
@@ -33,17 +34,25 @@ class FinplotWindow():
     def createPlotWidgets(self):
 
         # fin plot
-        self.ax0, self.ax1, self.ax2, self.axPnL = fplt.create_plot_widget(master=self.dockArea, rows=4, init_zoom_periods=200)
-        self.dockArea.axs = [self.ax0, self.ax1, self.ax2, self.axPnL]
+        self.ax0, self.ax_rsi, self.ax_stochasticRsi, self.ax_stochastic, self.axPnL = fplt.create_plot_widget(master=self.dockArea, rows=5, init_zoom_periods=200)
+        self.dockArea.axs = [self.ax0] # , self.ax_rsi, self.ax2, self.axPnL
         self.dockChart.addWidget(self.ax0.ax_widget, 1, 0, 1, 1)
-        self.dockChart.addWidget(self.ax1.ax_widget, 2, 0, 1, 1)
+
+        '''
+        self.dockChart.addWidget(self.ax_rsi.ax_widget, 2, 0, 1, 1)
         self.dockChart.addWidget(self.ax2.ax_widget, 3, 0, 1, 1)
+        '''
 
+        self.interface.dock_rsi.layout.addWidget(self.ax_rsi.ax_widget)
+        self.interface.dock_stochasticRsi.layout.addWidget(self.ax_stochasticRsi.ax_widget)
+        self.interface.dock_stochastic.layout.addWidget(self.ax_stochastic.ax_widget)
+
+        # Ax Profit & Loss
         self.interface.strategyResultsUI.ResultsTabWidget.widget(1).layout().addWidget(self.axPnL.ax_widget)
-        #self.dockChart.addWidget(self.axPnL.ax_widget, 4, 0, 1, 1)
 
-        self.ax1.ax_widget.hide()
-        self.ax2.ax_widget.hide()
+        self.ax_rsi.ax_widget.hide()
+        self.ax_stochasticRsi.ax_widget.hide()
+        self.ax_stochastic.ax_widget.hide()
         self.axPnL.ax_widget.hide()
         pass
 
@@ -319,14 +328,29 @@ class FinplotWindow():
                 self.ichimoku_indicator = ichimoku.Ichimoku(self.data)
                 self.ichimoku_indicator.draw(self.ax0)
 
+            if self.IndRsiActivated:
+                self.rsi_indicator = rsi.Rsi(self.data)
+                self.rsi_indicator.draw(self.ax_rsi)
+                self.ax_rsi.ax_widget.show()
+            else:
+                self.ax_rsi.ax_widget.hide()
+                pass
+
+            if self.IndStochasticActivated:
+                pass
+
+            if self.IndStochasticRsiActivated:
+                pass
+
+            if self.IndVolumesActivated:
+                fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
+
+
             # Finally draw candles
             self.drawCandles()
 
             # Draw orders
             self.drawOrders()
-
-            if self.IndVolumesActivated:
-                fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
 
             # Refresh view : auto zoom
             fplt.refresh()
@@ -335,6 +359,15 @@ class FinplotWindow():
 
 
     def setIndicator(self, indicatorName, activated):
+
+        if (indicatorName == "Rsi"):
+            self.IndRsiActivated = activated
+
+        if (indicatorName == "Stochastic"):
+            self.IndStochasticActivated = activated
+
+        if (indicatorName == "StochasticRsi"):
+            self.IndStochasticRsiActivated = activated
 
         if (indicatorName == "Ichimoku"):
             self.IndIchimokuActivated = activated

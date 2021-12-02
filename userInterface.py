@@ -97,8 +97,19 @@ class UserInterface:
         self.dockArea.addDock(self.dock_strategyResultsUI, position='bottom')
 
         # Create Order widget
-        #self.dock_orders = Dock("Orders", size = (1000, 200), closable = False)
-        #self.dockArea.addDock(self.dock_orders, position='below', relativeTo=self.dock_trades)
+        self.dock_rsi = Dock("RSI", size = (1000, 120), closable = False, hideTitle=True)
+        self.dockArea.addDock(self.dock_rsi, position='bottom', relativeTo=self.dock_chart)
+        self.dock_rsi.hide()
+
+        self.dock_stochastic = Dock("Stochastic", size = (1000, 120), closable = False, hideTitle=True)
+        self.dockArea.addDock(self.dock_stochastic, position='bottom', relativeTo=self.dock_chart)
+        self.dock_stochastic.hide()
+
+        self.dock_stochasticRsi = Dock("Stochastic Rsi", size = (1000, 120), closable = False, hideTitle=True)
+        self.dockArea.addDock(self.dock_stochasticRsi, position='bottom', relativeTo=self.dock_chart)
+        self.dock_stochasticRsi.hide()
+
+
         #self.dock_trades.raiseDock()
 
     #########
@@ -478,6 +489,30 @@ class UserInterface:
         self.ResetPB.toggled.connect(self.resetChart)
         layout.addWidget(self.ResetPB)
 
+        # RSI
+        self.RsiPB = QtWidgets.QPushButton(self.panel)
+        self.RsiPB.setText("RSI")
+        self.RsiPB.setCheckable(True)
+        self.RsiPB.setMaximumWidth(100)
+        self.RsiPB.toggled.connect(self.addRsi)
+        layout.addWidget(self.RsiPB)
+
+        # Stochastic
+        self.StochasticPB = QtWidgets.QPushButton(self.panel)
+        self.StochasticPB.setText("Stochastic")
+        self.StochasticPB.setCheckable(True)
+        self.StochasticPB.setMaximumWidth(100)
+        self.StochasticPB.toggled.connect(self.addStochastic)
+        layout.addWidget(self.StochasticPB)
+
+        # Stochastic RSI
+        self.StochasticRsiPB = QtWidgets.QPushButton(self.panel)
+        self.StochasticRsiPB.setText("Stochastic RSI")
+        self.StochasticRsiPB.setCheckable(True)
+        self.StochasticRsiPB.setMaximumWidth(100)
+        self.StochasticRsiPB.toggled.connect(self.addStochasticRsi)
+        layout.addWidget(self.StochasticRsiPB)
+
         # Ichimoku
         self.IchimokuPB = QtWidgets.QPushButton(self.panel)
         self.IchimokuPB.setText("Ichimoku")
@@ -521,14 +556,27 @@ class UserInterface:
         self.fpltWindow.updateChart()
         pass
 
+    def addRsi(self):
+        self.fpltWindow.setIndicator("Rsi", self.RsiPB.isChecked() )
+        self.dock_rsi.show() if self.RsiPB.isChecked() else self.dock_rsi.hide()
+        pass
+
+    def addStochastic(self):
+        self.fpltWindow.setIndicator("Stochastic", self.StochasticPB.isChecked() )
+        self.dock_stochastic.show() if self.StochasticPB.isChecked() else self.dock_stochastic.hide()
+        pass
+
+    def addStochasticRsi(self):
+        self.fpltWindow.setIndicator("StochasticRsi", self.StochasticRsiPB.isChecked() )
+        self.dock_stochasticRsi.show() if self.StochasticRsiPB.isChecked() else self.dock_stochasticRsi.hide()
+        pass
+
     def addIchimoku(self):
         self.fpltWindow.setIndicator("Ichimoku", self.IchimokuPB.isChecked() )
         pass
     def volumes_toggle(self):
         self.fpltWindow.setIndicator("Volumes", self.volumesCB.isChecked())
         pass
-
-    
 
     #########
     #  Obsolete (Strategy results : transcations tab)
