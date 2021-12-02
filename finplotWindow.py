@@ -35,7 +35,7 @@ class FinplotWindow():
 
         # fin plot
         self.ax0, self.ax_rsi, self.ax_stochasticRsi, self.ax_stochastic, self.axPnL = fplt.create_plot_widget(master=self.dockArea, rows=5, init_zoom_periods=200)
-        self.dockArea.axs = [self.ax0] # , self.ax_rsi, self.ax2, self.axPnL
+        self.dockArea.axs = [self.ax0, self.ax_rsi, self.ax_stochasticRsi, self.ax_stochastic, self.axPnL] # , self.ax_rsi, self.ax2, self.axPnL
         self.dockChart.addWidget(self.ax0.ax_widget, 1, 0, 1, 1)
 
         '''
@@ -50,10 +50,6 @@ class FinplotWindow():
         # Ax Profit & Loss
         self.interface.strategyResultsUI.ResultsTabWidget.widget(1).layout().addWidget(self.axPnL.ax_widget)
 
-        self.ax_rsi.ax_widget.hide()
-        self.ax_stochasticRsi.ax_widget.hide()
-        self.ax_stochastic.ax_widget.hide()
-        self.axPnL.ax_widget.hide()
         pass
 
     def drawCandles(self):
@@ -331,10 +327,6 @@ class FinplotWindow():
             if self.IndRsiActivated:
                 self.rsi_indicator = rsi.Rsi(self.data)
                 self.rsi_indicator.draw(self.ax_rsi)
-                self.ax_rsi.ax_widget.show()
-            else:
-                self.ax_rsi.ax_widget.hide()
-                pass
 
             if self.IndStochasticActivated:
                 pass
