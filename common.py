@@ -69,3 +69,10 @@ def calc_stochastic_oscillator(df, n=14, m=3, smooth=3):
     d = k.rolling(m).mean()
     return k, d
 
+
+def calc_stochasticRsi_oscillator(df, n=14, m=3, smooth=3):
+    lo = df.Low.rolling(n).min()
+    hi = df.High.rolling(n).max()
+    k = 100 * (df.Close-lo) / (hi-lo)
+    d = k.rolling(m).mean()
+    return k, d

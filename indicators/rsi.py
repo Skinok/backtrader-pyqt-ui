@@ -4,12 +4,7 @@ import sys
 sys.path.append('../finplot')
 import finplot as fplt
 
-import backtrader.functions as func
-from pyqtgraph.functions import Color
-
 from common import calc_rsi
-from common import calc_parabolic_sar
-from common import calc_stochastic_oscillator
 
 class Rsi():
 
@@ -22,5 +17,4 @@ class Rsi():
         pass
 
     def clear(self):
-
         pass

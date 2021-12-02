@@ -4,6 +4,8 @@ from pyqtgraph.graphicsItems.LegendItem import LegendItem
 
 from indicators import ichimoku
 from indicators import rsi
+from indicators import stochastic
+from indicators import stochasticRsi
 
 sys.path.append('../finplot')
 import finplot as fplt
@@ -329,9 +331,13 @@ class FinplotWindow():
                 self.rsi_indicator.draw(self.ax_rsi)
 
             if self.IndStochasticActivated:
+                self.stochastic_indicator = stochastic.Stochastic(self.data)
+                self.stochastic_indicator.draw(self.ax_stochastic)
                 pass
 
             if self.IndStochasticRsiActivated:
+                self.stochasticRsi_indicator = stochasticRsi.StochasticRsi(self.data)
+                self.stochasticRsi_indicator.draw(self.ax_stochasticRsi)
                 pass
 
             if self.IndVolumesActivated:
