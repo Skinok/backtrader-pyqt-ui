@@ -4,17 +4,17 @@ import sys
 sys.path.append('../finplot')
 import finplot as fplt
 
-from common import calc_stochasticRsi_oscillator
+from common import StochRSI
 
 class StochasticRsi():
 
-    def __init__(self, dataFrames, stochasticRsi_periods=14, stochasticRsi_quick=3, stochasticRsi_smooth = 3):
-        self.stochasticRsi_df, self.stochasticRsi_quick_df = calc_stochasticRsi_oscillator(dataFrames, stochasticRsi_periods, stochasticRsi_quick, stochasticRsi_smooth)
+    def __init__(self, dataFrames, period=14, smoothK=3, smoothD = 3):
+        self.stochrsi, self.stochrsi_K, self.stochrsi_D = StochRSI(dataFrames, period, smoothK, smoothD)
         pass
 
     def draw(self, ax, stochasticRsi_color = "red", stochasticRsi_quick_color="green"):
-        self.stochasticRsi_plot = fplt.plot(self.stochasticRsi_df, ax = ax, color=stochasticRsi_color, width=1 )
-        self.stochasticRsi_quick_plot = fplt.plot(self.stochasticRsi_quick_df, ax = ax, color=stochasticRsi_quick_color, width=1 )
+        self.stochrsi_K_plot = fplt.plot(self.stochrsi_K, ax = ax, color=stochasticRsi_color, width=1 )
+        self.stochrsi_D_plot = fplt.plot(self.stochrsi_D, ax = ax, color=stochasticRsi_quick_color, width=1 )
         pass
 
     def clear(self):
