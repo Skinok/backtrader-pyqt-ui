@@ -556,24 +556,24 @@ class UserInterface:
         self.fpltWindow.updateChart()
         pass
 
+    # indicators in external windows
     def addRsi(self):
-        self.fpltWindow.setIndicator("Rsi", self.RsiPB.isChecked() )
         self.dock_rsi.show() if self.RsiPB.isChecked() else self.dock_rsi.hide()
         pass
 
     def addStochastic(self):
-        self.fpltWindow.setIndicator("Stochastic", self.StochasticPB.isChecked() )
         self.dock_stochastic.show() if self.StochasticPB.isChecked() else self.dock_stochastic.hide()
         pass
 
     def addStochasticRsi(self):
-        self.fpltWindow.setIndicator("StochasticRsi", self.StochasticRsiPB.isChecked() )
         self.dock_stochasticRsi.show() if self.StochasticRsiPB.isChecked() else self.dock_stochasticRsi.hide()
         pass
 
+    # On chart indicators
     def addIchimoku(self):
         self.fpltWindow.setIndicator("Ichimoku", self.IchimokuPB.isChecked() )
         pass
+
     def volumes_toggle(self):
         self.fpltWindow.setIndicator("Volumes", self.volumesCB.isChecked())
         pass

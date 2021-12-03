@@ -57,13 +57,29 @@ class FinplotWindow():
     def drawCandles(self):
 
         fplt.candlestick_ochl(self.data['Open Close High Low'.split()], ax=self.ax0)
-
+        
         #self.hover_label = fplt.add_legend('', ax=self.ax0)
         #fplt.set_time_inspector(self.update_legend_text, ax=self.ax0, when='hover', data=data)
         #fplt.add_crosshair_info(self.update_crosshair_text, ax=self.ax0)
 
         # Inside plot widget controls
         #self.createControlPanel(self.ax0.ax_widget)
+        pass
+
+    def drawExternalsIndicators(self):
+
+        #if self.IndRsiActivated:
+        self.rsi_indicator = rsi.Rsi(self.data)
+        self.rsi_indicator.draw(self.ax_rsi)
+
+        #if self.IndStochasticActivated:
+        self.stochastic_indicator = stochastic.Stochastic(self.data)
+        self.stochastic_indicator.draw(self.ax_stochastic)
+
+        #if self.IndStochasticRsiActivated:
+        self.stochasticRsi_indicator = stochasticRsi.StochasticRsi(self.data)
+        self.stochasticRsi_indicator.draw(self.ax_stochasticRsi)
+
         pass
 
     #########
@@ -305,6 +321,9 @@ class FinplotWindow():
 
     def setChartData(self, data):
         self.data = data
+
+        # Calculate indicators only one time when setting chart data
+        self.drawExternalsIndicators()
         pass
 
     def resetChart(self):
@@ -326,23 +345,8 @@ class FinplotWindow():
                 self.ichimoku_indicator = ichimoku.Ichimoku(self.data)
                 self.ichimoku_indicator.draw(self.ax0)
 
-            if self.IndRsiActivated:
-                self.rsi_indicator = rsi.Rsi(self.data)
-                self.rsi_indicator.draw(self.ax_rsi)
-
-            if self.IndStochasticActivated:
-                self.stochastic_indicator = stochastic.Stochastic(self.data)
-                self.stochastic_indicator.draw(self.ax_stochastic)
-                pass
-
-            if self.IndStochasticRsiActivated:
-                self.stochasticRsi_indicator = stochasticRsi.StochasticRsi(self.data)
-                self.stochasticRsi_indicator.draw(self.ax_stochasticRsi)
-                pass
-
             if self.IndVolumesActivated:
                 fplt.volume_ocv(self.data['Open Close Volume'.split()], ax=self.ax0.overlay())
-
 
             # Finally draw candles
             self.drawCandles()
@@ -355,28 +359,19 @@ class FinplotWindow():
 
         pass
 
-
+    
     def setIndicator(self, indicatorName, activated):
-
-        if (indicatorName == "Rsi"):
-            self.IndRsiActivated = activated
-
-        if (indicatorName == "Stochastic"):
-            self.IndStochasticActivated = activated
-
-        if (indicatorName == "StochasticRsi"):
-            self.IndStochasticRsiActivated = activated
 
         if (indicatorName == "Ichimoku"):
             self.IndIchimokuActivated = activated
-
+        
         if (indicatorName == "Volumes"):
             self.IndVolumesActivated = activated
 
         self.updateChart()
 
         pass
-
+  
     #############
     #  Show finplot Window
     #############
