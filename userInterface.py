@@ -497,6 +497,26 @@ class UserInterface:
         spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Minimum)
         layout.addSpacerItem(spacer)
 
+        # SMA
+        self.SmaPB = QtWidgets.QPushButton(self.panel)
+        self.SmaPB.setText("SMA")
+        self.SmaPB.setCheckable(True)
+        self.SmaPB.setMaximumWidth(100)
+        self.SmaPB.toggled.connect(self.addSma)
+        layout.addWidget(self.SmaPB)
+
+        # EMA
+        self.EmaPB = QtWidgets.QPushButton(self.panel)
+        self.EmaPB.setText("EMA")
+        self.EmaPB.setCheckable(True)
+        self.EmaPB.setMaximumWidth(100)
+        self.EmaPB.toggled.connect(self.addEma)
+        layout.addWidget(self.EmaPB)
+
+        # Spacer
+        spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Minimum)
+        layout.addSpacerItem(spacer)
+
         # RSI
         self.RsiPB = QtWidgets.QPushButton(self.panel)
         self.RsiPB.setText("RSI")
@@ -566,6 +586,38 @@ class UserInterface:
     def resetChart(self):
         self.fpltWindow.resetChart()
         self.fpltWindow.updateChart()
+        pass
+
+    # On chart indicators
+    def addSma(self):
+
+        # Show indicator parameter dialog
+        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_chart)
+        paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+        paramDialog.setTitle("SMA Indicator parameters")
+        paramDialog.addParameter("SMA Period", 14)
+        paramDialog.adjustSize()
+
+        if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+            period = paramDialog.getValue("SMA Period")
+            self.fpltWindow.drawSma( period )
+
+        pass
+
+    # On chart indicators
+    def addEma(self):
+
+        # Show indicator parameter dialog
+        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_chart)
+        paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+        paramDialog.setTitle("EMA Indicator parameters")
+        paramDialog.addParameter("EMA Period", 9)
+        paramDialog.adjustSize()
+
+        if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+            period = paramDialog.getValue("EMA Period")
+            self.fpltWindow.drawEma( period )
+
         pass
 
     # indicators in external windows

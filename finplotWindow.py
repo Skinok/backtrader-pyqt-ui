@@ -6,6 +6,8 @@ from indicators import ichimoku
 from indicators import rsi
 from indicators import stochastic
 from indicators import stochasticRsi
+from indicators import sma
+from indicators import ema
 
 sys.path.append('../finplot')
 import finplot as fplt
@@ -64,6 +66,16 @@ class FinplotWindow():
 
         # Inside plot widget controls
         #self.createControlPanel(self.ax0.ax_widget)
+        pass
+
+    def drawSma(self, period):
+        self.sma_indicator = sma.Sma(self.data, period)
+        self.sma_indicator.draw(self.ax0)
+        pass
+
+    def drawEma(self, period):
+        self.ema_indicator = ema.Ema(self.data, period)
+        self.ema_indicator.draw(self.ax0)
         pass
 
     def drawRsi(self, period):
