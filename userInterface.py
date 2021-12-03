@@ -577,7 +577,6 @@ class UserInterface:
             paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
             paramDialog.setTitle("RSI Indicator parameters")
             paramDialog.addParameter("RSI Period", 14)
-            #paramDialog.setStyleSheet("QDialog{ border: 1px solid green; }")
             paramDialog.adjustSize()
 
             if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
@@ -596,11 +595,61 @@ class UserInterface:
         pass
 
     def toogleStochastic(self):
-        self.dock_stochastic.show() if self.StochasticPB.isChecked() else self.dock_stochastic.hide()
+
+        if self.StochasticPB.isChecked():
+            # Show indicator parameter dialog
+            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_chart)
+            paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+            paramDialog.setTitle("Stochastic Indicator parameters")
+            paramDialog.addParameter("Stochastic Period K", 14)
+            paramDialog.addParameter("Stochastic Smooth K", 3)
+            paramDialog.addParameter("Stochastic Smooth D", 3)
+            paramDialog.adjustSize()
+
+            if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+                period = paramDialog.getValue("Stochastic Period K")
+                smooth_k = paramDialog.getValue("Stochastic Smooth K")
+                smooth_d = paramDialog.getValue("Stochastic Smooth D")
+
+                self.fpltWindow.drawStochastic( period, smooth_k, smooth_d )
+                self.dock_stochastic.show()
+            else:
+                # Cancel
+                self.RsiPB.setChecked(False)
+                self.dock_stochastic.hide()
+                
+        else:
+            self.dock_stochastic.hide()
+
         pass
 
     def toogleStochasticRsi(self):
-        self.dock_stochasticRsi.show() if self.StochasticRsiPB.isChecked() else self.dock_stochasticRsi.hide()
+
+        if self.StochasticRsiPB.isChecked():
+            # Show indicator parameter dialog
+            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_chart)
+            paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+            paramDialog.setTitle("Stochastic Indicator parameters")
+            paramDialog.addParameter("Stochastic Rsi Period K", 14)
+            paramDialog.addParameter("Stochastic Rsi Smooth K", 3)
+            paramDialog.addParameter("Stochastic Rsi Smooth D", 3)
+            paramDialog.adjustSize()
+
+            if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+                period = paramDialog.getValue("Stochastic Rsi Period K")
+                smooth_k = paramDialog.getValue("Stochastic Rsi Smooth K")
+                smooth_d = paramDialog.getValue("Stochastic Rsi Smooth D")
+
+                self.fpltWindow.drawStochasticRsi( period, smooth_k, smooth_d)
+                self.dock_stochasticRsi.show()
+            else:
+                # Cancel
+                self.RsiPB.setChecked(False)
+                self.dock_stochasticRsi.hide()
+                
+        else:
+            self.dock_stochasticRsi.hide()
+
         pass
 
     # On chart indicators

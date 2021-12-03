@@ -12,11 +12,8 @@ class StochasticRsi():
         self.stochrsi, self.stochrsi_K, self.stochrsi_D = StochRSI(dataFrames, period, smoothK, smoothD)
         pass
 
-    def draw(self, ax, stochasticRsi_color = "red", stochasticRsi_quick_color="green"):
-        self.stochrsi_K_plot = fplt.plot(self.stochrsi_K, ax = ax, color=stochasticRsi_color, width=1 )
-        self.stochrsi_D_plot = fplt.plot(self.stochrsi_D, ax = ax, color=stochasticRsi_quick_color, width=1 )
+    def draw(self, ax, stochasticRsi_k_color = "red", stochasticRsi_d_color="green"):
+        self.stochrsi_K_plot = fplt.plot(self.stochrsi_K, ax = ax, color=stochasticRsi_k_color, width=1 )
+        self.stochrsi_D_plot = fplt.plot(self.stochrsi_D, ax = ax, color=stochasticRsi_d_color, width=1 )
         pass
 
-    def clear(self):
-
-        pass

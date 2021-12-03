@@ -71,13 +71,13 @@ class FinplotWindow():
         self.rsi_indicator.draw(self.ax_rsi)
         pass
 
-    def drawStochastic(self, period_k, period_d):
-        self.stochastic_indicator = stochastic.Stochastic(self.data, period_k, period_d)
+    def drawStochastic(self, period, smooth_k, smooth_d):
+        self.stochastic_indicator = stochastic.Stochastic(self.data, period, smooth_k, smooth_d)
         self.stochastic_indicator.draw(self.ax_stochastic)
         pass
 
-    def drawStochasticRsi(self, period, period_k, period_d, period_):
-        self.stochasticRsi_indicator = stochasticRsi.StochasticRsi(self.data)
+    def drawStochasticRsi(self, period, smooth_k, smooth_d):
+        self.stochasticRsi_indicator = stochasticRsi.StochasticRsi(self.data, period, smooth_k, smooth_d)
         self.stochasticRsi_indicator.draw(self.ax_stochasticRsi)
         pass
 
