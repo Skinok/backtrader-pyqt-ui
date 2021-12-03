@@ -13,6 +13,7 @@ class Rsi():
         pass
 
     def draw(self, ax, rsi_color = "magenta"):
+        ax.reset()
         self.rsi_plot = fplt.plot(self.rsi_df, ax = ax, color=rsi_color, width=1 )
         pass
 

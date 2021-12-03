@@ -31,9 +31,15 @@ sys.path.append('../finplot')
 import finplot as fplt
 
 import backtrader as bt
+
+# Ui made with Qt Designer
 import strategyTesterUI
 import strategyResultsUI
+import indicatorParametersUI
+
+# Import Chart lib
 import finplotWindow
+
 
 import datetime
 
@@ -64,8 +70,6 @@ class UserInterface:
         
         # Set width/height of QSplitter
         self.app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-
-
 
         pass
 
@@ -489,12 +493,16 @@ class UserInterface:
         self.ResetPB.toggled.connect(self.resetChart)
         layout.addWidget(self.ResetPB)
 
+        # Spacer
+        spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Minimum)
+        layout.addSpacerItem(spacer)
+
         # RSI
         self.RsiPB = QtWidgets.QPushButton(self.panel)
         self.RsiPB.setText("RSI")
         self.RsiPB.setCheckable(True)
         self.RsiPB.setMaximumWidth(100)
-        self.RsiPB.toggled.connect(self.addRsi)
+        self.RsiPB.toggled.connect(self.toogleRsi)
         layout.addWidget(self.RsiPB)
 
         # Stochastic
@@ -502,7 +510,7 @@ class UserInterface:
         self.StochasticPB.setText("Stochastic")
         self.StochasticPB.setCheckable(True)
         self.StochasticPB.setMaximumWidth(100)
-        self.StochasticPB.toggled.connect(self.addStochastic)
+        self.StochasticPB.toggled.connect(self.toogleStochastic)
         layout.addWidget(self.StochasticPB)
 
         # Stochastic RSI
@@ -510,7 +518,7 @@ class UserInterface:
         self.StochasticRsiPB.setText("Stochastic RSI")
         self.StochasticRsiPB.setCheckable(True)
         self.StochasticRsiPB.setMaximumWidth(100)
-        self.StochasticRsiPB.toggled.connect(self.addStochasticRsi)
+        self.StochasticRsiPB.toggled.connect(self.toogleStochasticRsi)
         layout.addWidget(self.StochasticRsiPB)
 
         # Ichimoku
@@ -518,8 +526,12 @@ class UserInterface:
         self.IchimokuPB.setText("Ichimoku")
         self.IchimokuPB.setCheckable(True)
         self.IchimokuPB.setMaximumWidth(100)
-        self.IchimokuPB.toggled.connect(self.addIchimoku)
+        self.IchimokuPB.toggled.connect(self.toogleIchimoku)
         layout.addWidget(self.IchimokuPB)
+
+        # Spacer 
+        spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Minimum)
+        layout.addSpacerItem(spacer)
 
         # Dark mode
         self.darkmodeCB = QtWidgets.QCheckBox(self.panel)
@@ -557,20 +569,42 @@ class UserInterface:
         pass
 
     # indicators in external windows
-    def addRsi(self):
-        self.dock_rsi.show() if self.RsiPB.isChecked() else self.dock_rsi.hide()
+    def toogleRsi(self):
+
+        if self.RsiPB.isChecked():
+            # Show indicator parameter dialog
+            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_chart)
+            paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+            paramDialog.setTitle("RSI Indicator parameters")
+            paramDialog.addParameter("RSI Period", 14)
+            #paramDialog.setStyleSheet("QDialog{ border: 1px solid green; }")
+            paramDialog.adjustSize()
+
+            if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+                period = paramDialog.getValue("RSI Period")
+
+                self.fpltWindow.drawRsi( period )
+                self.dock_rsi.show()
+            else:
+                # Cancel
+                self.RsiPB.setChecked(False)
+                self.dock_rsi.hide()
+                
+        else:
+            self.dock_rsi.hide()
+
         pass
 
-    def addStochastic(self):
+    def toogleStochastic(self):
         self.dock_stochastic.show() if self.StochasticPB.isChecked() else self.dock_stochastic.hide()
         pass
 
-    def addStochasticRsi(self):
+    def toogleStochasticRsi(self):
         self.dock_stochasticRsi.show() if self.StochasticRsiPB.isChecked() else self.dock_stochasticRsi.hide()
         pass
 
     # On chart indicators
-    def addIchimoku(self):
+    def toogleIchimoku(self):
         self.fpltWindow.setIndicator("Ichimoku", self.IchimokuPB.isChecked() )
         pass
 

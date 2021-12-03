@@ -66,20 +66,19 @@ class FinplotWindow():
         #self.createControlPanel(self.ax0.ax_widget)
         pass
 
-    def drawExternalsIndicators(self):
-
-        #if self.IndRsiActivated:
-        self.rsi_indicator = rsi.Rsi(self.data)
+    def drawRsi(self, period):
+        self.rsi_indicator = rsi.Rsi(self.data, period)
         self.rsi_indicator.draw(self.ax_rsi)
+        pass
 
-        #if self.IndStochasticActivated:
-        self.stochastic_indicator = stochastic.Stochastic(self.data)
+    def drawStochastic(self, period_k, period_d):
+        self.stochastic_indicator = stochastic.Stochastic(self.data, period_k, period_d)
         self.stochastic_indicator.draw(self.ax_stochastic)
+        pass
 
-        #if self.IndStochasticRsiActivated:
+    def drawStochasticRsi(self, period, period_k, period_d, period_):
         self.stochasticRsi_indicator = stochasticRsi.StochasticRsi(self.data)
         self.stochasticRsi_indicator.draw(self.ax_stochasticRsi)
-
         pass
 
     #########
@@ -321,10 +320,6 @@ class FinplotWindow():
 
     def setChartData(self, data):
         self.data = data
-
-        # Calculate indicators only one time when setting chart data
-        self.drawExternalsIndicators()
-        pass
 
     def resetChart(self):
 
