@@ -393,8 +393,8 @@ class FinplotWindow():
 
         self.axPnL.reset()
 
-        fplt.plot(pln_data['time'], pln_data['value'], ax = self.axPnL, legend="value")
         fplt.plot(pln_data['time'], pln_data['equity'], ax = self.axPnL, legend="equity")
+        fplt.plot(pln_data['time'], pln_data['value'], ax = self.axPnL, legend="value")
         
         self.axPnL.ax_widget.show()
         self.axPnL.show()

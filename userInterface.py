@@ -328,7 +328,8 @@ class UserInterface:
         
         self.strategyTesterUI.startingCashLE.textChanged.connect( self.controller.cashChanged )
 
-        # self.interface.tradesSizeLE.setValue(self.cerebro.broker.cash)
+        # Add Data
+        self.strategyTesterUI.addLocalDataFilePB.clicked.connect( self.openDataFile )
 
         pass
 
