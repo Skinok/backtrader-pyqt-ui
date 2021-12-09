@@ -48,6 +48,7 @@ class Controller:
 
         # Init attributes
         self.strategyParameters = {}
+        self.dataframes = {}
 
         # Global is here to update the Ui in observers easily, if you find a better way, don't hesistate to tell me (Skinok)
         global interface
@@ -98,21 +99,40 @@ class Controller:
         pass
 
 
-    def loadData(self, dataPath):
+    def loadData(self, dataPath, datetimeFormat, separator):
 
-        self.dataframe = pd.read_csv(dataPath, sep='\t', parse_dates=[0], date_parser=lambda x: pd.to_datetime(x, format='%Y-%m-%d %H:%M:%S'),skiprows=0,header=0,index_col=0)
+        # Try importing data file
+        # We should code a widget that ask for options as : separators, date format, and so on...
+        try:
+            fileName = os.path.basename(dataPath)
+            self.dataframes[fileName] = pd.read_csv(dataPath, sep=separator, parse_dates=[0], date_parser=lambda x: pd.to_datetime(x, format=datetimeFormat), skiprows=0, header=0, index_col=0)
+        except ValueError as err:
+            return False, "ValueError error:" + str(err)
+        except AttributeError as err:
+            return False, "AttributeError error:" + str(err)
+        except :
+            return False, "Unexpected error:" + str(sys.exc_info()[0])
 
-        # Datetime first column : 2012-12-28 17:45:00
-        #self.dataframe['TimeInt'] = pd.to_datetime(self.dataframe.index).astype('int64') # use finplot's internal representation, which is ns
-        
-        # Pass it to the backtrader datafeed and add it to the cerebro
-        self.data = bt.feeds.PandasData(dataname=self.dataframe, timeframe=bt.TimeFrame.Minutes)
+        return True, ""
 
-        # Add data to cerebro
-        self.cerebro.adddata(self.data)  # Add the data feed
+    def importData(self, fileNamesOrdered):
 
-        # Draw charts based on input data
-        self.interface.drawChart(self.dataframe)
+        # Files should be loaded in the good order
+        for fileName in fileNamesOrdered:
+            
+            df = self.dataframes[fileName]
+
+            # Datetime first column : 2012-12-28 17:45:00
+            #self.dataframe['TimeInt'] = pd.to_datetime(self.dataframe.index).astype('int64') # use finplot's internal representation, which is ns
+            
+            # Pass it to the backtrader datafeed and add it to the cerebro
+            self.data = bt.feeds.PandasData(dataname=df, timeframe=bt.TimeFrame.Minutes)
+
+            # Add data to cerebro : only add data when all files have been selected for multi-timeframes
+            self.cerebro.adddata(self.data)  # Add the data feed
+
+            # Draw charts based on input data
+            self.interface.drawChart(df)
 
         # Enable run button
         self.interface.strategyTesterUI.runBacktestPB.setEnabled(True)
@@ -214,7 +234,9 @@ class Controller:
         pnl_data['value'] = self.wallet.value_list
         pnl_data['equity'] = self.wallet.equity_list
         pnl_data['cash'] = self.wallet.cash_list
-        pnl_data['time'] = self.dataframe.index
+        
+        # really uggly
+        pnl_data['time'] = list(self.dataframes.values())[0].index
 
         # draw charts
         df = pd.DataFrame(pnl_data)

@@ -36,6 +36,7 @@ import backtrader as bt
 import strategyTesterUI
 import strategyResultsUI
 import indicatorParametersUI
+import loadDataFilesUI
 
 # Import Chart lib
 import finplotWindow
@@ -121,17 +122,18 @@ class UserInterface:
     #########
     def createUIs(self):
         
-        self.createActions()
-        self.createMenuBar()
-
         self.createStrategyTesterUI()
         self.createTradesUI()
+        self.createLoadDataFilesUI()
         #self.createOrdersUI()
         self.createSummaryUI()
 
         # Create finplot Window
         self.createFinplotWindow()
         self.createControlPanel()
+
+        self.createActions()
+        self.createMenuBar()
 
         pass
 
@@ -152,7 +154,7 @@ class UserInterface:
         self.backtestDataActionGroup = QtWidgets.QActionGroup(self.win)
         
         self.openCSVAction = QtWidgets.QAction(QtGui.QIcon(""),"Open CSV File", self.backtestDataActionGroup)
-        self.openCSVAction.triggered.connect( self.openDataFile )
+        self.openCSVAction.triggered.connect( self.loadDataFileUI.show )
 
         #self.DataSourceAction = QAction(QtWidgets.QIcon(""),"Choose Data Source", self.toolbar)
         #self.DataSourceAction.triggered.connect( self.l )
@@ -188,9 +190,6 @@ class UserInterface:
 
         pass
 
-    def openDataFile(self):
-        dataFileName = QtWidgets.QFileDialog.getOpenFileName(self.win, 'Open data file', self.current_dir_path + "/data","CSV files (*.csv)")[0]
-        self.controller.loadData(dataFileName)
 
     #########
     #  Strategy results : trades tab
@@ -311,6 +310,15 @@ class UserInterface:
     #########
     #  UI parameters for testing stategies
     #########
+    def createLoadDataFilesUI(self):
+
+        self.loadDataFileUI = loadDataFilesUI.LoadDataFilesUI(self.controller, self.win)
+        self.loadDataFileUI.hide()
+        pass
+
+    #########
+    #  UI parameters for testing stategies
+    #########
     def createStrategyTesterUI(self):
 
         self.strategyTesterUI = strategyTesterUI.StrategyTesterUI(self.controller)
@@ -327,9 +335,6 @@ class UserInterface:
         self.strategyTesterUI.startingCashLE.setValidator( validator )
         
         self.strategyTesterUI.startingCashLE.textChanged.connect( self.controller.cashChanged )
-
-        # Add Data
-        self.strategyTesterUI.addLocalDataFilePB.clicked.connect( self.openDataFile )
 
         pass
 
@@ -713,6 +718,14 @@ class UserInterface:
     def volumes_toggle(self):
         self.fpltWindow.setIndicator("Volumes", self.volumesCB.isChecked())
         pass
+
+
+    #########
+    #  Load data files UI slots
+    #########
+    
+    
+
 
     #########
     #  Obsolete (Strategy results : transcations tab)
