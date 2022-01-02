@@ -134,7 +134,7 @@ class UserInterface:
         self.fpltWindow[timeframe].show()
 
         # Create timeframe button
-        self.timeFramePB[timeframe] = QtWidgets.QPushButton(self.controlPanel)
+        self.timeFramePB[timeframe] = QtWidgets.QRadioButton(self.controlPanel)
         self.timeFramePB[timeframe].setText(timeframe)
         self.timeFramePB[timeframe].setCheckable(True)
         self.timeFramePB[timeframe].setMaximumWidth(100)
