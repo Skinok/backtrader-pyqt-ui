@@ -35,7 +35,7 @@ class FinplotWindow():
     #########
     #  Prepare the plot widgets
     #########
-    def createPlotWidgets(self):
+    def createPlotWidgets(self, timeframe):
 
         # fin plot
         self.ax0, self.ax_rsi, self.ax_stochasticRsi, self.ax_stochastic, self.axPnL = fplt.create_plot_widget(master=self.dockArea, rows=5, init_zoom_periods=200)
@@ -47,9 +47,9 @@ class FinplotWindow():
         self.dockChart.addWidget(self.ax2.ax_widget, 3, 0, 1, 1)
         '''
 
-        self.interface.dock_rsi.layout.addWidget(self.ax_rsi.ax_widget)
-        self.interface.dock_stochasticRsi.layout.addWidget(self.ax_stochasticRsi.ax_widget)
-        self.interface.dock_stochastic.layout.addWidget(self.ax_stochastic.ax_widget)
+        self.interface.dock_rsi[timeframe].layout.addWidget(self.ax_rsi.ax_widget)
+        self.interface.dock_stochasticRsi[timeframe].layout.addWidget(self.ax_stochasticRsi.ax_widget)
+        self.interface.dock_stochastic[timeframe].layout.addWidget(self.ax_stochastic.ax_widget)
 
         # Ax Profit & Loss
         self.interface.strategyResultsUI.ResultsTabWidget.widget(1).layout().addWidget(self.axPnL.ax_widget)
@@ -67,6 +67,7 @@ class FinplotWindow():
         # Inside plot widget controls
         #self.createControlPanel(self.ax0.ax_widget)
         pass
+    
 
     def drawSma(self, period):
         self.sma_indicator = sma.Sma(self.data, period)

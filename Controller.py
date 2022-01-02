@@ -99,13 +99,22 @@ class Controller:
         pass
 
 
+    # Return True if loading is successfull & the error string if False
     def loadData(self, dataPath, datetimeFormat, separator):
 
         # Try importing data file
         # We should code a widget that ask for options as : separators, date format, and so on...
         try:
             fileName = os.path.basename(dataPath)
-            self.dataframes[fileName] = pd.read_csv(dataPath, sep=separator, parse_dates=[0], date_parser=lambda x: pd.to_datetime(x, format=datetimeFormat), skiprows=0, header=0, index_col=0)
+            self.dataframes[fileName] = pd.read_csv(dataPath, 
+            sep=separator, 
+            parse_dates=[0], 
+            date_parser=lambda x: pd.to_datetime(x, format=datetimeFormat), 
+            skiprows=0, 
+            header=0, 
+            names=["Time", "Open", "High", "Low", "Close", "Volume"],
+            index_col=0)
+
         except ValueError as err:
             return False, "ValueError error:" + str(err)
         except AttributeError as err:
@@ -131,11 +140,41 @@ class Controller:
             # Add data to cerebro : only add data when all files have been selected for multi-timeframes
             self.cerebro.adddata(self.data)  # Add the data feed
 
+            # find the time frame
+            timeframe = self.findTimeFrame(df)
+
+            # Create the chart window for the good timeframe (if it does not already exists?)
+            self.interface.createChartDock(timeframe)
+
             # Draw charts based on input data
-            self.interface.drawChart(df)
+            self.interface.drawChart(df, timeframe)
 
         # Enable run button
         self.interface.strategyTesterUI.runBacktestPB.setEnabled(True)
+
+        pass
+
+    def findTimeFrame(self,df):
+
+        if len(df.index) > 2:
+            dtDiff = df.index[1] - df.index[0]
+
+            if dtDiff.seconds == 60:
+                return "M1"
+            elif dtDiff.seconds == 300:
+                return "M5"
+            elif dtDiff.seconds == 900:
+                return "M15"
+            elif dtDiff.seconds == 1800:
+                return "M30"
+            elif dtDiff.seconds == 3600:
+                return "H1"
+            elif dtDiff.seconds == 14400:
+                return "H4"
+            elif dtDiff.seconds == 86400:
+                return "D"
+            elif dtDiff.seconds == 604800:
+                return "W"
 
         pass
 
@@ -255,3 +294,4 @@ class Controller:
             self.cerebro.broker.setcash(self.startingcash)
 
         pass
+

@@ -29,7 +29,6 @@ import sys, os
 
 sys.path.append('../finplot')
 import finplot as fplt
-
 import backtrader as bt
 
 # Ui made with Qt Designer
@@ -65,6 +64,15 @@ class UserInterface:
         self.app = QtWidgets.QApplication([])
         self.win = QtWidgets.QMainWindow()
 
+        # All dock area of each time frame
+        self.dockAreaTimeframes = {}
+        self.dock_charts= {}
+        self.dock_rsi= {}
+        self.dock_stochastic= {}
+        self.dock_stochasticRsi= {}
+        self.fpltWindow = {}
+        self.timeFramePB = {}
+
         # Resize windows properties
         self.win.resize(1600,1100)
         self.win.setWindowTitle("Skinok Backtrader UI")
@@ -74,24 +82,89 @@ class UserInterface:
 
         pass
 
+    def initialize(self):
+
+        # Docks
+        self.createMainDocks()
+
+        # Create all buttons above the chart window
+        self.createControlPanel()
+
+        self.createUIs()
+
+        # Enable run button
+        self.strategyTesterUI.runBacktestPB.setEnabled(False)
+
+        self.strategyTesterUI.initialize()
+
+        pass
+
+    #########
+    #  Create all chart dock for ONE timeframe
+    #########
+    def createChartDock(self, timeframe):
+
+        # this need to be changed later
+        self.current_timeframe = timeframe
+
+        # Each time frame has its own dock area
+        self.dockAreaTimeframes[timeframe] = DockArea()
+        self.stackedCharts.addWidget(self.dockAreaTimeframes[timeframe])
+
+        # Create Chart widget
+        self.dock_charts[timeframe] = Dock("dock_chart_"+timeframe, size = (1000, 500), closable = False, hideTitle=True)
+        self.dockAreaTimeframes[timeframe].addDock(self.dock_charts[timeframe])
+
+        # Create Order widget
+        self.dock_rsi[timeframe] = Dock("RSI", size = (1000, 120), closable = False, hideTitle=True)
+        self.dockAreaTimeframes[timeframe].addDock(self.dock_rsi[timeframe], position='bottom', relativeTo=self.dock_charts[timeframe])
+        self.dock_rsi[timeframe].hide()
+
+        self.dock_stochastic[timeframe] = Dock("Stochastic", size = (1000, 120), closable = False, hideTitle=True)
+        self.dockAreaTimeframes[timeframe].addDock(self.dock_stochastic[timeframe], position='bottom', relativeTo=self.dock_charts[timeframe])
+        self.dock_stochastic[timeframe].hide()
+
+        self.dock_stochasticRsi[timeframe] = Dock("Stochastic Rsi", size = (1000, 120), closable = False, hideTitle=True)
+        self.dockAreaTimeframes[timeframe].addDock(self.dock_stochasticRsi[timeframe], position='bottom', relativeTo=self.dock_charts[timeframe])
+        self.dock_stochasticRsi[timeframe].hide()
+
+        # Create finplot Window
+        self.fpltWindow[timeframe] = finplotWindow.FinplotWindow(self.dockAreaTimeframes[timeframe], self.dock_charts[timeframe], self)
+        self.fpltWindow[timeframe].createPlotWidgets(timeframe)
+        self.fpltWindow[timeframe].show()
+
+        # Create timeframe button
+        self.timeFramePB[timeframe] = QtWidgets.QPushButton(self.controlPanel)
+        self.timeFramePB[timeframe].setText(timeframe)
+        self.timeFramePB[timeframe].setCheckable(True)
+        self.timeFramePB[timeframe].setMaximumWidth(100)
+        self.timeFramePB[timeframe].toggled.connect(lambda: self.toogleTimeframe(timeframe) )
+        self.controlPanelLayout.insertWidget(0,self.timeFramePB[timeframe])
+
+        self.stackedCharts.setCurrentIndex(0)
+
+        # init checked after connecting the slot
+        if self.darkmodeCB.isChecked():
+            self.dark_mode_toggle()
+
+        pass 
+
+
+
     #########
     #  Create all main window docks
     #########
-    def createDocks(self):
+    def createMainDocks(self):
+
         self.dockArea = DockArea()
         self.win.setCentralWidget(self.dockArea)
 
-        # Create Chart widget      
-        self.dock_chart = Dock("dock_chart", size = (1000, 500), closable = False, hideTitle=True )
-        self.dockArea.addDock(self.dock_chart, position='above')
+        # Create Stacked widget
+        self.dock_stackedCharts = Dock("dock_stackedCharts", size = (1000, 500), closable = False, hideTitle=True )
+        self.dockArea.addDock(self.dock_stackedCharts, position='above')
 
-        # Create Trade widget 
-        #self.dock_trades = Dock("Trades", size = (1000, 200), closable = False, hideTitle=True)
-        #self.dockArea.addDock(self.dock_trades, position='bottom')
-
-        # Create Summary widget 
-        #self.dock_summary = Dock("Strategy Summary", size = (200, 100), closable = False, hideTitle=True)
-        #self.dockArea.addDock(self.dock_summary, position='left', relativeTo=self.dock_trades)
+        self.stackedCharts = QtWidgets.QStackedWidget(self.dock_stackedCharts)
+        self.dock_stackedCharts.addWidget( self.stackedCharts, 1 , 0 )
 
         # Create Strategy Tester Tab
         self.dock_strategyTester = Dock("Strategy Tester", size = (200, 500), closable = False, hideTitle=True)
@@ -101,21 +174,7 @@ class UserInterface:
         self.dock_strategyResultsUI = Dock("Strategy Tester", size = (1000, 250), closable = False, hideTitle=True)
         self.dockArea.addDock(self.dock_strategyResultsUI, position='bottom')
 
-        # Create Order widget
-        self.dock_rsi = Dock("RSI", size = (1000, 120), closable = False, hideTitle=True)
-        self.dockArea.addDock(self.dock_rsi, position='bottom', relativeTo=self.dock_chart)
-        self.dock_rsi.hide()
-
-        self.dock_stochastic = Dock("Stochastic", size = (1000, 120), closable = False, hideTitle=True)
-        self.dockArea.addDock(self.dock_stochastic, position='bottom', relativeTo=self.dock_chart)
-        self.dock_stochastic.hide()
-
-        self.dock_stochasticRsi = Dock("Stochastic Rsi", size = (1000, 120), closable = False, hideTitle=True)
-        self.dockArea.addDock(self.dock_stochasticRsi, position='bottom', relativeTo=self.dock_chart)
-        self.dock_stochasticRsi.hide()
-
-
-        #self.dock_trades.raiseDock()
+        pass
 
     #########
     #   Create all dock contents
@@ -127,10 +186,6 @@ class UserInterface:
         self.createLoadDataFilesUI()
         #self.createOrdersUI()
         self.createSummaryUI()
-
-        # Create finplot Window
-        self.createFinplotWindow()
-        self.createControlPanel()
 
         self.createActions()
         self.createMenuBar()
@@ -145,7 +200,7 @@ class UserInterface:
         # Indicators
         #self.indicatorsActionGroup = QtWidgets.QActionGroup(self.win)
 
-            # Ichimoku
+        # Ichimoku
         #self.addIchimokuAction = QtWidgets.QAction(QtGui.QIcon(""),"Add Ichimoku", self.indicatorsActionGroup)
         #self.addIchimokuAction.triggered.connect( self.addIndicator )
         #self.indicatorsActionGroup.addAction(self.addIchimokuAction)
@@ -166,9 +221,7 @@ class UserInterface:
         #self.darkModeAction = QtWidgets.QAction(QtGui.QIcon(""),"Switch Color Mode", self.optionsActionGroup)
         #self.darkModeAction.triggered.connect( self.dark_mode_toggle )
         
-
         #self.optionsActionGroup.addAction(self.darkModeAction)
-
         pass
 
     #########
@@ -181,7 +234,6 @@ class UserInterface:
         #self.indicatorsMenu = self.menubar.addMenu("Indicators")
         #self.indicatorsMenu.addActions(self.indicatorsActionGroup.actions())
 
-        
         self.backtestDataMenu = self.menubar.addMenu("Backtest Data")
         self.backtestDataMenu.addActions(self.backtestDataActionGroup.actions())
 
@@ -396,35 +448,13 @@ class UserInterface:
 
         pass
 
-    #########
-    #  Fin plot Window
-    #########
-    def createFinplotWindow(self):
-        self.fpltWindow = finplotWindow.FinplotWindow(self.dockArea, self.dock_chart, self)
-        self.fpltWindow.createPlotWidgets()
-        pass
-
-    #
-    def initialize(self):
-
-        # Docks
-        self.createDocks()
-        self.createUIs()
-
-        # Enable run button
-        self.strategyTesterUI.runBacktestPB.setEnabled(False)
-
-        self.strategyTesterUI.initialize()
-
-        pass
-
 
     #########
     #  Show all
     #########
     def show(self):
-        self.fpltWindow.show() # prepares plots when they're all setup
-        #fpltWindow.autoviewrestore()
+
+        #self.fpltWindow[timeframe].show() # prepares plots when they're all setup
 
         self.win.show()
         self.app.exec_()
@@ -439,17 +469,17 @@ class UserInterface:
     #########
     # Draw chart
     #########
-    def drawChart(self, data):
-        self.fpltWindow.setChartData(data)
-        self.fpltWindow.updateChart()
+    def drawChart(self, data, timeframe):
+        self.fpltWindow[timeframe].setChartData(data)
+        self.fpltWindow[timeframe].updateChart()
         pass
 
     #########
     # Draw orders on chart
     #########
-    def setOrders(self, orders):
+    def setOrders(self, orders, timeframe):
         #self.fillOrdersUI(self.myOrders)
-        self.fpltWindow.drawOrders(orders)
+        self.fpltWindow[timeframe].drawOrders(orders)
         pass
 
     #########
@@ -457,22 +487,22 @@ class UserInterface:
     # A python expert could do waaaaay better optimized on this function
     # But anyway... it works...
     #########
-    def displayPnL(self, pnl_dataframe):
+    def displayPnL(self, pnl_dataframe, timeframe):
 
         # draw charts
-        self.fpltWindow.drawPnL(pnl_dataframe)
+        self.fpltWindow[timeframe].drawPnL(pnl_dataframe)
         pass
 
     #########
     # Control panel overlay on top/above of the finplot window
     #########
     def createControlPanel(self):
+                
+        self.controlPanel = QtWidgets.QWidget(self.dock_stackedCharts)
+        self.dock_stackedCharts.addWidget(self.controlPanel,0,0)
 
-        self.panel = QtWidgets.QWidget(self.dock_chart)
-        self.dock_chart.addWidget(self.panel,0,0,1,1)
-
-        layout = QtWidgets.QHBoxLayout(self.panel)
-
+        self.controlPanelLayout = QtWidgets.QHBoxLayout(self.controlPanel)
+        
         '''
         panel.symbol = QtWidgets.QComboBox(panel)
         [panel.symbol.addItem(i+'USDT') for i in 'BTC ETH XRP DOGE BNB SOL ADA LTC LINK DOT TRX BCH'.split()]
@@ -492,113 +522,123 @@ class UserInterface:
         '''
 
         # Rest
-        self.ResetPB = QtWidgets.QPushButton(self.panel)
+        self.ResetPB = QtWidgets.QPushButton(self.controlPanel)
         self.ResetPB.setText("Reset")
         self.ResetPB.setCheckable(True)
         self.ResetPB.setMaximumWidth(100)
         self.ResetPB.toggled.connect(self.resetChart)
-        layout.addWidget(self.ResetPB)
+        self.controlPanelLayout.addWidget(self.ResetPB)
 
         # Spacer
         spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Minimum)
-        layout.addSpacerItem(spacer)
+        self.controlPanelLayout.addSpacerItem(spacer)
 
         # SMA
-        self.SmaPB = QtWidgets.QPushButton(self.panel)
+        self.SmaPB = QtWidgets.QPushButton(self.controlPanel)
         self.SmaPB.setText("SMA")
         self.SmaPB.setCheckable(True)
         self.SmaPB.setMaximumWidth(100)
         self.SmaPB.toggled.connect(self.addSma)
-        layout.addWidget(self.SmaPB)
+        self.controlPanelLayout.addWidget(self.SmaPB)
 
         # EMA
-        self.EmaPB = QtWidgets.QPushButton(self.panel)
+        self.EmaPB = QtWidgets.QPushButton(self.controlPanel)
         self.EmaPB.setText("EMA")
         self.EmaPB.setCheckable(True)
         self.EmaPB.setMaximumWidth(100)
         self.EmaPB.toggled.connect(self.addEma)
-        layout.addWidget(self.EmaPB)
+        self.controlPanelLayout.addWidget(self.EmaPB)
 
         # Spacer
         spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Minimum)
-        layout.addSpacerItem(spacer)
+        self.controlPanelLayout.addSpacerItem(spacer)
 
         # RSI
-        self.RsiPB = QtWidgets.QPushButton(self.panel)
+        self.RsiPB = QtWidgets.QPushButton(self.controlPanel)
         self.RsiPB.setText("RSI")
         self.RsiPB.setCheckable(True)
         self.RsiPB.setMaximumWidth(100)
         self.RsiPB.toggled.connect(self.toogleRsi)
-        layout.addWidget(self.RsiPB)
+        self.controlPanelLayout.addWidget(self.RsiPB)
 
         # Stochastic
-        self.StochasticPB = QtWidgets.QPushButton(self.panel)
+        self.StochasticPB = QtWidgets.QPushButton(self.controlPanel)
         self.StochasticPB.setText("Stochastic")
         self.StochasticPB.setCheckable(True)
         self.StochasticPB.setMaximumWidth(100)
         self.StochasticPB.toggled.connect(self.toogleStochastic)
-        layout.addWidget(self.StochasticPB)
+        self.controlPanelLayout.addWidget(self.StochasticPB)
 
         # Stochastic RSI
-        self.StochasticRsiPB = QtWidgets.QPushButton(self.panel)
+        self.StochasticRsiPB = QtWidgets.QPushButton(self.controlPanel)
         self.StochasticRsiPB.setText("Stochastic RSI")
         self.StochasticRsiPB.setCheckable(True)
         self.StochasticRsiPB.setMaximumWidth(100)
         self.StochasticRsiPB.toggled.connect(self.toogleStochasticRsi)
-        layout.addWidget(self.StochasticRsiPB)
+        self.controlPanelLayout.addWidget(self.StochasticRsiPB)
 
         # Ichimoku
-        self.IchimokuPB = QtWidgets.QPushButton(self.panel)
+        self.IchimokuPB = QtWidgets.QPushButton(self.controlPanel)
         self.IchimokuPB.setText("Ichimoku")
         self.IchimokuPB.setCheckable(True)
         self.IchimokuPB.setMaximumWidth(100)
         self.IchimokuPB.toggled.connect(self.toogleIchimoku)
-        layout.addWidget(self.IchimokuPB)
+        self.controlPanelLayout.addWidget(self.IchimokuPB)
 
         # Spacer 
         spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Minimum)
-        layout.addSpacerItem(spacer)
+        self.controlPanelLayout.addSpacerItem(spacer)
 
         # Dark mode
-        self.darkmodeCB = QtWidgets.QCheckBox(self.panel)
+        self.darkmodeCB = QtWidgets.QCheckBox(self.controlPanel)
         self.darkmodeCB.setText('Dark mode')
         self.darkmodeCB.toggled.connect(self.dark_mode_toggle)
-        # init checked after connecting the slot
         self.darkmodeCB.setChecked(True)
-        layout.addWidget(self.darkmodeCB)
+        self.controlPanelLayout.addWidget(self.darkmodeCB)
 
         # Volumes
-        self.volumesCB = QtWidgets.QCheckBox(self.panel)
+        self.volumesCB = QtWidgets.QCheckBox(self.controlPanel)
         self.volumesCB.setText('Volumes')
         self.volumesCB.toggled.connect(self.volumes_toggle)
         # init checked after connecting the slot
-        self.volumesCB.setChecked(True)
-        layout.addWidget(self.volumesCB)
+        self.volumesCB.setChecked(False)
+        self.controlPanelLayout.addWidget(self.volumesCB)
 
-        layout.insertSpacerItem( 0, QtWidgets.QSpacerItem( 0,0, hPolicy=QtWidgets.QSizePolicy.Expanding, vPolicy=QtWidgets.QSizePolicy.Preferred) )
+        # Spacer
+        self.controlPanelLayout.insertSpacerItem(0, QtWidgets.QSpacerItem( 0,0, hPolicy=QtWidgets.QSizePolicy.Expanding, vPolicy=QtWidgets.QSizePolicy.Preferred) )
 
-        return self.panel
+        return self.controlPanel
 
     #########
     # Toggle anther UI Theme
     #########
     def dark_mode_toggle(self):
-        self.fpltWindow.activateDarkMode(self.darkmodeCB.isChecked())
+        for key,window in self.fpltWindow.items():
+            window.activateDarkMode(self.darkmodeCB.isChecked())
         pass
 
     ##########
     # INDICATORS
     ##########
+    def toogleTimeframe(self, timeframe):
+
+        print("Display " + timeframe)
+        self.current_timeframe = timeframe
+
+        self.stackedCharts.setCurrentIndex( self.stackedCharts.indexOf( self.dockAreaTimeframes[timeframe]) )
+
+        pass
+
     def resetChart(self):
-        self.fpltWindow.resetChart()
-        self.fpltWindow.updateChart()
+        self.fpltWindow[self.current_timeframe].resetChart()
+        self.fpltWindow[self.current_timeframe].updateChart()
         pass
 
     # On chart indicators
     def addSma(self):
 
         # Show indicator parameter dialog
-        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_chart)
+        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_charts[self.current_timeframe])
         paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         paramDialog.setTitle("SMA Indicator parameters")
         paramDialog.addParameter("SMA Period", 14)
@@ -606,7 +646,7 @@ class UserInterface:
 
         if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
             period = paramDialog.getValue("SMA Period")
-            self.fpltWindow.drawSma( period )
+            self.fpltWindow[self.current_timeframe].drawSma( period )
 
         pass
 
@@ -614,7 +654,7 @@ class UserInterface:
     def addEma(self):
 
         # Show indicator parameter dialog
-        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_chart)
+        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_charts[self.current_timeframe])
         paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         paramDialog.setTitle("EMA Indicator parameters")
         paramDialog.addParameter("EMA Period", 9)
@@ -622,7 +662,7 @@ class UserInterface:
 
         if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
             period = paramDialog.getValue("EMA Period")
-            self.fpltWindow.drawEma( period )
+            self.fpltWindow[self.current_timeframe].drawEma( period )
 
         pass
 
@@ -631,7 +671,7 @@ class UserInterface:
 
         if self.RsiPB.isChecked():
             # Show indicator parameter dialog
-            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_chart)
+            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_charts[self.current_timeframe])
             paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
             paramDialog.setTitle("RSI Indicator parameters")
             paramDialog.addParameter("RSI Period", 14)
@@ -640,15 +680,15 @@ class UserInterface:
             if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
                 period = paramDialog.getValue("RSI Period")
 
-                self.fpltWindow.drawRsi( period )
-                self.dock_rsi.show()
+                self.fpltWindow[self.current_timeframe].drawRsi( period )
+                self.dock_rsi[self.current_timeframe].show()
             else:
                 # Cancel
                 self.RsiPB.setChecked(False)
-                self.dock_rsi.hide()
+                self.dock_rsi[self.current_timeframe].hide()
                 
         else:
-            self.dock_rsi.hide()
+            self.dock_rsi[self.current_timeframe].hide()
 
         pass
 
@@ -656,7 +696,7 @@ class UserInterface:
 
         if self.StochasticPB.isChecked():
             # Show indicator parameter dialog
-            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_chart)
+            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_charts[self.current_timeframe])
             paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
             paramDialog.setTitle("Stochastic Indicator parameters")
             paramDialog.addParameter("Stochastic Period K", 14)
@@ -669,15 +709,15 @@ class UserInterface:
                 smooth_k = paramDialog.getValue("Stochastic Smooth K")
                 smooth_d = paramDialog.getValue("Stochastic Smooth D")
 
-                self.fpltWindow.drawStochastic( period, smooth_k, smooth_d )
-                self.dock_stochastic.show()
+                self.fpltWindow[self.current_timeframe].drawStochastic( period, smooth_k, smooth_d )
+                self.dock_stochastic[self.current_timeframe].show()
             else:
                 # Cancel
                 self.RsiPB.setChecked(False)
-                self.dock_stochastic.hide()
+                self.dock_stochastic[self.current_timeframe].hide()
                 
         else:
-            self.dock_stochastic.hide()
+            self.dock_stochastic[self.current_timeframe].hide()
 
         pass
 
@@ -685,7 +725,7 @@ class UserInterface:
 
         if self.StochasticRsiPB.isChecked():
             # Show indicator parameter dialog
-            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_chart)
+            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_charts[self.current_timeframe])
             paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
             paramDialog.setTitle("Stochastic Indicator parameters")
             paramDialog.addParameter("Stochastic Rsi Period K", 14)
@@ -698,35 +738,28 @@ class UserInterface:
                 smooth_k = paramDialog.getValue("Stochastic Rsi Smooth K")
                 smooth_d = paramDialog.getValue("Stochastic Rsi Smooth D")
 
-                self.fpltWindow.drawStochasticRsi( period, smooth_k, smooth_d)
-                self.dock_stochasticRsi.show()
+                self.fpltWindow[self.current_timeframe].drawStochasticRsi( period, smooth_k, smooth_d)
+                self.dock_stochasticRsi[self.current_timeframe].show()
             else:
                 # Cancel
                 self.RsiPB.setChecked(False)
-                self.dock_stochasticRsi.hide()
+                self.dock_stochasticRsi[self.current_timeframe].hide()
                 
         else:
-            self.dock_stochasticRsi.hide()
+            self.dock_stochasticRsi[self.current_timeframe].hide()
 
         pass
 
     # On chart indicators
     def toogleIchimoku(self):
-        self.fpltWindow.setIndicator("Ichimoku", self.IchimokuPB.isChecked() )
+        self.fpltWindow[self.current_timeframe].setIndicator("Ichimoku", self.IchimokuPB.isChecked() )
         pass
 
     def volumes_toggle(self):
-        self.fpltWindow.setIndicator("Volumes", self.volumesCB.isChecked())
+        self.fpltWindow[self.current_timeframe].setIndicator("Volumes", self.volumesCB.isChecked())
         pass
-
-
-    #########
-    #  Load data files UI slots
-    #########
     
     
-
-
     #########
     #  Obsolete (Strategy results : transcations tab)
     #########
