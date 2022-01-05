@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, QtWidgets, uic
+from PyQt5 import QtCore, QtWidgets, QtGui, uic
 
 import os 
 
@@ -34,7 +34,7 @@ class IndicatorParametersUI(QtWidgets.QDialog):
 
         self.layout().setSizeConstraint( QtWidgets.QLayout.SetFixedSize )
 
-        self.setStyleSheet("border: solid 1px #FFF")
+        self.setStyleSheet( "background-color: #455364" )
 
         pass
 
@@ -46,9 +46,13 @@ class IndicatorParametersUI(QtWidgets.QDialog):
         lineEdit = QtWidgets.QLineEdit(parameterName, self)
         lineEdit.setObjectName(parameterName)
         lineEdit.setText(str(defaultValue))
-        
         self.parameterLayout.addRow(parameterName, lineEdit)
+        pass
 
+    def addParameterColor(self, parameterName, defaultValue):
+        # Custom color picker
+        colorButton = SelectColorButton(parameterName, self)
+        self.parameterLayout.addRow(parameterName, colorButton)
         pass
 
     def getValue(self, parameterName):
@@ -66,3 +70,41 @@ class IndicatorParametersUI(QtWidgets.QDialog):
                         return None
         else:
             return None
+
+    def getColorValue(self, parameterName):
+        colorButton = self.findChild(SelectColorButton, parameterName)
+        if colorButton is not None:
+            try:
+                return colorButton.getColor().name()
+            except:
+                return None
+        else:
+            return None
+
+
+class SelectColorButton(QtWidgets.QPushButton): 
+
+    def __init__(self, objectName, parent = None):
+
+        super(SelectColorButton, self).__init__()
+
+        self.setColor( QtGui.QColor("yellow") )
+
+        self.setObjectName(objectName)
+        self.setParent(parent)
+        self.clicked.connect(self.changeColor)
+
+    def setColor(self,color):
+        self.color = color
+        self.updateColor()
+
+    def getColor(self):
+        return self.color
+
+    def updateColor(self):
+        self.setStyleSheet( "background-color: " + self.color.name() )
+
+    def changeColor(self):
+        newColor = QtWidgets.QColorDialog.getColor(self.color, self.parentWidget())
+        if newColor != self.color:
+            self.setColor( newColor )

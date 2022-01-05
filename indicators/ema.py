@@ -12,8 +12,8 @@ class Ema():
         self.ema_df =  dataFrames["Close"].ewm(span=ema_periods, adjust=False).mean()
         pass
 
-    def draw(self, ax, ema_color = "yellow"):
-        self.ema_plot = fplt.plot(self.ema_df, ax = ax, color=ema_color, width=1 )
+    def draw(self, ax, ema_color = "yellow", width=1):
+        self.ema_plot = fplt.plot(self.ema_df, ax = ax, color=ema_color, width=width )
         pass
 
     def clear(self):

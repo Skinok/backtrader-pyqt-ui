@@ -642,11 +642,15 @@ class UserInterface:
         paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         paramDialog.setTitle("SMA Indicator parameters")
         paramDialog.addParameter("SMA Period", 14)
+        paramDialog.addParameter("Plot width", 1)
+        paramDialog.addParameterColor("Plot color", "#FFFF00")
         paramDialog.adjustSize()
 
         if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
             period = paramDialog.getValue("SMA Period")
-            self.fpltWindow[self.current_timeframe].drawSma( period )
+            width = paramDialog.getValue("Plot width")
+            qColor = paramDialog.getColorValue("Plot color")
+            self.fpltWindow[self.current_timeframe].drawSma( period, qColor, width)
 
         pass
 
@@ -658,11 +662,15 @@ class UserInterface:
         paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         paramDialog.setTitle("EMA Indicator parameters")
         paramDialog.addParameter("EMA Period", 9)
+        paramDialog.addParameter("Plot width", 1)
+        paramDialog.addParameterColor("Plot color", "#FFFF00")
         paramDialog.adjustSize()
 
         if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
             period = paramDialog.getValue("EMA Period")
-            self.fpltWindow[self.current_timeframe].drawEma( period )
+            width = paramDialog.getValue("Plot width")
+            qColor = paramDialog.getColorValue("Plot color")
+            self.fpltWindow[self.current_timeframe].drawEma( period, qColor, width )
 
         pass
 

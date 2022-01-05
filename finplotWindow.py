@@ -67,21 +67,20 @@ class FinplotWindow():
         # Inside plot widget controls
         #self.createControlPanel(self.ax0.ax_widget)
         pass
-    
 
-    def drawSma(self, period):
+    def drawSma(self, period, color, width):
         self.sma_indicator = sma.Sma(self.data, period)
-        self.sma_indicator.draw(self.ax0)
+        self.sma_indicator.draw(self.ax0, color, width)
         pass
 
-    def drawEma(self, period):
+    def drawEma(self, period, color, width):
         self.ema_indicator = ema.Ema(self.data, period)
-        self.ema_indicator.draw(self.ax0)
+        self.ema_indicator.draw(self.ax0, color, width)
         pass
 
-    def drawRsi(self, period):
+    def drawRsi(self, period, color):
         self.rsi_indicator = rsi.Rsi(self.data, period)
-        self.rsi_indicator.draw(self.ax_rsi)
+        self.rsi_indicator.draw(self.ax_rsi, color)
         pass
 
     def drawStochastic(self, period, smooth_k, smooth_d):

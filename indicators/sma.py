@@ -12,8 +12,8 @@ class Sma():
         self.sma_df =  dataFrames["Close"].rolling(window=sma_periods).mean()
         pass
 
-    def draw(self, ax, sma_color = "green"):
-        self.sma_plot = fplt.plot(self.sma_df, ax = ax, color=sma_color, width=1 )
+    def draw(self, ax, sma_color = "green", width=1):
+        self.sma_plot = fplt.plot(self.sma_df, ax = ax, color=sma_color, width=width )
         pass
 
     def clear(self):
