@@ -106,14 +106,17 @@ class Controller:
         # We should code a widget that ask for options as : separators, date format, and so on...
         try:
             fileName = os.path.basename(dataPath)
-            self.dataframes[fileName] = pd.read_csv(dataPath, 
-            sep=separator, 
-            parse_dates=[0], 
-            date_parser=lambda x: pd.to_datetime(x, format=datetimeFormat), 
-            skiprows=0, 
-            header=0, 
-            names=["Time", "Open", "High", "Low", "Close", "Volume"],
-            index_col=0)
+
+            # Python contains
+            if not dataPath in self.dataframes: 
+                self.dataframes[fileName] = pd.read_csv(dataPath, 
+                                                    sep=separator, 
+                                                    parse_dates=[0], 
+                                                    date_parser=lambda x: pd.to_datetime(x, format=datetimeFormat), 
+                                                    skiprows=0, 
+                                                    header=0, 
+                                                    names=["Time", "Open", "High", "Low", "Close", "Volume"],
+                                                    index_col=0)
 
         except ValueError as err:
             return False, "ValueError error:" + str(err)
@@ -126,31 +129,40 @@ class Controller:
 
     def importData(self, fileNamesOrdered):
 
-        # Files should be loaded in the good order
-        for fileName in fileNamesOrdered:
+        try:
+
+            # Files should be loaded in the good order
+            for fileName in fileNamesOrdered:
+                
+                df = self.dataframes[fileName]
+
+                # Datetime first column : 2012-12-28 17:45:00
+                #self.dataframe['TimeInt'] = pd.to_datetime(self.dataframe.index).astype('int64') # use finplot's internal representation, which is ns
+                
+                # Pass it to the backtrader datafeed and add it to the cerebro
+                self.data = bt.feeds.PandasData(dataname=df, timeframe=bt.TimeFrame.Minutes)
+
+                # Add data to cerebro : only add data when all files have been selected for multi-timeframes
+                self.cerebro.adddata(self.data)  # Add the data feed
+
+                # find the time frame
+                timeframe = self.findTimeFrame(df)
+
+                # Create the chart window for the good timeframe (if it does not already exists?)
+                self.interface.createChartDock(timeframe)
+
+                # Draw charts based on input data
+                self.interface.drawChart(df, timeframe)
+
+            # Enable run button
+            self.interface.strategyTesterUI.runBacktestPB.setEnabled(True)
+
+            return True
+
+        except:
             
-            df = self.dataframes[fileName]
-
-            # Datetime first column : 2012-12-28 17:45:00
-            #self.dataframe['TimeInt'] = pd.to_datetime(self.dataframe.index).astype('int64') # use finplot's internal representation, which is ns
-            
-            # Pass it to the backtrader datafeed and add it to the cerebro
-            self.data = bt.feeds.PandasData(dataname=df, timeframe=bt.TimeFrame.Minutes)
-
-            # Add data to cerebro : only add data when all files have been selected for multi-timeframes
-            self.cerebro.adddata(self.data)  # Add the data feed
-
-            # find the time frame
-            timeframe = self.findTimeFrame(df)
-
-            # Create the chart window for the good timeframe (if it does not already exists?)
-            self.interface.createChartDock(timeframe)
-
-            # Draw charts based on input data
-            self.interface.drawChart(df, timeframe)
-
-        # Enable run button
-        self.interface.strategyTesterUI.runBacktestPB.setEnabled(True)
+            print("Unexpected error:" + str(sys.exc_info()[0]))
+            return False
 
         pass
 
@@ -177,7 +189,6 @@ class Controller:
                 return "W"
 
         pass
-
 
     def addStrategy(self, strategyName):
         

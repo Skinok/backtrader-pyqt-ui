@@ -26,8 +26,6 @@ class LoadDataFilesUI(QtWidgets.QWidget):
 
         self.openFilePB = self.findChild(QtWidgets.QToolButton, "openFilePB")
         self.loadFilePB = self.findChild(QtWidgets.QPushButton, "loadFilePB")
-        self.downPB = self.findChild(QtWidgets.QLineEdit, "downPB")
-        self.upPB = self.findChild(QtWidgets.QLineEdit, "upPB")
         self.deletePB = self.findChild(QtWidgets.QLineEdit, "deletePB")
         self.importPB = self.findChild(QtWidgets.QPushButton, "importPB")
 
@@ -46,10 +44,8 @@ class LoadDataFilesUI(QtWidgets.QWidget):
         pass
 
     def openFile(self):
-
         self.dataFileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Open data file', self.current_dir_path + "/data","CSV files (*.csv)")[0]
         self.filePathLE.setText(self.dataFileName)
-
         pass
 
     def loadFile(self):
@@ -64,7 +60,11 @@ class LoadDataFilesUI(QtWidgets.QWidget):
             self.errorLabel.setText("The file has been loaded correctly.")
 
             # Add file name
-            self.dataFilesListWidget.addItem(os.path.basename(self.dataFileName))
+            fileName = os.path.basename(self.dataFileName)
+            items = self.dataFilesListWidget.findItems(fileName, QtCore.Qt.MatchFixedString)
+
+            if len(items) == 0:
+                self.dataFilesListWidget.addItem(os.path.basename(self.dataFileName))
 
         else:
 
@@ -82,9 +82,10 @@ class LoadDataFilesUI(QtWidgets.QWidget):
             items.append(self.dataFilesListWidget.item(x).text())
 
         # Give all ordered data path to the controller
-        self.controller.importData(items)
-        self.hide()
-
+        if self.controller.importData(items):
+            self.dataFilesListWidget.clear()
+            self.hide()
+            
         pass
 
     '''
