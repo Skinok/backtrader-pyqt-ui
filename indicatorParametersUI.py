@@ -18,12 +18,23 @@ class IndicatorParametersUI(QtWidgets.QDialog):
         self.parameterLayout = self.findChild(QtWidgets.QFormLayout, "parameterLayout")
 
         # Move at the center of the window
-        x = int(parent.sizeHint().width() / 2 - self.sizeHint().width())
-        y = int(parent.sizeHint().height() / 2 - self.sizeHint().height()) 
+        #x = int(parent.sizeHint().width() / 2 - self.sizeHint().width())
+        #y = int(parent.sizeHint().height() / 2 - self.sizeHint().height()) 
         
-        self.move( x, y )
+        #self.move( x, y )
+        pw = parent.sizeHint().width()
+        ph = parent.sizeHint().height()
+
+        px = parent.x()
+        py = parent.y()
+
+        myH = self.height()
+
+        self.move( parent.sizeHint().width() - (self.width() / 2), (parent.sizeHint().height() / 2) - (self.height() / 2))
 
         self.layout().setSizeConstraint( QtWidgets.QLayout.SetFixedSize )
+
+        self.setStyleSheet("border: solid 1px #FFF")
 
         pass
 

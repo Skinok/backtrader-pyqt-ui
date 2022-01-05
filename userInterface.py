@@ -638,7 +638,7 @@ class UserInterface:
     def addSma(self):
 
         # Show indicator parameter dialog
-        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_charts[self.current_timeframe])
+        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.win)
         paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         paramDialog.setTitle("SMA Indicator parameters")
         paramDialog.addParameter("SMA Period", 14)
@@ -654,7 +654,7 @@ class UserInterface:
     def addEma(self):
 
         # Show indicator parameter dialog
-        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_charts[self.current_timeframe])
+        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.win)
         paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         paramDialog.setTitle("EMA Indicator parameters")
         paramDialog.addParameter("EMA Period", 9)
