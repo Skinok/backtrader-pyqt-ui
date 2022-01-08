@@ -289,7 +289,7 @@ class Controller:
         pnl_data['time'] = list(self.dataframes.values())[0].index
 
         # draw charts
-        df = pd.DataFrame(pnl_data)
+        df = pd.DataFrame(pnl_data) 
         self.interface.displayPnL( df )
 
         pass

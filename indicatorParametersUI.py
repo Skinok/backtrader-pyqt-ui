@@ -29,8 +29,9 @@ class IndicatorParametersUI(QtWidgets.QDialog):
         py = parent.y()
 
         myH = self.height()
+        mySzH=self.sizeHint().height()
 
-        self.move( parent.sizeHint().width() - (self.width() / 2), (parent.sizeHint().height() / 2) - (self.height() / 2))
+        self.move( parent.sizeHint().width() - (self.sizeHint().width() / 2), (parent.sizeHint().height() / 2) - (self.sizeHint().height() / 2))
 
         self.layout().setSizeConstraint( QtWidgets.QLayout.SetFixedSize )
 

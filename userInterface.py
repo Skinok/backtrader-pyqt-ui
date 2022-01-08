@@ -75,7 +75,7 @@ class UserInterface:
 
         # Resize windows properties
         self.win.resize(1600,1100)
-        self.win.setWindowTitle("Skinok Backtrader UI")
+        self.win.setWindowTitle("Skinok Backtrader UI v0.3")
         
         # Set width/height of QSplitter
         self.app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
@@ -477,9 +477,9 @@ class UserInterface:
     #########
     # Draw orders on chart
     #########
-    def setOrders(self, orders, timeframe):
-        #self.fillOrdersUI(self.myOrders)
-        self.fpltWindow[timeframe].drawOrders(orders)
+    def setOrders(self, orders):
+        for timeframe,fpltWindow in self.fpltWindow.items():
+            fpltWindow.drawOrders(orders)
         pass
 
     #########
@@ -487,10 +487,11 @@ class UserInterface:
     # A python expert could do waaaaay better optimized on this function
     # But anyway... it works...
     #########
-    def displayPnL(self, pnl_dataframe, timeframe):
+    def displayPnL(self, pnl_dataframe):
 
         # draw charts
-        self.fpltWindow[timeframe].drawPnL(pnl_dataframe)
+        for timeframe, fpltwindow in self.fpltWindow.items():
+            fpltwindow.drawPnL(pnl_dataframe)
         pass
 
     #########
