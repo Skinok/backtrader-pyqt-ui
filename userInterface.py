@@ -488,10 +488,12 @@ class UserInterface:
     # But anyway... it works...
     #########
     def displayPnL(self, pnl_dataframe):
-
         # draw charts
         for timeframe, fpltwindow in self.fpltWindow.items():
             fpltwindow.drawPnL(pnl_dataframe)
+
+        self.togglePnLWidget()
+
         pass
 
     #########
@@ -628,7 +630,18 @@ class UserInterface:
 
         self.stackedCharts.setCurrentIndex( self.stackedCharts.indexOf( self.dockAreaTimeframes[timeframe]) )
 
+        self.togglePnLWidget()
+        
         pass
+
+    def togglePnLWidget(self):
+
+        # hide all PnL windows & Show the good one
+        for tf, fpltWindow in self.fpltWindow.items():
+            if tf != self.current_timeframe:
+                fpltWindow.hidePnL()
+            else:
+                fpltWindow.showPnL()
 
     def resetChart(self):
         self.fpltWindow[self.current_timeframe].resetChart()

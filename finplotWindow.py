@@ -400,4 +400,14 @@ class FinplotWindow():
         self.axPnL.show()
 
         pass
+
+    def showPnL(self):
+        self.axPnL.show()
+        self.axPnL.ax_widget.show()
+        pass
+
+    def hidePnL(self):
+        self.axPnL.hide()
+        self.axPnL.ax_widget.hide()
+        pass
     
