@@ -4,6 +4,7 @@
 
 ![Backtrader PyQt Ui 2](./images/overview2.png "Backtrader PyQt Ui")
 
+![Backtrader PyQt Ui 3](./images/overview3.png "Backtrader PyQt Ui")
 
 # How to install ?
 
