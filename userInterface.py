@@ -697,12 +697,13 @@ class UserInterface:
             paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
             paramDialog.setTitle("RSI Indicator parameters")
             paramDialog.addParameter("RSI Period", 14)
+            paramDialog.addParameterColor("Plot color", "#FFFF00")
             paramDialog.adjustSize()
 
             if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
                 period = paramDialog.getValue("RSI Period")
-
-                self.fpltWindow[self.current_timeframe].drawRsi( period )
+                qColor = paramDialog.getColorValue("Plot color")
+                self.fpltWindow[self.current_timeframe].drawRsi( period, qColor )
                 self.dock_rsi[self.current_timeframe].show()
             else:
                 # Cancel
