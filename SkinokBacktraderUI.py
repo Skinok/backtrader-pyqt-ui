@@ -38,9 +38,7 @@ import userInterface as Ui
 from observers.SkinokObserver import SkinokObserver
 from wallet import Wallet
 
-
-
-class Controller:
+class SkinokBacktraderUI:
 
     def __init__(self):
 

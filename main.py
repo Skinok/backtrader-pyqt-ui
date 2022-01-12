@@ -17,7 +17,7 @@
 #
 ###############################################################################
 
-from Controller import Controller
+from SkinokBacktraderUI import SkinokBacktraderUI
 
-skinokTrader = Controller()
+skinokTrader = SkinokBacktraderUI()
 skinokTrader.displayUI()
