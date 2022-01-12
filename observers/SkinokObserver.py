@@ -23,7 +23,7 @@ from __future__ import (absolute_import, division, print_function,
 
 from backtrader import Observer
 
-import Controller
+import SkinokBacktraderUI
 
 class SkinokObserver(Observer):
 
@@ -32,13 +32,13 @@ class SkinokObserver(Observer):
     def __init__(self):
         
         # Ui following
-        self.progressBar = Controller.interface.getProgressBar()
+        self.progressBar = SkinokBacktraderUI.interface.getProgressBar()
         self.progressBar.setMaximum(self.datas[0].close.buflen())
         self.progressBar.setValue(0)
 
-        Controller.wallet.value_list = []
-        Controller.wallet.equity_list = []
-        Controller.wallet.cash_list = []
+        SkinokBacktraderUI.wallet.value_list = []
+        SkinokBacktraderUI.wallet.equity_list = []
+        SkinokBacktraderUI.wallet.cash_list = []
 
     def next(self):
 
@@ -55,17 +55,17 @@ class SkinokObserver(Observer):
             pnl += trade.pnl # trade.pnlcomm if self.p.pnlcomm else trade.pnl
 
         # Portfolio update
-        Controller.wallet.current_value = self.wallet_value = Controller.wallet.current_value + pnl
-        Controller.wallet.value_list.append( Controller.wallet.current_value )
+        SkinokBacktraderUI.wallet.current_value = self.wallet_value = SkinokBacktraderUI.wallet.current_value + pnl
+        SkinokBacktraderUI.wallet.value_list.append( SkinokBacktraderUI.wallet.current_value )
 
-        Controller.wallet.current_equity = self.wallet_equity = self._owner.broker.getvalue()
-        Controller.wallet.equity_list.append(self._owner.broker.getvalue())
+        SkinokBacktraderUI.wallet.current_equity = self.wallet_equity = self._owner.broker.getvalue()
+        SkinokBacktraderUI.wallet.equity_list.append(self._owner.broker.getvalue())
 
-        Controller.wallet.current_cash = self.wallet_cash = self._owner.broker.getcash()
-        Controller.wallet.cash_list.append(self._owner.broker.getcash())
+        SkinokBacktraderUI.wallet.current_cash = self.wallet_cash = self._owner.broker.getcash()
+        SkinokBacktraderUI.wallet.cash_list.append(self._owner.broker.getcash())
 
         # Progress bar update
         self.progressBar.setValue( self.progressBar.value() + 1 )
-        Controller.interface.app.processEvents()
+        SkinokBacktraderUI.interface.app.processEvents()
 
     
