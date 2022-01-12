@@ -7,7 +7,7 @@ class IndicatorParametersUI(QtWidgets.QDialog):
     def __init__(self, parent = None):
         super(IndicatorParametersUI, self).__init__()
 
-        self.setParent(parent)
+        #self.setParent(parent)
 
         # It does not finish by a "/"
         self.current_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -16,26 +16,6 @@ class IndicatorParametersUI(QtWidgets.QDialog):
         
         self.title = self.findChild(QtWidgets.QLabel, "title")
         self.parameterLayout = self.findChild(QtWidgets.QFormLayout, "parameterLayout")
-
-        # Move at the center of the window
-        #x = int(parent.sizeHint().width() / 2 - self.sizeHint().width())
-        #y = int(parent.sizeHint().height() / 2 - self.sizeHint().height()) 
-        
-        #self.move( x, y )
-        pw = parent.sizeHint().width()
-        ph = parent.sizeHint().height()
-
-        px = parent.x()
-        py = parent.y()
-
-        myH = self.height()
-        mySzH=self.sizeHint().height()
-
-        self.move( parent.sizeHint().width() - (self.sizeHint().width() / 2), (parent.sizeHint().height() / 2) - (self.sizeHint().height() / 2))
-
-        self.layout().setSizeConstraint( QtWidgets.QLayout.SetFixedSize )
-
-        self.setStyleSheet( "background-color: #455364" )
 
         pass
 

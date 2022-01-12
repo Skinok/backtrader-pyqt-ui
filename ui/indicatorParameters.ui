@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Custom indicator configuration</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -29,7 +29,7 @@
       </size>
      </property>
      <property name="text">
-      <string>Indicator</string>
+      <string>Customize indicator</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

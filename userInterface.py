@@ -652,7 +652,7 @@ class UserInterface:
     def addSma(self):
 
         # Show indicator parameter dialog
-        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.win)
+        paramDialog = indicatorParametersUI.IndicatorParametersUI()
         paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         paramDialog.setTitle("SMA Indicator parameters")
         paramDialog.addParameter("SMA Period", 14)
@@ -672,7 +672,9 @@ class UserInterface:
     def addEma(self):
 
         # Show indicator parameter dialog
-        paramDialog = indicatorParametersUI.IndicatorParametersUI(self.win)
+        
+
+        paramDialog = indicatorParametersUI.IndicatorParametersUI()
         paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         paramDialog.setTitle("EMA Indicator parameters")
         paramDialog.addParameter("EMA Period", 9)
@@ -693,7 +695,7 @@ class UserInterface:
 
         if self.RsiPB.isChecked():
             # Show indicator parameter dialog
-            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_charts[self.current_timeframe])
+            paramDialog = indicatorParametersUI.IndicatorParametersUI()
             paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
             paramDialog.setTitle("RSI Indicator parameters")
             paramDialog.addParameter("RSI Period", 14)
@@ -719,7 +721,7 @@ class UserInterface:
 
         if self.StochasticPB.isChecked():
             # Show indicator parameter dialog
-            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_charts[self.current_timeframe])
+            paramDialog = indicatorParametersUI.IndicatorParametersUI()
             paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
             paramDialog.setTitle("Stochastic Indicator parameters")
             paramDialog.addParameter("Stochastic Period K", 14)
@@ -748,7 +750,7 @@ class UserInterface:
 
         if self.StochasticRsiPB.isChecked():
             # Show indicator parameter dialog
-            paramDialog = indicatorParametersUI.IndicatorParametersUI(self.dock_charts[self.current_timeframe])
+            paramDialog = indicatorParametersUI.IndicatorParametersUI()
             paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
             paramDialog.setTitle("Stochastic Indicator parameters")
             paramDialog.addParameter("Stochastic Rsi Period K", 14)
