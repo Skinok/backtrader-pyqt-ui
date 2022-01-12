@@ -139,9 +139,9 @@ class UserInterface:
         self.timeFramePB[timeframe].setCheckable(True)
         self.timeFramePB[timeframe].setMaximumWidth(100)
         self.timeFramePB[timeframe].toggled.connect(lambda: self.toogleTimeframe(timeframe) )
-        self.controlPanelLayout.insertWidget(0,self.timeFramePB[timeframe])
+        self.timeFramePB[timeframe].toggle()
 
-        self.stackedCharts.setCurrentIndex(0)
+        self.controlPanelLayout.insertWidget(0,self.timeFramePB[timeframe])
 
         # init checked after connecting the slot
         if self.darkmodeCB.isChecked():
@@ -625,13 +625,13 @@ class UserInterface:
     ##########
     def toogleTimeframe(self, timeframe):
 
-        print("Display " + timeframe)
-        self.current_timeframe = timeframe
+        if self.timeFramePB[timeframe].isChecked():
+            print("Display " + timeframe)
+            self.current_timeframe = timeframe
+            index = self.stackedCharts.indexOf( self.dockAreaTimeframes[timeframe])
+            self.stackedCharts.setCurrentIndex( index )
+            self.togglePnLWidget()
 
-        self.stackedCharts.setCurrentIndex( self.stackedCharts.indexOf( self.dockAreaTimeframes[timeframe]) )
-
-        self.togglePnLWidget()
-        
         pass
 
     def togglePnLWidget(self):

@@ -81,6 +81,9 @@ class LoadDataFilesUI(QtWidgets.QWidget):
         for x in range(self.dataFilesListWidget.count()):
             items.append(self.dataFilesListWidget.item(x).text())
 
+        # Sort item by timeframe
+        
+
         # Give all ordered data path to the controller
         if self.controller.importData(items):
             self.dataFilesListWidget.clear()

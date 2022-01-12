@@ -38,6 +38,8 @@ import userInterface as Ui
 from observers.SkinokObserver import SkinokObserver
 from wallet import Wallet
 
+
+
 class Controller:
 
     def __init__(self):
@@ -63,6 +65,9 @@ class Controller:
 
         # Once everything is created, initialize data
         self.interface.initialize()
+
+        # Timeframes
+        self.timeFrameIndex = {"M1" : 0, "M5" : 10, "M15": 20, "M30": 30, "H1":40, "H4":50, "D":60, "W":70}
 
         pass
 
@@ -127,12 +132,16 @@ class Controller:
 
         return True, ""
 
-    def importData(self, fileNamesOrdered):
+    def importData(self, fileNames):
 
         try:
+                
+            # Sort data by timeframe
+            # For cerebro, we need to add lower timeframes first
+            fileNames.sort( key=lambda x: self.timeFrameIndex[self.findTimeFrame(self.dataframes[x])])
 
             # Files should be loaded in the good order
-            for fileName in fileNamesOrdered:
+            for fileName in fileNames:
                 
                 df = self.dataframes[fileName]
 
@@ -145,7 +154,7 @@ class Controller:
                 # Add data to cerebro : only add data when all files have been selected for multi-timeframes
                 self.cerebro.adddata(self.data)  # Add the data feed
 
-                # find the time frame
+                # Find timeframe
                 timeframe = self.findTimeFrame(df)
 
                 # Create the chart window for the good timeframe (if it does not already exists?)
@@ -159,14 +168,16 @@ class Controller:
 
             return True
 
+        except AttributeError as e:
+            print("AttributeError error:" + str(e))
+        except KeyError as e:
+            print("KeyError error:" + str(e))
         except:
-            
             print("Unexpected error:" + str(sys.exc_info()[0]))
             return False
-
         pass
 
-    def findTimeFrame(self,df):
+    def findTimeFrame(self, df):
 
         if len(df.index) > 2:
             dtDiff = df.index[1] - df.index[0]
