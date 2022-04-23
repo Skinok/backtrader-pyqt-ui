@@ -149,8 +149,6 @@ class UserInterface:
 
         pass 
 
-
-
     #########
     #  Create all main window docks
     #########
@@ -197,31 +195,27 @@ class UserInterface:
     #########
     def createActions(self):
 
-        # Indicators
-        #self.indicatorsActionGroup = QtWidgets.QActionGroup(self.win)
-
-        # Ichimoku
-        #self.addIchimokuAction = QtWidgets.QAction(QtGui.QIcon(""),"Add Ichimoku", self.indicatorsActionGroup)
-        #self.addIchimokuAction.triggered.connect( self.addIndicator )
-        #self.indicatorsActionGroup.addAction(self.addIchimokuAction)
-
         # Data sources
         self.backtestDataActionGroup = QtWidgets.QActionGroup(self.win)
         
         self.openCSVAction = QtWidgets.QAction(QtGui.QIcon(""),"Open CSV File", self.backtestDataActionGroup)
         self.openCSVAction.triggered.connect( self.loadDataFileUI.show )
 
-        #self.DataSourceAction = QAction(QtWidgets.QIcon(""),"Choose Data Source", self.toolbar)
-        #self.DataSourceAction.triggered.connect( self.l )
-        #self.toolbar.addAction(self.addIchimokuAction)
+        # AI
+        self.aiActionGroup = QtWidgets.QActionGroup(self.win)
+        
+        self.loadTFModelAction = QtWidgets.QAction(QtGui.QIcon(""),"Load Tensorflow Model", self.aiActionGroup)
+        self.loadTFModelAction.triggered.connect( self.loadTFModel )
+
+        #self.loadTorchModelAction = QtWidgets.QAction(QtGui.QIcon(""),"Load Torch Model", self.aiActionGroup)
+        #self.loadTorchModelAction.triggered.connect( self.loadTorchModel )
+
+        self.loadStableBaselines3Action = QtWidgets.QAction(QtGui.QIcon(""),"Load Stable Baselines 3 Model", self.aiActionGroup)
+        self.loadStableBaselines3Action.triggered.connect( self.loadStableBaselinesModel )
 
         # Options
         self.optionsActionGroup = QtWidgets.QActionGroup(self.win)
 
-        #self.darkModeAction = QtWidgets.QAction(QtGui.QIcon(""),"Switch Color Mode", self.optionsActionGroup)
-        #self.darkModeAction.triggered.connect( self.dark_mode_toggle )
-        
-        #self.optionsActionGroup.addAction(self.darkModeAction)
         pass
 
     #########
@@ -237,11 +231,13 @@ class UserInterface:
         self.backtestDataMenu = self.menubar.addMenu("Backtest Data")
         self.backtestDataMenu.addActions(self.backtestDataActionGroup.actions())
 
+        self.aiMenu = self.menubar.addMenu("Artificial Intelligence")
+        self.aiMenu.addActions(self.aiActionGroup.actions())
+
         self.optionsMenu = self.menubar.addMenu("Options")
         self.optionsMenu.addActions(self.optionsActionGroup.actions())
 
         pass
-
 
     #########
     #  Strategy results : trades tab
@@ -265,6 +261,8 @@ class UserInterface:
         self.tradeTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
         self.strategyResultsUI.ResultsTabWidget.widget(0).layout().addWidget(self.tradeTableWidget)
+
+        pass
 
     def fillTradesUI(self, trades):
 
@@ -831,7 +829,7 @@ class UserInterface:
         for parameterName, parameterValue in strategy.params._getitems():
             label = QtWidgets.QLabel(parameterName)
             lineEdit = QtWidgets.QLineEdit(str(parameterValue))
-
+            lineEdit.setObjectName(parameterName)
             # Save the parameter to inject it in the addStrategy method
             self.controller.strategyParametersSave(parameterName, parameterValue)
 
@@ -848,5 +846,43 @@ class UserInterface:
 
         pass
 
+    # Load an AI Model from Tensor Flow framework
+    def loadTFModel(self):
+
+        ai_model_dir = QtWidgets.QFileDialog.getExistingDirectory(self.win,"Open Tensorflow Model", self.current_dir_path)
+
+        # Add the AI Model Strategy
+        self.controller.addStrategy("AiTensorFlowModel")
+
+        self.strategyTesterUI.findChild(QtWidgets.QLineEdit, "model").setText(ai_model_dir)
+        self.controller.strategyParametersSave("model", ai_model_dir)
+
+        pass
     
+    # Load an AI Model from Py Torch framework
+    def loadTorchModel(self):
+
+        ai_model_zip_file = QtWidgets.QFileDialog.getOpenFileName(self.win,"Open Torch Model", self.current_dir_path, "*.zip")[0]
+
+        # Add the AI Model Strategy
+        self.controller.addStrategy("AiTorchModel")
+
+        self.strategyTesterUI.findChild(QtWidgets.QLineEdit, "model").setText(ai_model_zip_file)
+        self.controller.strategyParametersSave("model", ai_model_zip_file)
+
+        pass
+
+    # Load an AI Model from Stable Baselines framework
+    def loadStableBaselinesModel(self):
+
+        ai_model_zip_file = QtWidgets.QFileDialog.getOpenFileName(self.win,"Open Torch Model", self.current_dir_path, "*.zip")[0]
+
+        # Add the AI Model Strategy
+        self.controller.addStrategy("AiStableBaselinesModel")
+
+        self.strategyTesterUI.findChild(QtWidgets.QLineEdit, "model").setText(ai_model_zip_file)
+        self.controller.strategyParametersSave("model", ai_model_zip_file)
+
+        pass
+
     

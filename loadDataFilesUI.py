@@ -23,6 +23,7 @@ class LoadDataFilesUI(QtWidgets.QWidget):
 
         self.tabRB = self.findChild(QtWidgets.QRadioButton, "tabRB")
         self.commaRB = self.findChild(QtWidgets.QRadioButton, "commaRB")
+        self.semicolonRB = self.findChild(QtWidgets.QRadioButton, "semicolonRB")
 
         self.openFilePB = self.findChild(QtWidgets.QToolButton, "openFilePB")
         self.loadFilePB = self.findChild(QtWidgets.QPushButton, "loadFilePB")
@@ -51,7 +52,7 @@ class LoadDataFilesUI(QtWidgets.QWidget):
     def loadFile(self):
 
         # try loading file by controller
-        separator = '\t' if self.tabRB.isChecked() else ','
+        separator = '\t' if self.tabRB.isChecked() else ',' if self.commaRB.isChecked() else ';'
         success, errorMessage = self.controller.loadData(self.dataFileName, self.datetimeFormatLE.text(), separator)
 
         if success:

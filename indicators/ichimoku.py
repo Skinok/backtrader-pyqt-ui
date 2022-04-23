@@ -15,6 +15,11 @@ import pandas as pd
 class Ichimoku():
 
     '''
+    THIS CLASS TAKE A PANDA DATAFRAME AS INPUT, AND NOT A BACKTRADER DATA FEED (Use bt.Ind.Ichimoku instead)
+    '''
+
+
+    '''
     Developed and published in his book in 1969 by journalist Goichi Hosoda
 
     Formula:
@@ -37,6 +42,10 @@ class Ichimoku():
 
     '''
 
+
+    '''
+    THIS METHOD TAKE A PANDA DATAFRAME AS INPUT, AND NOT A BACKTRADER DATA FEED (Use bt.Ind.Ichimoku instead)
+    '''
     def __init__(self, dataFrames, tenkan = 9, kijun = 26, senkou = 52, senkou_lead = 26, chikou = 26):
 
         # Tenkan-sen (Conversion Line): (9-period high + 9-period low)/2))

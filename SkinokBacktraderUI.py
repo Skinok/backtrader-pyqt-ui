@@ -125,6 +125,8 @@ class SkinokBacktraderUI:
             return False, "ValueError error:" + str(err)
         except AttributeError as err:
             return False, "AttributeError error:" + str(err)
+        except IndexError as err:
+            return False, "IndexError error:" + str(err)
         except :
             return False, "Unexpected error:" + str(sys.exc_info()[0])
 
@@ -225,7 +227,7 @@ class SkinokBacktraderUI:
             if isinstance(param, int):
                 self.strategyParameters[parameterName] = int(lineEdit.text())
             elif isinstance(param, float):
-                self.strategyParameters[parameterName] = int(lineEdit.text())
+                self.strategyParameters[parameterName] = float(lineEdit.text())
             else:
                 self.strategyParameters[parameterName] = lineEdit.text()
 
@@ -246,8 +248,8 @@ class SkinokBacktraderUI:
         self.interface.resetChart()
 
         # Add strategy here to get modified parameters
-        test = self.strategyParameters
-        self.strategyIndex = self.cerebro.addstrategy(self.strategyClass, test)
+        params = self.strategyParameters
+        self.strategyIndex = self.cerebro.addstrategy(self.strategyClass, params)
 
         # Wallet Management : reset between each run
         self.cerebro.broker.setcash(self.startingcash)
