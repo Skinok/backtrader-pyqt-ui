@@ -2,12 +2,12 @@ import sys, os
 
 from pyqtgraph.graphicsItems.LegendItem import LegendItem
 
-from indicators import ichimoku
-from indicators import rsi
-from indicators import stochastic
-from indicators import stochasticRsi
-from indicators import sma
-from indicators import ema
+from custom_indicators import ichimoku
+from custom_indicators import rsi
+from custom_indicators import stochastic
+from custom_indicators import stochasticRsi
+from custom_indicators import sma
+from custom_indicators import ema
 
 sys.path.append('../finplot')
 import finplot as fplt

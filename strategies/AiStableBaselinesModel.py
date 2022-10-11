@@ -25,6 +25,10 @@ from stable_baselines3 import PPO
 import numpy as np
 from enum import Enum
 
+import pandas as pd
+
+from custom_indicators import BollingerBandsBandwitch
+
 # action list
 class Action(Enum):
     HOLD=0
@@ -62,6 +66,25 @@ class AiStableBaselinesModel(mt.MetaStrategy):
         self.atr = bt.indicators.ATR(self.data, period=self.p.atrperiod)
 
         self.stochastic = bt.ind.stochastic.Stochastic(self.data)
+        self.rsi = bt.ind.RelativeStrengthIndex(self.data)
+        self.bbands = bt.ind.BollingerBands(self.data)
+        self.bbandsPct = bt.ind.BollingerBandsPct(self.data)
+        self.bbandsBandwitch = BollingerBandsBandwitch.BollingerBandsBandwitch(self.data)
+
+        self.sma_200 = bt.ind.MovingAverageSimple(self.data,period=200)
+        self.sma_150 = bt.ind.MovingAverageSimple(self.data,period=150)
+        self.sma_100 = bt.ind.MovingAverageSimple(self.data,period=100)
+        self.sma_50 = bt.ind.MovingAverageSimple(self.data,period=50)
+        self.sma_21 = bt.ind.MovingAverageSimple(self.data,period=21)
+
+        self.ema_200 = bt.ind.ExponentialMovingAverage(self.data,period=200)
+        self.ema_100 = bt.ind.ExponentialMovingAverage(self.data,period=100)
+        self.ema_50 = bt.ind.ExponentialMovingAverage(self.data,period=50)
+        self.ema_26 = bt.ind.ExponentialMovingAverage(self.data,period=26)
+        self.ema_12 = bt.ind.ExponentialMovingAverage(self.data,period=12)
+        self.ema_9 = bt.ind.ExponentialMovingAverage(self.data,period=9)
+
+        self.macd = bt.ind.MACDHisto(self.data)
 
         pass
 
@@ -75,6 +98,11 @@ class AiStableBaselinesModel(mt.MetaStrategy):
     def next(self):
 
         self.obseravation = self.next_observation()
+
+        # Do nothing if a parameter is not valid yet (basically wait for all idicators to be loaded)
+        if pd.isna(self.obseravation).any():
+            print("Waiting indicators")
+            return
 
         # Prepare data for Model
         action, _states = self.model.predict(self.obseravation) # deterministic=True
@@ -112,10 +140,43 @@ class AiStableBaselinesModel(mt.MetaStrategy):
         # https://stackoverflow.com/questions/53979199/tensorflow-keras-returning-multiple-predictions-while-expecting-one
 
         # Ichimoku
-        inputs = [ self.ichimoku.tenkan[0], self.ichimoku.kijun[0], self.ichimoku.senkou[0], self.ichimoku.senkou_lead[0], self.ichimoku.chikou[0] ]
+        #inputs = [ self.ichimoku.tenkan[0], self.ichimoku.kijun[0], self.ichimoku.senkou[0], self.ichimoku.senkou_lead[0], self.ichimoku.chikou[0] ]
+
+        # OHLCV
+        inputs = [ self.data.open[0],self.data.high[0],self.data.low[0],self.data.close[0],self.data.volume[0] ]
 
         # Stochastic
-        inputs = inputs + [self.stochastic.percK[0] / 100.0, self.stochastic.percD[0] / 100.0]
+        inputs = inputs + [self.stochastic.percK[0], self.stochastic.percD[0]]
+
+        # Rsi
+        inputs = inputs + [self.rsi.rsi[0]]
+
+        # bbands
+        inputs = inputs + [self.bbands.bot[0]] # BBL
+        inputs = inputs + [self.bbands.mid[0]] # BBM
+        inputs = inputs + [self.bbands.top[0]] # BBU
+        inputs = inputs + [self.bbandsBandwitch.bandwitch[0]] # BBB
+        inputs = inputs + [self.bbandsPct.pctb[0]] # BBP
+
+        # sma
+        inputs = inputs + [self.sma_200.sma[0]] 
+        inputs = inputs + [self.sma_150.sma[0]] 
+        inputs = inputs + [self.sma_100.sma[0]] 
+        inputs = inputs + [self.sma_50.sma[0]] 
+        inputs = inputs + [self.sma_21.sma[0]]
+
+        # ema
+        inputs = inputs + [self.ema_200.ema[0]]
+        inputs = inputs + [self.ema_100.ema[0]]
+        inputs = inputs + [self.ema_50.ema[0]]
+        inputs = inputs + [self.ema_26.ema[0]]
+        inputs = inputs + [self.ema_12.ema[0]]
+        inputs = inputs + [self.ema_9.ema[0]]
+
+        # macd
+        inputs = inputs + [self.macd.macd[0]] # MACD
+        inputs = inputs + [self.macd.histo[0]] # MACD histo
+        inputs = inputs + [self.macd.signal[0]] # MACD signal
 
         return np.array(inputs)
 
