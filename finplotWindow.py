@@ -12,6 +12,7 @@ from custom_indicators import ema
 sys.path.append('../finplot')
 import finplot as fplt
 
+import pandas as pd
 import backtrader as bt
 from pyqtgraph import mkColor, mkBrush
 
@@ -379,6 +380,24 @@ class FinplotWindow():
 
         pass
   
+    def zoomTo(self, dateStr1, dateStr2):
+
+        for win in fplt.windows:
+            for ax in win.axs:
+                x1 = fplt._dateStr2x(ax,dateStr1)
+                x2 = fplt._dateStr2x(ax,dateStr2)
+
+                # Do not zoom exactly on the trade, so take a little bit before & after
+                date1 = x1[0];
+                if date1 > 10:
+                    date1 = date1 - 10
+
+                date2 = x2[0] + 10;
+
+                ax.vb.update_y_zoom(date1,date2)
+        
+        pass
+
     #############
     #  Show finplot Window
     #############

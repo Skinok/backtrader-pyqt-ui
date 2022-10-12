@@ -309,6 +309,21 @@ class UserInterface:
 
                 row += 1
 
+        # Click on a trade line will move the chart to the corresponding trade
+        self.tradeTableWidget.cellClicked.connect( self.tradeClicked );
+
+        pass
+
+    # Slot when a trade has been clicked
+    def tradeClicked(self, row, column):
+
+        selectedItems = self.tradeTableWidget.selectedItems() # QList<QTableWidgetItem *>
+        if len(selectedItems) > 4:
+            dateTradeOpen = selectedItems[2].text()
+            dateTradeClose = selectedItems[3].text()
+
+            self.fpltWindow[self.current_timeframe].zoomTo(dateTradeOpen,dateTradeClose)
+
         pass
 
     #########
