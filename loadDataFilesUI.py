@@ -19,8 +19,8 @@ class LoadDataFilesUI(QtWidgets.QWidget):
         uic.loadUi( self.current_dir_path + "/ui/loadDataFiles.ui", self)
 
         self.filePathLE = self.findChild(QtWidgets.QLineEdit, "filePathLE")
-        self.datetimeFormatLE = self.findChild(QtWidgets.QLineEdit, "datetimeFormatLE")
-
+        self.datetimeFormatLE = self.findChild(QtWidgets.QComboBox, "datetimeFormatLE")
+       
         self.tabRB = self.findChild(QtWidgets.QRadioButton, "tabRB")
         self.commaRB = self.findChild(QtWidgets.QRadioButton, "commaRB")
         self.semicolonRB = self.findChild(QtWidgets.QRadioButton, "semicolonRB")
@@ -35,7 +35,10 @@ class LoadDataFilesUI(QtWidgets.QWidget):
         self.dataFilesListWidget = self.findChild(QtWidgets.QListWidget, "dataFilesListWidget")
 
         # Default values
-        self.datetimeFormatLE.setText("%Y-%m-%d %H:%M:%S")
+        self.datetimeFormatLE.addItem("%Y-%m-%d %H:%M:%S")
+        self.datetimeFormatLE.addItem("%Y-%m-%d %H:%M")
+        self.datetimeFormatLE.addItem("%Y-%m-%d %H")
+        self.datetimeFormatLE.addItem("%Y-%m-%d")
 
         # Connect slots : open file
         self.openFilePB.clicked.connect( self.openFile )
