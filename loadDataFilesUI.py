@@ -47,6 +47,11 @@ class LoadDataFilesUI(QtWidgets.QWidget):
     def openFile(self):
         self.dataFileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Open data file', self.current_dir_path + "/data","CSV files (*.csv)")[0]
         self.filePathLE.setText(self.dataFileName)
+        fileparts = os.path.split(self.dataFileName)
+        datafile = fileparts[1]
+        print(datafile[-4:])
+        if datafile[-4:]=='.csv':
+            self.commaRB.setChecked(True)
         pass
 
     def loadFile(self):

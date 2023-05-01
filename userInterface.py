@@ -542,7 +542,7 @@ class UserInterface:
         self.ResetPB.setText("Reset")
         self.ResetPB.setCheckable(True)
         self.ResetPB.setMaximumWidth(100)
-        self.ResetPB.toggled.connect(self.resetChart)
+        self.ResetPB.toggled[bool].connect(self.resetChart)
         self.controlPanelLayout.addWidget(self.ResetPB)
 
         # Spacer
@@ -554,7 +554,7 @@ class UserInterface:
         self.SmaPB.setText("SMA")
         self.SmaPB.setCheckable(True)
         self.SmaPB.setMaximumWidth(100)
-        self.SmaPB.toggled.connect(self.addSma)
+        self.SmaPB.toggled[bool].connect(self.addSma)
         self.controlPanelLayout.addWidget(self.SmaPB)
 
         # EMA
@@ -562,7 +562,7 @@ class UserInterface:
         self.EmaPB.setText("EMA")
         self.EmaPB.setCheckable(True)
         self.EmaPB.setMaximumWidth(100)
-        self.EmaPB.toggled.connect(self.addEma)
+        self.EmaPB.toggled[bool].connect(self.addEma)
         self.controlPanelLayout.addWidget(self.EmaPB)
 
         # Spacer
@@ -574,7 +574,7 @@ class UserInterface:
         self.RsiPB.setText("RSI")
         self.RsiPB.setCheckable(True)
         self.RsiPB.setMaximumWidth(100)
-        self.RsiPB.toggled.connect(self.toogleRsi)
+        self.RsiPB.toggled[bool].connect(self.toogleRsi)
         self.controlPanelLayout.addWidget(self.RsiPB)
 
         # Stochastic
@@ -582,7 +582,7 @@ class UserInterface:
         self.StochasticPB.setText("Stochastic")
         self.StochasticPB.setCheckable(True)
         self.StochasticPB.setMaximumWidth(100)
-        self.StochasticPB.toggled.connect(self.toogleStochastic)
+        self.StochasticPB.toggled[bool].connect(self.toogleStochastic)
         self.controlPanelLayout.addWidget(self.StochasticPB)
 
         # Stochastic RSI
