@@ -61,7 +61,7 @@ class LoadDataFilesUI(QtWidgets.QWidget):
 
         # try loading file by controller
         separator = '\t' if self.tabRB.isChecked() else ',' if self.commaRB.isChecked() else ';'
-        success, errorMessage = self.controller.loadData(self.dataFileName, self.datetimeFormatLE.text(), separator)
+        success, errorMessage = self.controller.loadData(self.dataFileName, self.datetimeFormatLE.currentText(), separator)
 
         if success:
 
