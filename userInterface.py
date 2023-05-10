@@ -55,7 +55,7 @@ class UserInterface:
     #########
     def __init__(self,controller):
 
-        self.controller = controller
+        self.controller = controller    # SkinokBacktraderUI
 
         # It does not finish by a "/"
         self.current_dir_path = os.path.dirname(os.path.realpath(__file__))

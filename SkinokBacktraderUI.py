@@ -112,10 +112,18 @@ class SkinokBacktraderUI:
 
             # Python contains
             if not dataPath in self.dataframes: 
+                # self.dataframes[fileName] = pd.read_csv(dataPath, 
+                #                                     sep=separator, 
+                #                                     parse_dates=[0], 
+                #                                     date_parser=lambda x: pd.to_datetime(x, format=datetimeFormat), 
+                #                                     skiprows=0, 
+                #                                     header=0, 
+                #                                     names=["Time", "Open", "High", "Low", "Close", "Volume"],
+                #                                     index_col=0)
                 self.dataframes[fileName] = pd.read_csv(dataPath, 
                                                     sep=separator, 
                                                     parse_dates=[0], 
-                                                    date_parser=lambda x: pd.to_datetime(x, format=datetimeFormat), 
+                                                    date_format=datetimeFormat, 
                                                     skiprows=0, 
                                                     header=0, 
                                                     names=["Time", "Open", "High", "Low", "Close", "Volume"],
