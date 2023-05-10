@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtWidgets, uic
-
+import pandas as pd
 import os 
 
 class LoadDataFilesUI(QtWidgets.QWidget):
@@ -55,6 +55,22 @@ class LoadDataFilesUI(QtWidgets.QWidget):
         print(datafile[-4:])
         if datafile[-4:]=='.csv':
             self.commaRB.setChecked(True)
+            df = pd.read_csv(self.dataFileName, nrows=1)
+            
+            # print(df)
+            timestring = df.iloc[0,0]
+            ncolon = timestring.count(':')
+            if ncolon==2:
+                self.datetimeFormatLE.setCurrentIndex(0)        
+            elif ncolon==1:
+                self.datetimeFormatLE.setCurrentIndex(1) 
+            else:
+                nspace = timestring.count(' ')
+                if nspace==1:
+                    self.datetimeFormatLE.setCurrentIndex(2)
+                else:
+                    self.datetimeFormatLE.setCurrentIndex(3)
+             
         pass
 
     def loadFile(self):
