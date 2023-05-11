@@ -390,10 +390,10 @@ class FinplotWindow():
         print(date_str)
 
         if ax.getAxis('bottom').vb.datasrc is None:
-
             df = self.last_ax_data_xtick
         else:
             df = ax.getAxis('bottom').vb.datasrc.df
+            self.last_ax_data_xtick = df
 
         dftime = np.array(df.iloc[:, 0])
         lsttime = dftime.tolist()
