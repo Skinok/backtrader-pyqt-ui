@@ -33,8 +33,8 @@ class FinplotWindow():
 
         self.IndVolumesActivated = False
 
-        self.last_zoom_x = []
-        self.last_zoom_date = []
+        self.last_ax_data_xtick = []
+
 
         pass
 
@@ -387,29 +387,24 @@ class FinplotWindow():
 
     def _date_str2x(self, ax, date_str):
         print(type(ax.getAxis('bottom').vb.datasrc))
+        print(date_str)
+
         if ax.getAxis('bottom').vb.datasrc is None:
-            x=self.last_zoom_x[self.last_zoom_date.index(date_str)]
+
+            df = self.last_ax_data_xtick
         else:
-            if self.last_zoom_date is not None and  len(self.last_zoom_date) == 2:
-                self.last_zoom_date = []
-                self.last_zoom_x = []
-
             df = ax.getAxis('bottom').vb.datasrc.df
-            dftime = np.array(df.iloc[:, 0])
-            lsttime = dftime.tolist()
-            # print(dftime)
-            # print(lsttime)
 
-            xtime = dt.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-            xint = int((xtime.timestamp()+8*3600)*1e9)
-            print(xint,lsttime[0])
-            x = lsttime.index(xint)
-            if self.last_zoom_date is None:
-                self.last_zoom_date = [date_str]
-                self.last_zoom_x = [x]
-            else:
-                self.last_zoom_date = self.last_zoom_date.append(date_str)
-                self.last_zoom_x = self.last_zoom_x.append(x)
+        dftime = np.array(df.iloc[:, 0])
+        lsttime = dftime.tolist()
+        # print(dftime)
+        # print(lsttime)
+
+        xtime = dt.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+        xint = int((xtime.timestamp()+8*3600)*1e9)
+        print(xint,lsttime[0])
+        x = lsttime.index(xint)
+
         return [x]
 
     def zoomTo(self, dateStr1, dateStr2):
