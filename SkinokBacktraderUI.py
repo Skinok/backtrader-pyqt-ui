@@ -17,15 +17,12 @@
 #
 ###############################################################################
 
-import pandas
-
 #import sys
 #sys.path.append('D:/perso/trading/anaconda3/backtrader2')
 import backtrader as bt
 from CerebroEnhanced import *
 
 import sys, os
-from backtrader.order import BuyOrder, SellOrder
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/observers')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/strategies')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../finplot')
@@ -69,7 +66,6 @@ class SkinokBacktraderUI:
 
         pass
 
-
     def resetCerebro(self):
 
         # create a "Cerebro" engine instance
@@ -100,7 +96,6 @@ class SkinokBacktraderUI:
             self.cerebro.adddata(self.data)  # Add the data feed
 
         pass
-
 
     # Return True if loading is successfull & the error string if False
     def loadData(self, dataPath, datetimeFormat, separator):
@@ -266,7 +261,6 @@ class SkinokBacktraderUI:
         self.interface.strategyTesterUI.runLabel.setText("Strategy backtest completed.")
         
         pass
-
 
     def displayStrategyResults(self):
         # Stats on trades

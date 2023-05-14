@@ -17,18 +17,16 @@
 #
 ###############################################################################
 
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
+from PyQt6 import QtGui
+from PyQt6 import QtCore
 
-from PyQt5 import QtGui
-from PyQt5 import QtCore
 from numpy import NaN
 
 from pyqtgraph.dockarea import DockArea, Dock
 
-import sys, os
+import os
 
-sys.path.append('../finplot')
-import finplot as fplt
 import backtrader as bt
 
 # Ui made with Qt Designer
@@ -40,12 +38,7 @@ import loadDataFilesUI
 # Import Chart lib
 import finplotWindow
 
-
-import datetime
-
 import qdarkstyle
-
-import pandas as pd
 import functools
 
 class UserInterface:
@@ -53,7 +46,7 @@ class UserInterface:
     #########
     #  
     #########
-    def __init__(self,controller):
+    def __init__(self, controller):
 
         self.controller = controller
 
@@ -78,7 +71,7 @@ class UserInterface:
         self.win.setWindowTitle("Skinok Backtrader UI v0.3")
         
         # Set width/height of QSplitter
-        self.app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        self.app.setStyleSheet(qdarkstyle._load_stylesheet())
 
         pass
 
@@ -196,25 +189,25 @@ class UserInterface:
     def createActions(self):
 
         # Data sources
-        self.backtestDataActionGroup = QtWidgets.QActionGroup(self.win)
+        self.backtestDataActionGroup = QtGui.QActionGroup(self.win)
         
-        self.openCSVAction = QtWidgets.QAction(QtGui.QIcon(""),"Open CSV File", self.backtestDataActionGroup)
+        self.openCSVAction = QtGui.QAction(QtGui.QIcon(""),"Open CSV File", self.backtestDataActionGroup)
         self.openCSVAction.triggered.connect( self.loadDataFileUI.show )
 
         # AI
-        self.aiActionGroup = QtWidgets.QActionGroup(self.win)
+        self.aiActionGroup = QtGui.QActionGroup(self.win)
         
-        self.loadTFModelAction = QtWidgets.QAction(QtGui.QIcon(""),"Load Tensorflow Model", self.aiActionGroup)
+        self.loadTFModelAction = QtGui.QAction(QtGui.QIcon(""),"Load Tensorflow Model", self.aiActionGroup)
         self.loadTFModelAction.triggered.connect( self.loadTFModel )
 
         #self.loadTorchModelAction = QtWidgets.QAction(QtGui.QIcon(""),"Load Torch Model", self.aiActionGroup)
         #self.loadTorchModelAction.triggered.connect( self.loadTorchModel )
 
-        self.loadStableBaselines3Action = QtWidgets.QAction(QtGui.QIcon(""),"Load Stable Baselines 3 Model", self.aiActionGroup)
+        self.loadStableBaselines3Action = QtGui.QAction(QtGui.QIcon(""),"Load Stable Baselines 3 Model", self.aiActionGroup)
         self.loadStableBaselines3Action.triggered.connect( self.loadStableBaselinesModel )
 
         # Options
-        self.optionsActionGroup = QtWidgets.QActionGroup(self.win)
+        self.optionsActionGroup = QtGui.QActionGroup(self.win)
 
         pass
 
@@ -252,13 +245,13 @@ class UserInterface:
         self.tradeTableWidget.verticalHeader().setVisible(False)
 
         self.tradeTableWidget.horizontalHeader().setStretchLastSection(True)
-        self.tradeTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.tradeTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         #self.tradeTableWidget.setStyleSheet("alternate-background-color: #AAAAAA;background-color: #CCCCCC;")
         self.tradeTableWidget.setAlternatingRowColors(True)
         self.tradeTableWidget.setSortingEnabled(True)
-        self.tradeTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.tradeTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tradeTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.tradeTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
 
         self.strategyResultsUI.ResultsTabWidget.widget(0).layout().addWidget(self.tradeTableWidget)
 
@@ -546,7 +539,7 @@ class UserInterface:
         self.controlPanelLayout.addWidget(self.ResetPB)
 
         # Spacer
-        spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Minimum)
+        spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Policy.Minimum)
         self.controlPanelLayout.addSpacerItem(spacer)
 
         # SMA
@@ -566,7 +559,7 @@ class UserInterface:
         self.controlPanelLayout.addWidget(self.EmaPB)
 
         # Spacer
-        spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Minimum)
+        spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Policy.Minimum)
         self.controlPanelLayout.addSpacerItem(spacer)
 
         # RSI
@@ -602,7 +595,7 @@ class UserInterface:
         self.controlPanelLayout.addWidget(self.IchimokuPB)
 
         # Spacer 
-        spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Minimum)
+        spacer = QtWidgets.QSpacerItem(50,20,QtWidgets.QSizePolicy.Policy.Minimum)
         self.controlPanelLayout.addSpacerItem(spacer)
 
         # Dark mode
@@ -621,7 +614,7 @@ class UserInterface:
         self.controlPanelLayout.addWidget(self.volumesCB)
 
         # Spacer
-        self.controlPanelLayout.insertSpacerItem(0, QtWidgets.QSpacerItem( 0,0, hPolicy=QtWidgets.QSizePolicy.Expanding, vPolicy=QtWidgets.QSizePolicy.Preferred) )
+        self.controlPanelLayout.insertSpacerItem(0, QtWidgets.QSpacerItem( 0,0, hPolicy=QtWidgets.QSizePolicy.Policy.Expanding, vPolicy=QtWidgets.QSizePolicy.Policy.Preferred) )
 
         return self.controlPanel
 
