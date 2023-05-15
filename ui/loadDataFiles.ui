@@ -109,7 +109,7 @@
        </widget>
       </item>
       <item row="1" column="1" colspan="4">
-       <widget class="QLineEdit" name="datetimeFormatLE"/>
+       <widget class="QComboBox" name="datetimeFormatLE"/>
       </item>
       <item row="4" column="1" colspan="4">
        <widget class="QPushButton" name="loadFilePB">

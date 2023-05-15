@@ -48,7 +48,7 @@ class UserInterface:
     #########
     def __init__(self, controller):
 
-        self.controller = controller
+        self.controller = controller    # SkinokBacktraderUI
 
         # It does not finish by a "/"
         self.current_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -448,9 +448,9 @@ class UserInterface:
             self.summaryTableWidget.setItem(7,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["short"]["total"])))
 
             self.summaryTableWidget.horizontalHeader().setStretchLastSection(True)
-            self.summaryTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+            self.summaryTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
 
-            self.summaryTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+            self.summaryTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         pass
 
@@ -535,7 +535,7 @@ class UserInterface:
         self.ResetPB.setText("Reset")
         self.ResetPB.setCheckable(True)
         self.ResetPB.setMaximumWidth(100)
-        self.ResetPB.toggled.connect(self.resetChart)
+        self.ResetPB.toggled[bool].connect(self.resetChart)
         self.controlPanelLayout.addWidget(self.ResetPB)
 
         # Spacer
@@ -547,7 +547,7 @@ class UserInterface:
         self.SmaPB.setText("SMA")
         self.SmaPB.setCheckable(True)
         self.SmaPB.setMaximumWidth(100)
-        self.SmaPB.toggled.connect(self.addSma)
+        self.SmaPB.toggled[bool].connect(self.addSma)
         self.controlPanelLayout.addWidget(self.SmaPB)
 
         # EMA
@@ -555,7 +555,7 @@ class UserInterface:
         self.EmaPB.setText("EMA")
         self.EmaPB.setCheckable(True)
         self.EmaPB.setMaximumWidth(100)
-        self.EmaPB.toggled.connect(self.addEma)
+        self.EmaPB.toggled[bool].connect(self.addEma)
         self.controlPanelLayout.addWidget(self.EmaPB)
 
         # Spacer
@@ -567,7 +567,7 @@ class UserInterface:
         self.RsiPB.setText("RSI")
         self.RsiPB.setCheckable(True)
         self.RsiPB.setMaximumWidth(100)
-        self.RsiPB.toggled.connect(self.toogleRsi)
+        self.RsiPB.toggled[bool].connect(self.toogleRsi)
         self.controlPanelLayout.addWidget(self.RsiPB)
 
         # Stochastic
@@ -575,7 +575,7 @@ class UserInterface:
         self.StochasticPB.setText("Stochastic")
         self.StochasticPB.setCheckable(True)
         self.StochasticPB.setMaximumWidth(100)
-        self.StochasticPB.toggled.connect(self.toogleStochastic)
+        self.StochasticPB.toggled[bool].connect(self.toogleStochastic)
         self.controlPanelLayout.addWidget(self.StochasticPB)
 
         # Stochastic RSI

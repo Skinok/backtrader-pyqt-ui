@@ -53,11 +53,11 @@ class sma_crossover(mt.MetaStrategy):
 
     params = (
         # period for the fast Moving Average
-        ('fast', 15),
+        ('fast', 5),
         # period for the slow moving average
         ('slow', 30),
         # Trade size
-        ('tradeSize', 2000)
+        ('tradeSize', 500)
     )
 
     def __init__(self, *argv):

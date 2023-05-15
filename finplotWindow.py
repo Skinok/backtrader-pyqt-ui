@@ -13,6 +13,8 @@ sys.path.append('../finplot')
 import finplot as fplt
 
 import pandas as pd
+import numpy as np
+from datetime import datetime as dt
 import backtrader as bt
 from pyqtgraph import mkColor, mkBrush
 
@@ -30,6 +32,9 @@ class FinplotWindow():
         self.IndStochasticRsiActivated = False
 
         self.IndVolumesActivated = False
+
+        self.last_ax_data_xtick = []
+
 
         pass
 
@@ -379,20 +384,44 @@ class FinplotWindow():
         self.updateChart()
 
         pass
-  
+
+    def _date_str2x(self, ax, date_str):
+        print(type(ax.getAxis('bottom').vb.datasrc))
+        print(date_str)
+
+        if ax.getAxis('bottom').vb.datasrc is None:
+            df = self.last_ax_data_xtick
+        else:
+            df = ax.getAxis('bottom').vb.datasrc.df
+            self.last_ax_data_xtick = df
+
+        dftime = np.array(df.iloc[:, 0])
+        lsttime = dftime.tolist()
+        # print(dftime)
+        # print(lsttime)
+
+        xtime = dt.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+        xint = int((xtime.timestamp()+8*3600)*1e9)
+        print(xint,lsttime[0])
+        x = lsttime.index(xint)
+
+        return [x]
+
     def zoomTo(self, dateStr1, dateStr2):
 
         for win in fplt.windows:
             for ax in win.axs:
-                x1 = fplt._dateStr2x(ax,dateStr1)
-                x2 = fplt._dateStr2x(ax,dateStr2)
+                # x1 = self._date_str2x(ax, dateStr1)
+                # x2 = self._date_str2x(ax, dateStr2)
+                x1 = fplt._dateStr2x(ax, dateStr1)
+                x2 = fplt._dateStr2x(ax, dateStr2)
 
                 # Do not zoom exactly on the trade, so take a little bit before & after
-                date1 = x1[0];
+                date1 = x1[0]
                 if date1 > 10:
                     date1 = date1 - 10
 
-                date2 = x2[0] + 10;
+                date2 = x2[0] + 10
 
                 ax.vb.update_y_zoom(date1,date2)
         

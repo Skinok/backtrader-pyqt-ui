@@ -32,10 +32,11 @@ class StrategyTesterUI(QtWidgets.QWidget):
         # Remove straty .py file name
         self.strategyBaseName = []
         for stratName in self.strategyNames:
+            # here remove file extension
             self.strategyBaseName.append(QtCore.QFileInfo(stratName).baseName())
 
         self.strategyNameCB.addItems(self.strategyBaseName)
-        
+        self.strategyNameCB.setCurrentIndex(self.strategyNameCB.count()-1)
         pass
  
     def run(self):

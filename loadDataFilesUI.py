@@ -1,5 +1,5 @@
 from PyQt6 import QtCore, QtWidgets, uic
-
+import pandas as pd
 import os 
 
 class LoadDataFilesUI(QtWidgets.QWidget):
@@ -19,8 +19,8 @@ class LoadDataFilesUI(QtWidgets.QWidget):
         uic.loadUi( self.current_dir_path + "/ui/loadDataFiles.ui", self)
 
         self.filePathLE = self.findChild(QtWidgets.QLineEdit, "filePathLE")
-        self.datetimeFormatLE = self.findChild(QtWidgets.QLineEdit, "datetimeFormatLE")
-
+        self.datetimeFormatLE = self.findChild(QtWidgets.QComboBox, "datetimeFormatLE")
+       
         self.tabRB = self.findChild(QtWidgets.QRadioButton, "tabRB")
         self.commaRB = self.findChild(QtWidgets.QRadioButton, "commaRB")
         self.semicolonRB = self.findChild(QtWidgets.QRadioButton, "semicolonRB")
@@ -35,7 +35,10 @@ class LoadDataFilesUI(QtWidgets.QWidget):
         self.dataFilesListWidget = self.findChild(QtWidgets.QListWidget, "dataFilesListWidget")
 
         # Default values
-        self.datetimeFormatLE.setText("%Y-%m-%d %H:%M:%S")
+        self.datetimeFormatLE.addItem("%Y-%m-%d %H:%M:%S")
+        self.datetimeFormatLE.addItem("%Y-%m-%d %H:%M")
+        self.datetimeFormatLE.addItem("%Y-%m-%d %H")
+        self.datetimeFormatLE.addItem("%Y-%m-%d")
 
         # Connect slots : open file
         self.openFilePB.clicked.connect( self.openFile )
@@ -47,13 +50,34 @@ class LoadDataFilesUI(QtWidgets.QWidget):
     def openFile(self):
         self.dataFileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Open data file', self.current_dir_path + "/data","CSV files (*.csv)")[0]
         self.filePathLE.setText(self.dataFileName)
+        fileparts = os.path.split(self.dataFileName)
+        datafile = fileparts[1]
+        print(datafile[-4:])
+        if datafile[-4:]=='.csv':
+            self.commaRB.setChecked(True)
+            df = pd.read_csv(self.dataFileName, nrows=1)
+            
+            # print(df)
+            timestring = df.iloc[0,0]
+            ncolon = timestring.count(':')
+            if ncolon==2:
+                self.datetimeFormatLE.setCurrentIndex(0)        
+            elif ncolon==1:
+                self.datetimeFormatLE.setCurrentIndex(1) 
+            else:
+                nspace = timestring.count(' ')
+                if nspace==1:
+                    self.datetimeFormatLE.setCurrentIndex(2)
+                else:
+                    self.datetimeFormatLE.setCurrentIndex(3)
+             
         pass
 
     def loadFile(self):
 
         # try loading file by controller
         separator = '\t' if self.tabRB.isChecked() else ',' if self.commaRB.isChecked() else ';'
-        success, errorMessage = self.controller.loadData(self.dataFileName, self.datetimeFormatLE.text(), separator)
+        success, errorMessage = self.controller.loadData(self.dataFileName, self.datetimeFormatLE.currentText(), separator)
 
         if success:
 
