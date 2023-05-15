@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, QtWidgets, QtGui, uic
+from PyQt6 import QtCore, QtWidgets, QtGui, uic
 
 import os 
 

@@ -411,8 +411,10 @@ class FinplotWindow():
 
         for win in fplt.windows:
             for ax in win.axs:
-                x1 = self._date_str2x(ax, dateStr1)
-                x2 = self._date_str2x(ax, dateStr2)
+                # x1 = self._date_str2x(ax, dateStr1)
+                # x2 = self._date_str2x(ax, dateStr2)
+                x1 = fplt._dateStr2x(ax, dateStr1)
+                x2 = fplt._dateStr2x(ax, dateStr2)
 
                 # Do not zoom exactly on the trade, so take a little bit before & after
                 date1 = x1[0]

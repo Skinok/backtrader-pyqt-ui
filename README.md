@@ -20,9 +20,9 @@ pip install git+https://github.com/backtrader2/backtrader matplotlib requests \
 
 # How to use it ?
 
-* Put your CSV Data in the *data* folder
-* Create your strategy and put it in the *strategies* folder
- Your strategy *file* name should be exactly the same as the strategy *class* name
+* Put your CSV Data in the *data* folder  
+* Create your strategy and put it in the *strategies* folder  
+ Your strategy *file* name should be exactly the same as the strategy *class* name  
  You can take a look at the provided exemples
 
 

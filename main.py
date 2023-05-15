@@ -18,6 +18,5 @@
 ###############################################################################
 
 from SkinokBacktraderUI import SkinokBacktraderUI
-
 skinokTrader = SkinokBacktraderUI()
 skinokTrader.displayUI()
