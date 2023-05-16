@@ -666,7 +666,7 @@ class UserInterface:
         paramDialog.addParameterColor("Plot color", "#FFFF00")
         paramDialog.adjustSize()
 
-        if (paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted ):
+        if paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             period = paramDialog.getValue("SMA Period")
             width = paramDialog.getValue("Plot width")
             qColor = paramDialog.getColorValue("Plot color")
