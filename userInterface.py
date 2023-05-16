@@ -666,7 +666,7 @@ class UserInterface:
         paramDialog.addParameterColor("Plot color", "#FFFF00")
         paramDialog.adjustSize()
 
-        if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+        if (paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted ):
             period = paramDialog.getValue("SMA Period")
             width = paramDialog.getValue("Plot width")
             qColor = paramDialog.getColorValue("Plot color")
@@ -688,7 +688,7 @@ class UserInterface:
         paramDialog.addParameterColor("Plot color", "#FFFF00")
         paramDialog.adjustSize()
 
-        if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+        if (paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted ):
             period = paramDialog.getValue("EMA Period")
             width = paramDialog.getValue("Plot width")
             qColor = paramDialog.getColorValue("Plot color")
@@ -708,7 +708,7 @@ class UserInterface:
             paramDialog.addParameterColor("Plot color", "#FFFF00")
             paramDialog.adjustSize()
 
-            if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+            if (paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted ):
                 period = paramDialog.getValue("RSI Period")
                 qColor = paramDialog.getColorValue("Plot color")
                 self.fpltWindow[self.current_timeframe].drawRsi( period, qColor )
@@ -735,7 +735,7 @@ class UserInterface:
             paramDialog.addParameter("Stochastic Smooth D", 3)
             paramDialog.adjustSize()
 
-            if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+            if (paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted ):
                 period = paramDialog.getValue("Stochastic Period K")
                 smooth_k = paramDialog.getValue("Stochastic Smooth K")
                 smooth_d = paramDialog.getValue("Stochastic Smooth D")
@@ -764,7 +764,7 @@ class UserInterface:
             paramDialog.addParameter("Stochastic Rsi Smooth D", 3)
             paramDialog.adjustSize()
 
-            if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+            if (paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted ):
                 period = paramDialog.getValue("Stochastic Rsi Period K")
                 smooth_k = paramDialog.getValue("Stochastic Rsi Smooth K")
                 smooth_d = paramDialog.getValue("Stochastic Rsi Smooth D")
