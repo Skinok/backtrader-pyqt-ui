@@ -273,31 +273,31 @@ class UserInterface:
 
                     # Trade id
                     item = QtWidgets.QTableWidgetItem( str(trade.ref) )
-                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tradeTableWidget.setItem(row,0,item)
                     
                     item = QtWidgets.QTableWidgetItem( "Buy" if trade.long else "Sell" )
-                    item.setTextAlignment(QtCore.Qt.AlignCenter)    
+                    item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tradeTableWidget.setItem(row,1,item)
 
                     item = QtWidgets.QTableWidgetItem( str(bt.num2date(trade.dtopen)) )
-                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tradeTableWidget.setItem(row,2,item)
 
                     item = QtWidgets.QTableWidgetItem( str(bt.num2date(trade.dtclose)) )
-                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tradeTableWidget.setItem(row,3,item)
 
                     item = QtWidgets.QTableWidgetItem( str(trade.price) )
-                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tradeTableWidget.setItem(row,4,item)
 
                     item = QtWidgets.QTableWidgetItem( str(trade.commission) )
-                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tradeTableWidget.setItem(row,5,item)
 
                     item = QtWidgets.QTableWidgetItem( str(trade.pnlcomm) )
-                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tradeTableWidget.setItem(row,6,item)
 
                 row += 1
@@ -332,13 +332,13 @@ class UserInterface:
         self.orderTableWidget.setHorizontalHeaderLabels( labels )
 
         self.orderTableWidget.horizontalHeader().setStretchLastSection(True)
-        self.orderTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.orderTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         self.orderTableWidget.setStyleSheet("alternate-background-color: #AAAAAA;background-color: #CCCCCC;")
         self.orderTableWidget.setAlternatingRowColors(True)
         self.orderTableWidget.setSortingEnabled(True)
-        self.orderTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.orderTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.orderTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.orderTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
 
         self.dock_orders.addWidget(self.orderTableWidget)
 
@@ -806,10 +806,10 @@ class UserInterface:
         row = 0
         for date,values in trades:
             #for trade in trades:
-            self.transactionTableWidget.setItem(row,0,QtWidgets.QTableWidgetItem( date.strftime("%Y/%m/%d %H:%M:%S") ))
-            self.transactionTableWidget.setItem(row,1,QtWidgets.QTableWidgetItem( str(values[0][0]) ))
-            self.transactionTableWidget.setItem(row,2,QtWidgets.QTableWidgetItem( str(values[0][1]) ))
-            self.transactionTableWidget.setItem(row,3,QtWidgets.QTableWidgetItem( str(values[0][2]) ))
+            self.transactionTableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(date.strftime("%Y/%m/%d %H:%M:%S")))
+            self.transactionTableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(str(values[0][0])))
+            self.transactionTableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(str(values[0][1])))
+            self.transactionTableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(str(values[0][2])))
 
             row += 1
 

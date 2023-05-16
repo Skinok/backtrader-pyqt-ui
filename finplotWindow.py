@@ -15,6 +15,7 @@ import finplot as fplt
 import pandas as pd
 import numpy as np
 from datetime import datetime as dt
+import time as _time
 import backtrader as bt
 from pyqtgraph import mkColor, mkBrush
 
@@ -401,7 +402,7 @@ class FinplotWindow():
         # print(lsttime)
 
         xtime = dt.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-        xint = int((xtime.timestamp()+8*3600)*1e9)
+        xint = int((xtime.timestamp()-_time.timezone)*1e9)
         print(xint,lsttime[0])
         x = lsttime.index(xint)
 
