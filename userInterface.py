@@ -666,7 +666,7 @@ class UserInterface:
         paramDialog.addParameterColor("Plot color", "#FFFF00")
         paramDialog.adjustSize()
 
-        if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+        if paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             period = paramDialog.getValue("SMA Period")
             width = paramDialog.getValue("Plot width")
             qColor = paramDialog.getColorValue("Plot color")
@@ -688,7 +688,7 @@ class UserInterface:
         paramDialog.addParameterColor("Plot color", "#FFFF00")
         paramDialog.adjustSize()
 
-        if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+        if paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             period = paramDialog.getValue("EMA Period")
             width = paramDialog.getValue("Plot width")
             qColor = paramDialog.getColorValue("Plot color")
@@ -702,13 +702,13 @@ class UserInterface:
         if self.RsiPB.isChecked():
             # Show indicator parameter dialog
             paramDialog = indicatorParametersUI.IndicatorParametersUI()
-            paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+            paramDialog.setWindowFlags(QtCore.Qt.WindowType.CustomizeWindowHint)
             paramDialog.setTitle("RSI Indicator parameters")
             paramDialog.addParameter("RSI Period", 14)
             paramDialog.addParameterColor("Plot color", "#FFFF00")
             paramDialog.adjustSize()
 
-            if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+            if paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
                 period = paramDialog.getValue("RSI Period")
                 qColor = paramDialog.getColorValue("Plot color")
                 self.fpltWindow[self.current_timeframe].drawRsi( period, qColor )
@@ -728,14 +728,14 @@ class UserInterface:
         if self.StochasticPB.isChecked():
             # Show indicator parameter dialog
             paramDialog = indicatorParametersUI.IndicatorParametersUI()
-            paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+            paramDialog.setWindowFlags(QtCore.Qt.WindowType.CustomizeWindowHint)
             paramDialog.setTitle("Stochastic Indicator parameters")
             paramDialog.addParameter("Stochastic Period K", 14)
             paramDialog.addParameter("Stochastic Smooth K", 3)
             paramDialog.addParameter("Stochastic Smooth D", 3)
             paramDialog.adjustSize()
 
-            if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+            if paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
                 period = paramDialog.getValue("Stochastic Period K")
                 smooth_k = paramDialog.getValue("Stochastic Smooth K")
                 smooth_d = paramDialog.getValue("Stochastic Smooth D")
@@ -757,14 +757,14 @@ class UserInterface:
         if self.StochasticRsiPB.isChecked():
             # Show indicator parameter dialog
             paramDialog = indicatorParametersUI.IndicatorParametersUI()
-            paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+            paramDialog.setWindowFlags(QtCore.Qt.WindowType.CustomizeWindowHint)
             paramDialog.setTitle("Stochastic Indicator parameters")
             paramDialog.addParameter("Stochastic Rsi Period K", 14)
             paramDialog.addParameter("Stochastic Rsi Smooth K", 3)
             paramDialog.addParameter("Stochastic Rsi Smooth D", 3)
             paramDialog.adjustSize()
 
-            if (paramDialog.exec() == QtWidgets.QDialog.Accepted ):
+            if (paramDialog.exec() == QtWidgets.QDialog.DialogCode.Accepted ):
                 period = paramDialog.getValue("Stochastic Rsi Period K")
                 smooth_k = paramDialog.getValue("Stochastic Rsi Smooth K")
                 smooth_d = paramDialog.getValue("Stochastic Rsi Smooth D")
@@ -814,13 +814,13 @@ class UserInterface:
             row += 1
 
         self.transactionTableWidget.horizontalHeader().setStretchLastSection(True)
-        self.transactionTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.transactionTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         self.transactionTableWidget.setStyleSheet("alternate-background-color: #AAAAAA;background-color: #CCCCCC;")
         self.transactionTableWidget.setAlternatingRowColors(True)
         self.transactionTableWidget.setSortingEnabled(True)
-        self.transactionTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.transactionTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.transactionTableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.transactionTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
 
         self.dock_transactions.addWidget(self.transactionTableWidget)
 
