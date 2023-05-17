@@ -19,6 +19,13 @@ import time as _time
 import backtrader as bt
 from pyqtgraph import mkColor, mkBrush
 
+def chinese_price_colorfilter(item, datasrc, df):
+    opencol = df.columns[1]
+    closecol = df.columns[2]
+    is_up = df[opencol] <= df[closecol] # open lower than close = goes up
+    yield item.rowcolors('bear') + [df.loc[is_up, :]]
+    yield item.rowcolors('bull') + [df.loc[~is_up, :]]
+
 class FinplotWindow():
 
     def __init__(self, dockArea, dockChart, interface):
@@ -65,11 +72,11 @@ class FinplotWindow():
 
     def drawCandles(self):
 
-        fplt.candlestick_ochl(self.data['Open Close High Low'.split()], ax=self.ax0)
+        fplt.candlestick_ochl(self.data['Open Close High Low'.split()], ax=self.ax0,colorfunc=chinese_price_colorfilter)
         
         #self.hover_label = fplt.add_legend('', ax=self.ax0)
         #fplt.set_time_inspector(self.update_legend_text, ax=self.ax0, when='hover', data=data)
-        #fplt.add_crosshair_info(self.update_crosshair_text, ax=self.ax0)
+        fplt.add_crosshair_info(self.update_crosshair_text, ax=self.ax0)
 
         # Inside plot widget controls
         #self.createControlPanel(self.ax0.ax_widget)
@@ -231,7 +238,8 @@ class FinplotWindow():
         pass
 
     def update_crosshair_text(self,x, y, xtext, ytext):
-        ytext = '%s (Close%+.2f)' % (ytext, (y - self.data.iloc[x].Close))
+        ytext = '%s \n   open: %.4f\n   close: %.4f\n    high: %.4f\n     low: %.4f' \
+                % (ytext, self.data.iloc[x].Open, self.data.iloc[x].Close, self.data.iloc[x].High, self.data.iloc[x].Low)
         return xtext, ytext
 
     def activateDarkMode(self, activated):
@@ -459,4 +467,3 @@ class FinplotWindow():
         self.axPnL.hide()
         self.axPnL.ax_widget.hide()
         pass
-    
