@@ -107,7 +107,7 @@ class SkinokBacktraderUI:
 
             # Python contains
             if not dataPath in self.dataframes: 
-                if pd.__version__=='1.4.3':
+                if pd.__version__<'2.0.0':
                     self.dataframes[fileName] = pd.read_csv(dataPath, 
                                                         sep=separator, 
                                                         parse_dates=[0], 
