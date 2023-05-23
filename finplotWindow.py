@@ -43,7 +43,7 @@ class FinplotWindow():
 
         self.last_ax_data_xtick = []
 
-
+        
         pass
 
     #########
@@ -68,6 +68,7 @@ class FinplotWindow():
         # Ax Profit & Loss
         self.interface.strategyResultsUI.ResultsTabWidget.widget(1).layout().addWidget(self.axPnL.ax_widget)
 
+        fplt.add_crosshair_info(self.update_crosshair_text, ax=self.ax0)
         pass
 
     def drawCandles(self):
@@ -76,7 +77,7 @@ class FinplotWindow():
         
         #self.hover_label = fplt.add_legend('', ax=self.ax0)
         #fplt.set_time_inspector(self.update_legend_text, ax=self.ax0, when='hover', data=data)
-        fplt.add_crosshair_info(self.update_crosshair_text, ax=self.ax0)
+
 
         # Inside plot widget controls
         #self.createControlPanel(self.ax0.ax_widget)
@@ -238,9 +239,9 @@ class FinplotWindow():
         pass
 
     def update_crosshair_text(self,x, y, xtext, ytext):
-        ytext = '%s \n   open: %.4f\n   close: %.4f\n    high: %.4f\n     low: %.4f' \
-                % (ytext, self.data.iloc[x].Open, self.data.iloc[x].Close, self.data.iloc[x].High, self.data.iloc[x].Low)
-        return xtext, ytext
+        ytext = '%s \n Open: %.5f\n Close: %.5f\n High: %.5f\n Low: %.5f' \
+               % (ytext, self.data.iloc[x].Open, self.data.iloc[x].Close, self.data.iloc[x].High, self.data.iloc[x].Low)
+        return xtext,ytext
 
     def activateDarkMode(self, activated):
 

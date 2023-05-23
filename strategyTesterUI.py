@@ -1,28 +1,58 @@
 from PyQt6 import QtCore, QtWidgets, uic
 
 import os 
+import loadDataFilesUI
 
 class StrategyTesterUI(QtWidgets.QWidget):
 
-    def __init__(self, controller):
+    def __init__(self, controller, parentWindow):
         super(StrategyTesterUI, self).__init__()
 
         self.controller = controller
+
+        self.parent = parentWindow
 
         # It does not finish by a "/"
         self.current_dir_path = os.path.dirname(os.path.realpath(__file__))
 
         uic.loadUi( self.current_dir_path + "/ui/strategyTester.ui", self)
+
+        # Data
+        self.importDataBtn = self.findChild(QtWidgets.QPushButton, "importDataBtn")
+        self.importDataBtn.clicked.connect( self.loadData )
         
-        self.runBacktestPB = self.findChild(QtWidgets.QPushButton, "runBacktestPB")
-        self.runBacktestPB.clicked.connect(self.run)
+        # Strategy type PushButtons
+        self.strategyTypeAITensorFlowBtn = self.findChild(QtWidgets.QPushButton, "strategyTypeAITensorFlowBtn")
+        self.strategyTypeAiStablebaselinesBtn = self.findChild(QtWidgets.QPushButton, "strategyTypeAiStablebaselinesBtn")
+        self.strategyTypeAlgoBtn = self.findChild(QtWidgets.QPushButton, "strategyTypeAlgoBtn")
+        self.strategyTypeAiTorchBtn = self.findChild(QtWidgets.QPushButton, "strategyTypeAiTorchBtn")
+        
+        self.strategyTypeDetailsSW = self.findChild(QtWidgets.QStackedWidget, "strategyTypeDetailsSW")
 
-        self.runningStratPB = self.findChild(QtWidgets.QProgressBar, "runningStratPB")
+        # Ai Algo
+        self.AiModelPathLE = self.findChild(QtWidgets.QLineEdit, "AiModelPathLE")
+        self.AiModelPathBtn = self.findChild(QtWidgets.QPushButton, "AiModelPathBtn")
 
+        # Custom Algo
+        self.runningStratBtn = self.findChild(QtWidgets.QProgressBar, "runningStratBtn")
         self.strategyNameCB = self.findChild(QtWidgets.QComboBox, "strategyNameCB")
-        self.strategyNameCB.currentIndexChanged.connect(self.strategyNameActivated)
 
-        self.runBacktestPB.setEnabled(False)
+        # Run button
+        self.runBacktestBtn = self.findChild(QtWidgets.QPushButton, "runBacktestBtn")
+
+        # Connect ui buttons
+        self.strategyTypeAITensorFlowBtn.clicked.connect(self.strategyTypeAITensorFlowActivated)
+        self.strategyTypeAiStablebaselinesBtn.clicked.connect(self.strategyTypeAiStablebaselinesActivated)
+        self.strategyTypeAiTorchBtn.clicked.connect(self.strategyTypeAiTorchActivated)
+        self.strategyTypeAlgoBtn.clicked.connect(self.strategyTypeAlgoActivated)
+
+        self.AiModelPathBtn.clicked.connect(self.openAiFileDialog)
+
+        self.strategyNameCB.currentIndexChanged.connect(self.strategyNameActivated)
+        self.runBacktestBtn.clicked.connect(self.run)
+
+        # Init Run button to false waiting for user inputs
+        self.runBacktestBtn.setEnabled(False)
 
     def initialize(self):
 
@@ -33,16 +63,96 @@ class StrategyTesterUI(QtWidgets.QWidget):
         self.strategyBaseName = []
         for stratName in self.strategyNames:
             # here remove file extension
-            self.strategyBaseName.append(QtCore.QFileInfo(stratName).baseName())
+            if not stratName.startswith('Ai'):
+                self.strategyBaseName.append(QtCore.QFileInfo(stratName).baseName())
 
         self.strategyNameCB.addItems(self.strategyBaseName)
         self.strategyNameCB.setCurrentIndex(self.strategyNameCB.count()-1)
+
+        # 
+        self.loadDataFileUI = loadDataFilesUI.LoadDataFilesUI(self.controller, self.parent)
+        self.loadDataFileUI.hide()
+        pass
+
+    def loadData(self):
+        self.loadDataFileUI.show()
         pass
  
     def run(self):
         self.controller.run()
+        pass
 
     def strategyNameActivated(self):
         stratBaseName = self.strategyNameCB.currentText()
         self.controller.addStrategy(stratBaseName)
+        pass
     
+    def strategyTypeAITensorFlowActivated(self):
+        if self.strategyTypeAITensorFlowBtn.isChecked():
+            self.strategyTypeDetailsSW.setCurrentIndex(1)
+            self.AiModelChecked = "AiTensorFlowModel"
+        pass
+
+    def strategyTypeAiStablebaselinesActivated(self):
+        if self.strategyTypeAiStablebaselinesBtn.isChecked():
+            self.strategyTypeDetailsSW.setCurrentIndex(1)
+            self.AiModelChecked = "AiStableBaselinesModel"
+        pass
+
+    def strategyTypeAiTorchActivated(self):
+        if self.strategyTypeAiTorchBtn.isChecked():
+            self.strategyTypeDetailsSW.setCurrentIndex(1)
+            self.AiModelChecked = "AiTorchModel"
+        pass
+
+    def strategyTypeAlgoActivated(self):
+        if self.strategyTypeAlgoBtn.isChecked():
+            self.strategyTypeDetailsSW.setCurrentIndex(0)
+        pass
+
+    def openAiFileDialog(self):
+
+        if self.AiModelChecked == "AiTensorFlowModel":
+                self.loadTFModel()
+        elif self.AiModelChecked == "AiStableBaselinesModel": 
+            self.loadStableBaselinesModel()
+        elif self.AiModelChecked == "AiTorchModel": 
+            self.loadTorchModel()
+
+        pass
+
+    # Load an AI Model from Tensor Flow framework
+    def loadTFModel(self):
+
+        ai_model_dir = QtWidgets.QFileDialog.getExistingDirectory(self.parent,"Open Tensorflow Model", self.current_dir_path)
+
+        self.controller.addStrategy(self.AiModelChecked)
+
+        self.AiModelPathLE.setText(ai_model_dir)
+        self.controller.strategyParametersSave("model", ai_model_dir)
+
+        pass
+    
+    # Load an AI Model from Stable Baselines framework
+    def loadStableBaselinesModel(self):
+
+        ai_model_zip_file = QtWidgets.QFileDialog.getOpenFileName(self.parent,"Open Torch Model", self.current_dir_path, "*.zip")[0]
+
+        self.controller.addStrategy(self.AiModelChecked)
+
+        self.AiModelPathLE.setText(ai_model_zip_file)
+        self.controller.strategyParametersSave("model", ai_model_zip_file)
+
+        pass
+
+    # Load an AI Model from Py Torch framework
+    def loadTorchModel(self):
+
+        ai_model_zip_file = QtWidgets.QFileDialog.getOpenFileName(self.parent,"Open Torch Model", self.current_dir_path, "*.zip")[0]
+
+        self.controller.addStrategy(self.AiModelChecked)
+
+        self.AiModelPathLE.setText(ai_model_zip_file)
+        self.controller.strategyParametersSave("model", ai_model_zip_file)
+
+        pass

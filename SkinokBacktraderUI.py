@@ -169,7 +169,7 @@ class SkinokBacktraderUI:
                 self.interface.drawChart(df, timeframe)
 
             # Enable run button
-            self.interface.strategyTesterUI.runBacktestPB.setEnabled(True)
+            self.interface.strategyTesterUI.runBacktestBtn.setEnabled(True)
 
             return True
 

@@ -26,14 +26,12 @@ from numpy import NaN
 from pyqtgraph.dockarea import DockArea, Dock
 
 import os
-
 import backtrader as bt
 
 # Ui made with Qt Designer
 import strategyTesterUI
 import strategyResultsUI
 import indicatorParametersUI
-import loadDataFilesUI
 
 # Import Chart lib
 import finplotWindow
@@ -71,7 +69,7 @@ class UserInterface:
         self.win.setWindowTitle("Skinok Backtrader UI v0.3")
         
         # Set width/height of QSplitter
-        self.app.setStyleSheet(qdarkstyle._load_stylesheet())
+        self.app.setStyleSheet(qdarkstyle.load_stylesheet())
 
         pass
 
@@ -86,7 +84,7 @@ class UserInterface:
         self.createUIs()
 
         # Enable run button
-        self.strategyTesterUI.runBacktestPB.setEnabled(False)
+        self.strategyTesterUI.runBacktestBtn.setEnabled(False)
 
         self.strategyTesterUI.initialize()
 
@@ -158,7 +156,7 @@ class UserInterface:
         self.dock_stackedCharts.addWidget( self.stackedCharts, 1 , 0 )
 
         # Create Strategy Tester Tab
-        self.dock_strategyTester = Dock("Strategy Tester", size = (200, 500), closable = False, hideTitle=True)
+        self.dock_strategyTester = Dock("Strategy Tester", closable = False, hideTitle=True)
         self.dockArea.addDock(self.dock_strategyTester, position='left')
 
         # Create Strategy Tester Tab
@@ -174,7 +172,6 @@ class UserInterface:
         
         self.createStrategyTesterUI()
         self.createTradesUI()
-        self.createLoadDataFilesUI()
         #self.createOrdersUI()
         self.createSummaryUI()
 
@@ -189,25 +186,25 @@ class UserInterface:
     def createActions(self):
 
         # Data sources
-        self.backtestDataActionGroup = QtGui.QActionGroup(self.win)
+        #self.backtestDataActionGroup = QtGui.QActionGroup(self.win)
         
-        self.openCSVAction = QtGui.QAction(QtGui.QIcon(""),"Open CSV File", self.backtestDataActionGroup)
-        self.openCSVAction.triggered.connect( self.loadDataFileUI.show )
+        #self.openCSVAction = QtGui.QAction(QtGui.QIcon(""),"Open CSV File", self.backtestDataActionGroup)
+
 
         # AI
-        self.aiActionGroup = QtGui.QActionGroup(self.win)
+        #self.aiActionGroup = QtGui.QActionGroup(self.win)
         
-        self.loadTFModelAction = QtGui.QAction(QtGui.QIcon(""),"Load Tensorflow Model", self.aiActionGroup)
-        self.loadTFModelAction.triggered.connect( self.loadTFModel )
+        #self.loadTFModelAction = QtGui.QAction(QtGui.QIcon(""),"Load Tensorflow Model", self.aiActionGroup)
+        #self.loadTFModelAction.triggered.connect( self.loadTFModel )
 
         #self.loadTorchModelAction = QtWidgets.QAction(QtGui.QIcon(""),"Load Torch Model", self.aiActionGroup)
         #self.loadTorchModelAction.triggered.connect( self.loadTorchModel )
 
-        self.loadStableBaselines3Action = QtGui.QAction(QtGui.QIcon(""),"Load Stable Baselines 3 Model", self.aiActionGroup)
-        self.loadStableBaselines3Action.triggered.connect( self.loadStableBaselinesModel )
+        #self.loadStableBaselines3Action = QtGui.QAction(QtGui.QIcon(""),"Load Stable Baselines 3 Model", self.aiActionGroup)
+        #self.loadStableBaselines3Action.triggered.connect( self.loadStableBaselinesModel )
 
         # Options
-        self.optionsActionGroup = QtGui.QActionGroup(self.win)
+        #self.optionsActionGroup = QtGui.QActionGroup(self.win)
 
         pass
 
@@ -216,19 +213,19 @@ class UserInterface:
     #########
     def createMenuBar(self):
 
-        self.menubar = self.win.menuBar()
+        #self.menubar = self.win.menuBar()
 
         #self.indicatorsMenu = self.menubar.addMenu("Indicators")
         #self.indicatorsMenu.addActions(self.indicatorsActionGroup.actions())
 
-        self.backtestDataMenu = self.menubar.addMenu("Backtest Data")
-        self.backtestDataMenu.addActions(self.backtestDataActionGroup.actions())
+        #self.backtestDataMenu = self.menubar.addMenu("Backtest Data")
+        #self.backtestDataMenu.addActions(self.backtestDataActionGroup.actions())
 
-        self.aiMenu = self.menubar.addMenu("Artificial Intelligence")
-        self.aiMenu.addActions(self.aiActionGroup.actions())
+        #self.aiMenu = self.menubar.addMenu("Artificial Intelligence")
+        #self.aiMenu.addActions(self.aiActionGroup.actions())
 
-        self.optionsMenu = self.menubar.addMenu("Options")
-        self.optionsMenu.addActions(self.optionsActionGroup.actions())
+        #self.optionsMenu = self.menubar.addMenu("Options")
+        #self.optionsMenu.addActions(self.optionsActionGroup.actions())
 
         pass
 
@@ -368,21 +365,12 @@ class UserInterface:
     #########
     #  UI parameters for testing stategies
     #########
-    def createLoadDataFilesUI(self):
-
-        self.loadDataFileUI = loadDataFilesUI.LoadDataFilesUI(self.controller, self.win)
-        self.loadDataFileUI.hide()
-        pass
-
-    #########
-    #  UI parameters for testing stategies
-    #########
     def createStrategyTesterUI(self):
 
-        self.strategyTesterUI = strategyTesterUI.StrategyTesterUI(self.controller)
+        self.strategyTesterUI = strategyTesterUI.StrategyTesterUI(self.controller, self.win)
         self.dock_strategyTester.addWidget(self.strategyTesterUI)
 
-        self.strategyResultsUI = strategyResultsUI.StrategyResultsUI(self.controller)
+        self.strategyResultsUI = strategyResultsUI.StrategyResultsUI(self.controller, self.win)
         self.dock_strategyResultsUI.addWidget(self.strategyResultsUI)
 
         #
@@ -401,7 +389,7 @@ class UserInterface:
     #########
     def createSummaryUI(self):
         
-        self.summaryTableWidget = QtWidgets.QTableWidget(self.strategyResultsUI.SummaryGB)
+        self.summaryTableWidget = self.strategyResultsUI.summaryTableWidget
         
         self.summaryTableWidget.setColumnCount(2)
 
@@ -409,7 +397,7 @@ class UserInterface:
         self.summaryTableWidget.horizontalHeader().hide()
         self.summaryTableWidget.setShowGrid(False)
 
-        self.strategyResultsUI.SummaryGB.layout().addWidget(self.summaryTableWidget)
+        self.summaryTableWidget.setStyleSheet("QTableWidget { border: 0; }")
 
         pass
 
@@ -421,31 +409,47 @@ class UserInterface:
         self.summaryTableWidget.setRowCount(8)
 
         self.summaryTableWidget.setItem(0,0,QtWidgets.QTableWidgetItem("Cash"))
-        self.summaryTableWidget.setItem(0,1,QtWidgets.QTableWidgetItem(str(brokerCash)))
+        item = QtWidgets.QTableWidgetItem(str(round(brokerCash,2)))
+        item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+        self.summaryTableWidget.setItem(0,1,item)
 
         self.summaryTableWidget.setItem(1,0,QtWidgets.QTableWidgetItem("Value"))
-        self.summaryTableWidget.setItem(1,1,QtWidgets.QTableWidgetItem(str(brokerValue)))
+        item = QtWidgets.QTableWidgetItem(str(round(brokerValue,2)))
+        item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+        self.summaryTableWidget.setItem(1,1,item)
 
         # if there are some trades
         if len(tradeAnalysis) > 1:
 
             self.summaryTableWidget.setItem(2,0,QtWidgets.QTableWidgetItem("Profit total"))
-            self.summaryTableWidget.setItem(2,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["pnl"]["net"]["total"])))
+            item = QtWidgets.QTableWidgetItem(str(round(tradeAnalysis["pnl"]["net"]["total"],2)))
+            item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+            self.summaryTableWidget.setItem(2,1, item )
 
             self.summaryTableWidget.setItem(3,0,QtWidgets.QTableWidgetItem("Number of trades"))
-            self.summaryTableWidget.setItem(3,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["total"]["total"])))
+            item = QtWidgets.QTableWidgetItem(str(round(tradeAnalysis["total"]["total"],2)))
+            item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+            self.summaryTableWidget.setItem(3,1,item)
 
             self.summaryTableWidget.setItem(4,0,QtWidgets.QTableWidgetItem("Won"))
-            self.summaryTableWidget.setItem(4,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["won"]['total'])))
+            item = QtWidgets.QTableWidgetItem(str(round(tradeAnalysis["won"]['total'],2)))
+            item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+            self.summaryTableWidget.setItem(4,1,item)
 
             self.summaryTableWidget.setItem(5,0,QtWidgets.QTableWidgetItem("Lost"))
-            self.summaryTableWidget.setItem(5,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["lost"]['total'])))
+            item = QtWidgets.QTableWidgetItem(str(round(tradeAnalysis["lost"]['total'],2)))
+            item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+            self.summaryTableWidget.setItem(5,1,item)
 
             self.summaryTableWidget.setItem(6,0,QtWidgets.QTableWidgetItem("Long"))
-            self.summaryTableWidget.setItem(6,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["long"]["total"])))
+            item = QtWidgets.QTableWidgetItem(str(round(tradeAnalysis["long"]["total"],2)))
+            item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+            self.summaryTableWidget.setItem(6,1,item)
 
             self.summaryTableWidget.setItem(7,0,QtWidgets.QTableWidgetItem("Short"))
-            self.summaryTableWidget.setItem(7,1,QtWidgets.QTableWidgetItem(str(tradeAnalysis["short"]["total"])))
+            item = QtWidgets.QTableWidgetItem(str(round(tradeAnalysis["short"]["total"],2)))
+            item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+            self.summaryTableWidget.setItem(7,1,item)
 
             self.summaryTableWidget.horizontalHeader().setStretchLastSection(True)
             self.summaryTableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
@@ -835,17 +839,21 @@ class UserInterface:
         # Insert parameters
         row = 0
         for parameterName, parameterValue in strategy.params._getitems():
-            label = QtWidgets.QLabel(parameterName)
-            lineEdit = QtWidgets.QLineEdit(str(parameterValue))
-            lineEdit.setObjectName(parameterName)
-            # Save the parameter to inject it in the addStrategy method
-            self.controller.strategyParametersSave(parameterName, parameterValue)
 
-            # Connect the parameter changed slot
-            lineEdit.textChanged.connect(functools.partial(self.controller.strategyParametersChanged, lineEdit, parameterName, parameterValue))
+            if parameterName is not 'model':
+                label = QtWidgets.QLabel(parameterName)
+                lineEdit = QtWidgets.QLineEdit(str(parameterValue))
+                lineEdit.setObjectName(parameterName)
+                
+                # Connect the parameter changed slot
+                lineEdit.textChanged.connect(functools.partial(self.controller.strategyParametersChanged, lineEdit, parameterName, parameterValue))
 
-            self.strategyTesterUI.parametersLayout.addRow(label, lineEdit )
-            row = row + 1
+                self.strategyTesterUI.parametersLayout.addRow(label, lineEdit )
+
+                # Save the parameter to inject it in the addStrategy method
+                self.controller.strategyParametersSave(parameterName, parameterValue)
+
+                row = row + 1
             pass
 
         # Parameter box size
@@ -854,43 +862,6 @@ class UserInterface:
 
         pass
 
-    # Load an AI Model from Tensor Flow framework
-    def loadTFModel(self):
 
-        ai_model_dir = QtWidgets.QFileDialog.getExistingDirectory(self.win,"Open Tensorflow Model", self.current_dir_path)
-
-        # Add the AI Model Strategy
-        self.controller.addStrategy("AiTensorFlowModel")
-
-        self.strategyTesterUI.findChild(QtWidgets.QLineEdit, "model").setText(ai_model_dir)
-        self.controller.strategyParametersSave("model", ai_model_dir)
-
-        pass
-    
-    # Load an AI Model from Py Torch framework
-    def loadTorchModel(self):
-
-        ai_model_zip_file = QtWidgets.QFileDialog.getOpenFileName(self.win,"Open Torch Model", self.current_dir_path, "*.zip")[0]
-
-        # Add the AI Model Strategy
-        self.controller.addStrategy("AiTorchModel")
-
-        self.strategyTesterUI.findChild(QtWidgets.QLineEdit, "model").setText(ai_model_zip_file)
-        self.controller.strategyParametersSave("model", ai_model_zip_file)
-
-        pass
-
-    # Load an AI Model from Stable Baselines framework
-    def loadStableBaselinesModel(self):
-
-        ai_model_zip_file = QtWidgets.QFileDialog.getOpenFileName(self.win,"Open Torch Model", self.current_dir_path, "*.zip")[0]
-
-        # Add the AI Model Strategy
-        self.controller.addStrategy("AiStableBaselinesModel")
-
-        self.strategyTesterUI.findChild(QtWidgets.QLineEdit, "model").setText(ai_model_zip_file)
-        self.controller.strategyParametersSave("model", ai_model_zip_file)
-
-        pass
 
     
