@@ -73,11 +73,10 @@ class FinplotWindow():
 
     def drawCandles(self):
 
-        fplt.candlestick_ochl(self.data['Open Close High Low'.split()], ax=self.ax0,colorfunc=chinese_price_colorfilter)
+        fplt.candlestick_ochl(self.data['Open Close High Low'.split()], ax=self.ax0 ) # colorfunc=chinese_price_colorfilter
         
         #self.hover_label = fplt.add_legend('', ax=self.ax0)
         #fplt.set_time_inspector(self.update_legend_text, ax=self.ax0, when='hover', data=data)
-
 
         # Inside plot widget controls
         #self.createControlPanel(self.ax0.ax_widget)
