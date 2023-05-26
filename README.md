@@ -1,4 +1,4 @@
-[![Discord](https://img.shields.io/discord/1108412998520938557.svg?label=Discord&logo=Discord&color=7289DA&labelColor=2C2F33)](https://discord.gg/1108412998520938557)
+[![Discord](https://img.shields.io/discord/1108412998520938557.svg?label=Discord&logo=Discord&color=7289DA&labelColor=2C2F33)](https://discord.gg/56ERy324)
 
 # Skinok backtrader UI (PyQt and finplot)
 
