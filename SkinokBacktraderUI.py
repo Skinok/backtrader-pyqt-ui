@@ -23,6 +23,8 @@ import backtrader as bt
 from CerebroEnhanced import *
 
 import sys, os
+
+from dataManager import DataManager
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/observers')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/strategies')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../finplot')
@@ -34,6 +36,7 @@ import userInterface as Ui
 
 from observers.SkinokObserver import SkinokObserver
 from wallet import Wallet
+from userConfig import UserConfig
 
 class SkinokBacktraderUI:
 
@@ -63,6 +66,42 @@ class SkinokBacktraderUI:
 
         # Timeframes
         self.timeFrameIndex = {"M1" : 0, "M5" : 10, "M15": 20, "M30": 30, "H1":40, "H4":50, "D":60, "W":70}
+
+        self.dataManager = DataManager()
+
+        # Restore previous session for faster tests
+        self.loadConfig()
+
+        pass
+
+    def loadConfig(self):
+
+        userConfig = UserConfig()
+        userConfig.loadConfigFile()
+
+        isEmpty = True
+
+        # Load previous data files
+        for timeframe in self.timeFrameIndex.keys():
+
+            if timeframe in userConfig.data.keys():
+                
+                filePath = userConfig.data[timeframe]['filePath']
+                timeFormat = userConfig.data[timeframe]['timeFormat']
+                separator = userConfig.data[timeframe]['separator']
+
+                fileName = os.path.basename(filePath)
+
+                df, errorMessage = self.dataManager.loadDataFile(filePath,timeFormat, separator)
+
+                if df is not None:
+                    self.dataframes[fileName] = df
+                    isEmpty = False
+                else:
+                    print(f" Error loading user data file : {errorMessage}")
+
+        if not isEmpty:
+            self.importData()
 
         pass
 
@@ -97,53 +136,16 @@ class SkinokBacktraderUI:
 
         pass
 
-    # Return True if loading is successfull & the error string if False
-    def loadData(self, dataPath, datetimeFormat, separator):
 
-        # Try importing data file
-        # We should code a widget that ask for options as : separators, date format, and so on...
-        try:
-            fileName = os.path.basename(dataPath)
-
-            # Python contains
-            if not dataPath in self.dataframes: 
-                if pd.__version__<'2.0.0':
-                    self.dataframes[fileName] = pd.read_csv(dataPath, 
-                                                        sep=separator, 
-                                                        parse_dates=[0], 
-                                                        date_parser=lambda x: pd.to_datetime(x, format=datetimeFormat), 
-                                                        skiprows=0, 
-                                                        header=0, 
-                                                        names=["Time", "Open", "High", "Low", "Close", "Volume"],
-                                                        index_col=0)
-                else:
-                    self.dataframes[fileName] = pd.read_csv(dataPath, 
-                                                        sep=separator, 
-                                                        parse_dates=[0], 
-                                                        date_format=datetimeFormat, 
-                                                        skiprows=0, 
-                                                        header=0, 
-                                                        names=["Time", "Open", "High", "Low", "Close", "Volume"],
-                                                        index_col=0)
-
-        except ValueError as err:
-            return False, "ValueError error:" + str(err)
-        except AttributeError as err:
-            return False, "AttributeError error:" + str(err)
-        except IndexError as err:
-            return False, "IndexError error:" + str(err)
-        except :
-            return False, "Unexpected error:" + str(sys.exc_info()[0])
-
-        return True, ""
-
-    def importData(self, fileNames):
+    def importData(self):
 
         try:
+
+            fileNames = list(self.dataframes.keys())
                 
             # Sort data by timeframe
             # For cerebro, we need to add lower timeframes first
-            fileNames.sort( key=lambda x: self.timeFrameIndex[self.findTimeFrame(self.dataframes[x])])
+            fileNames.sort( key=lambda x: self.timeFrameIndex[self.dataManager.findTimeFrame(self.dataframes[x])] )
 
             # Files should be loaded in the good order
             for fileName in fileNames:
@@ -160,7 +162,7 @@ class SkinokBacktraderUI:
                 self.cerebro.adddata(self.data)  # Add the data feed
 
                 # Find timeframe
-                timeframe = self.findTimeFrame(df)
+                timeframe = self.dataManager.findTimeFrame(df)
 
                 # Create the chart window for the good timeframe (if it does not already exists?)
                 self.interface.createChartDock(timeframe)
@@ -182,29 +184,7 @@ class SkinokBacktraderUI:
             return False
         pass
 
-    def findTimeFrame(self, df):
 
-        if len(df.index) > 2:
-            dtDiff = df.index[1] - df.index[0]
-
-            if dtDiff.total_seconds() == 60:
-                return "M1"
-            elif dtDiff.total_seconds() == 300:
-                return "M5"
-            elif dtDiff.total_seconds() == 900:
-                return "M15"
-            elif dtDiff.total_seconds() == 1800:
-                return "M30"
-            elif dtDiff.total_seconds() == 3600:
-                return "H1"
-            elif dtDiff.total_seconds() == 14400:
-                return "H4"
-            elif dtDiff.total_seconds() == 86400:
-                return "D"
-            elif dtDiff.total_seconds() == 604800:
-                return "W"
-
-        pass
 
     def addStrategy(self, strategyName):
         

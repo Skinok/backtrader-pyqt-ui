@@ -682,8 +682,6 @@ class UserInterface:
     def addEma(self):
 
         # Show indicator parameter dialog
-        
-
         paramDialog = indicatorParametersUI.IndicatorParametersUI()
         paramDialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         paramDialog.setTitle("EMA Indicator parameters")
@@ -863,5 +861,15 @@ class UserInterface:
         pass
 
 
+    # Le reste du code de la classe
+    def save_results(self):
+        # Sauvegarde les résultats du backtest dans un fichier CSV
+        stats = self.bt.run() # stats est une série pandas avec les résultats du backtest
+        stats.to_csv("results.csv") # sauvegarde les résultats dans un fichier CSV
 
-    
+    def load_results(self):
+        # Charge les résultats du backtest à partir d'un fichier CSV
+        stats = pd.read_csv("results.csv") # charge les résultats à partir d'un fichier CSV
+        import finplot as fplt # importe la librairie finplot
+        fplt.candlestick_ochl(stats[['Open', 'Close', 'High', 'Low']]) # affiche le graphique du backtest à partir des résultats
+        fplt.show() # montre le graphique

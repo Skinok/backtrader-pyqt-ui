@@ -2,6 +2,9 @@ from PyQt6 import QtCore, QtWidgets, uic
 import pandas as pd
 import os 
 
+from userConfig import UserConfig
+from dataManager import DataManager
+
 class LoadDataFilesUI(QtWidgets.QWidget):
 
     def __init__(self, controller, parent = None):
@@ -19,7 +22,7 @@ class LoadDataFilesUI(QtWidgets.QWidget):
         uic.loadUi( self.current_dir_path + "/ui/loadDataFiles.ui", self)
 
         self.filePathLE = self.findChild(QtWidgets.QLineEdit, "filePathLE")
-        self.datetimeFormatLE = self.findChild(QtWidgets.QComboBox, "datetimeFormatLE")
+        self.datetimeFormatLE = self.findChild(QtWidgets.QLineEdit, "datetimeFormatLE")
        
         self.tabRB = self.findChild(QtWidgets.QRadioButton, "tabRB")
         self.commaRB = self.findChild(QtWidgets.QRadioButton, "commaRB")
@@ -34,67 +37,58 @@ class LoadDataFilesUI(QtWidgets.QWidget):
 
         self.dataFilesListWidget = self.findChild(QtWidgets.QListWidget, "dataFilesListWidget")
 
-        # Default values
-        self.datetimeFormatLE.addItem("%Y-%m-%d %H:%M:%S")
-        self.datetimeFormatLE.addItem("%Y-%m-%d %H:%M")
-        self.datetimeFormatLE.addItem("%Y-%m-%d %H")
-        self.datetimeFormatLE.addItem("%Y-%m-%d")
-
         # Connect slots : open file
-        self.openFilePB.clicked.connect( self.openFile )
+        self.openFilePB.clicked.connect( self.openFileDialog )
         self.loadFilePB.clicked.connect( self.loadFile )
         self.importPB.clicked.connect( self.importFiles )
+
+        self.dataManager = DataManager()
+        self.userConfig = UserConfig()
         
         pass
 
-    def openFile(self):
-        self.dataFileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Open data file', self.current_dir_path + "/data","CSV files (*.csv)")[0]
-        self.filePathLE.setText(self.dataFileName)
-        fileparts = os.path.split(self.dataFileName)
-        datafile = fileparts[1]
-        print(datafile[-4:])
-        if datafile[-4:]=='.csv':
-            self.commaRB.setChecked(True)
-            df = pd.read_csv(self.dataFileName, nrows=1)
-            
-            # print(df)
-            timestring = df.iloc[0,0]
-            ncolon = timestring.count(':')
-            if ncolon==2:
-                self.datetimeFormatLE.setCurrentIndex(0)        
-            elif ncolon==1:
-                self.datetimeFormatLE.setCurrentIndex(1) 
-            else:
-                nspace = timestring.count(' ')
-                if nspace==1:
-                    self.datetimeFormatLE.setCurrentIndex(2)
-                else:
-                    self.datetimeFormatLE.setCurrentIndex(3)
-             
+    def openFileDialog(self):
+        self.dataFilePath = QtWidgets.QFileDialog.getOpenFileName(self, 'Open data file', self.current_dir_path + "/data","CSV files (*.csv)")[0]
+        self.filePathLE.setText(self.dataFilePath)
+
+        self.datetimeFormatLE.setText(self.dataManager.DatetimeFormat(self.dataFilePath))
+
         pass
 
     def loadFile(self):
 
         # try loading file by controller
         separator = '\t' if self.tabRB.isChecked() else ',' if self.commaRB.isChecked() else ';'
-        success, errorMessage = self.controller.loadData(self.dataFileName, self.datetimeFormatLE.currentText(), separator)
 
-        if success:
+        timeFormat = self.datetimeFormatLE.text()
 
-            self.errorLabel.setStyleSheet("color:green")
-            self.errorLabel.setText("The file has been loaded correctly.")
+        if not self.dataFilePath in self.controller.dataframes:
+            
+            fileName = os.path.basename(self.dataFilePath)
 
-            # Add file name
-            fileName = os.path.basename(self.dataFileName)
-            items = self.dataFilesListWidget.findItems(fileName, QtCore.Qt.MatchFixedString)
+            df, errorMessage = self.dataManager.loadDataFile(self.dataFilePath, timeFormat, separator)
 
-            if len(items) == 0:
-                self.dataFilesListWidget.addItem(os.path.basename(self.dataFileName))
+            if df is not None:
 
-        else:
+                # ugly to reference the controller this way
+                self.controller.dataframes[fileName] = df
 
-            self.errorLabel.setStyleSheet("color:red")
-            self.errorLabel.setText(errorMessage)
+                self.errorLabel.setStyleSheet("color:green")
+                self.errorLabel.setText("The file has been loaded correctly.")
+
+                # Add file name
+                items = self.dataFilesListWidget.findItems(fileName, QtCore.Qt.MatchFixedString)
+
+                if len(items) == 0:
+                    self.dataFilesListWidget.addItem(os.path.basename(self.dataFilePath))
+
+                # Store data file in the user config parameters to later use
+                timeframe = self.dataManager.findTimeFrame(df)
+                self.userConfig.saveParameter(timeframe, {"filePath": self.dataFilePath, "separator" : separator, "timeFormat": timeFormat})
+
+            else:
+                self.errorLabel.setStyleSheet("color:red")
+                self.errorLabel.setText(errorMessage)
 
         pass
 
@@ -102,15 +96,14 @@ class LoadDataFilesUI(QtWidgets.QWidget):
     def importFiles(self):
 
         # Get all element in list widget
-        items = []
-        for x in range(self.dataFilesListWidget.count()):
-            items.append(self.dataFilesListWidget.item(x).text())
+        #items = []
+        #for x in range(self.dataFilesListWidget.count()):
+            #items.append(self.dataFilesListWidget.item(x).text())
 
         # Sort item by timeframe
-        
 
         # Give all ordered data path to the controller
-        if self.controller.importData(items):
+        if self.controller.importData():
             self.dataFilesListWidget.clear()
             self.hide()
             
