@@ -1,3 +1,5 @@
+[![Discord](https://img.shields.io/badge/DISCORD-Join%20the%20server-blue?style=for-the-badge&logo=discord)](https://discord.gg/56ERy324)
+
 # Skinok backtrader UI (PyQt and finplot)
 
 ![Backtrader PyQt Ui](./images/overview.png "Backtrader PyQt Ui")
