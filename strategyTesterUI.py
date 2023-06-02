@@ -41,12 +41,10 @@ class StrategyTesterUI(QtWidgets.QWidget):
         self.runBacktestBtn = self.findChild(QtWidgets.QPushButton, "runBacktestBtn")
 
         # Connect ui buttons
-        self.strategyTypeAITensorFlowBtn.clicked.connect(self.strategyTypeAITensorFlowActivated)
-        self.strategyTypeAiStablebaselinesBtn.clicked.connect(self.strategyTypeAiStablebaselinesActivated)
-        self.strategyTypeAiTorchBtn.clicked.connect(self.strategyTypeAiTorchActivated)
+        self.strategyTypeAITensorFlowBtn.clicked.connect(self.loadTFModel)
+        self.strategyTypeAiStablebaselinesBtn.clicked.connect(self.loadStableBaselinesModel)
+        self.strategyTypeAiTorchBtn.clicked.connect(self.loadTorchModel)
         self.strategyTypeAlgoBtn.clicked.connect(self.strategyTypeAlgoActivated)
-
-        self.AiModelPathBtn.clicked.connect(self.openAiFileDialog)
 
         self.strategyNameCB.currentIndexChanged.connect(self.strategyNameActivated)
         self.runBacktestBtn.clicked.connect(self.run)
@@ -86,47 +84,20 @@ class StrategyTesterUI(QtWidgets.QWidget):
         stratBaseName = self.strategyNameCB.currentText()
         self.controller.addStrategy(stratBaseName)
         pass
-    
-    def strategyTypeAITensorFlowActivated(self):
-        if self.strategyTypeAITensorFlowBtn.isChecked():
-            self.strategyTypeDetailsSW.setCurrentIndex(1)
-            self.AiModelChecked = "AiTensorFlowModel"
-        pass
-
-    def strategyTypeAiStablebaselinesActivated(self):
-        if self.strategyTypeAiStablebaselinesBtn.isChecked():
-            self.strategyTypeDetailsSW.setCurrentIndex(1)
-            self.AiModelChecked = "AiStableBaselinesModel"
-        pass
-
-    def strategyTypeAiTorchActivated(self):
-        if self.strategyTypeAiTorchBtn.isChecked():
-            self.strategyTypeDetailsSW.setCurrentIndex(1)
-            self.AiModelChecked = "AiTorchModel"
-        pass
 
     def strategyTypeAlgoActivated(self):
         if self.strategyTypeAlgoBtn.isChecked():
             self.strategyTypeDetailsSW.setCurrentIndex(0)
         pass
 
-    def openAiFileDialog(self):
-
-        if self.AiModelChecked == "AiTensorFlowModel":
-                self.loadTFModel()
-        elif self.AiModelChecked == "AiStableBaselinesModel": 
-            self.loadStableBaselinesModel()
-        elif self.AiModelChecked == "AiTorchModel": 
-            self.loadTorchModel()
-
-        pass
 
     # Load an AI Model from Tensor Flow framework
     def loadTFModel(self):
 
         ai_model_dir = QtWidgets.QFileDialog.getExistingDirectory(self.parent,"Open Tensorflow Model", self.current_dir_path)
 
-        self.controller.addStrategy(self.AiModelChecked)
+        self.controller.addStrategy("AiTensorFlowModel")
+        self.strategyTypeDetailsSW.setCurrentIndex(1)
 
         self.AiModelPathLE.setText(ai_model_dir)
         self.controller.strategyParametersSave("model", ai_model_dir)
@@ -138,7 +109,8 @@ class StrategyTesterUI(QtWidgets.QWidget):
 
         ai_model_zip_file = QtWidgets.QFileDialog.getOpenFileName(self.parent,"Open Torch Model", self.current_dir_path, "*.zip")[0]
 
-        self.controller.addStrategy(self.AiModelChecked)
+        self.controller.addStrategy("AiStableBaselinesModel")
+        self.strategyTypeDetailsSW.setCurrentIndex(1)
 
         self.AiModelPathLE.setText(ai_model_zip_file)
         self.controller.strategyParametersSave("model", ai_model_zip_file)
@@ -150,7 +122,8 @@ class StrategyTesterUI(QtWidgets.QWidget):
 
         ai_model_zip_file = QtWidgets.QFileDialog.getOpenFileName(self.parent,"Open Torch Model", self.current_dir_path, "*.zip")[0]
 
-        self.controller.addStrategy(self.AiModelChecked)
+        self.controller.addStrategy("AiTorchModel")
+        self.strategyTypeDetailsSW.setCurrentIndex(1)
 
         self.AiModelPathLE.setText(ai_model_zip_file)
         self.controller.strategyParametersSave("model", ai_model_zip_file)

@@ -160,9 +160,9 @@ class UserInterface:
         self.dockArea.addDock(self.dock_strategyTester, position='left')
 
         # Create Strategy Tester Tab
-        self.dock_strategyResultsUI = Dock("Strategy Tester", size = (1000, 250), closable = False, hideTitle=True)
+        self.dock_strategyResultsUI = Dock("Strategy Tester", size = (1000, 200), closable = False, hideTitle=True)
         self.dockArea.addDock(self.dock_strategyResultsUI, position='bottom')
-
+        self.dock_strategyResultsUI.hide()
         pass
 
     #########

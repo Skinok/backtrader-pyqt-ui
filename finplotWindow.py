@@ -129,8 +129,6 @@ class FinplotWindow():
                 ##############
                 if order.isbuy():
 
-                    direction = "buy"
-
                     # Tracer les traites allant des ouvertures de positions vers la fermeture de position
                     if currentPositionSize < 0:
                         
@@ -172,8 +170,6 @@ class FinplotWindow():
                 # Sell
                 ##############
                 elif order.issell():
-                    direction = "sell"
-
 
                     if currentPositionSize < 0:
                         # Augmentation de la postion
@@ -220,7 +216,7 @@ class FinplotWindow():
                 currentPositionSize += order.size
 
                 # Todo: We could display the size of the order with a label on the chart
-                fplt.add_order(bt.num2date(order.executed.dt), order.executed.price, direction, ax=self.ax0)
+                fplt.add_order(bt.num2date(order.executed.dt), order.executed.price, order.isbuy(), ax=self.ax0)
 
         pass
     

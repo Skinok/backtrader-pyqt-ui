@@ -32,7 +32,7 @@ class DataManager(Singleton):
 
     # Return True if loading is successfull & the error string if False
     # dataPath is the full file path
-    def loadDataFile(self, dataPath, datetimeFormat, separator):
+    def loadDataFrame(self, loadDataFile):
 
         # Try importing data file
         # We should code a widget that ask for options as : separators, date format, and so on...
@@ -40,19 +40,19 @@ class DataManager(Singleton):
 
             # Python contains
             if pd.__version__<'2.0.0':
-                df = pd.read_csv(dataPath, 
-                                    sep=separator, 
+                df = pd.read_csv(loadDataFile.filePath, 
+                                    sep=loadDataFile.separator, 
                                     parse_dates=[0], 
-                                    date_parser=lambda x: pd.to_datetime(x, format=datetimeFormat), 
+                                    date_parser=lambda x: pd.to_datetime(x, format=loadDataFile.timeFormat), 
                                     skiprows=0, 
                                     header=0, 
                                     names=["Time", "Open", "High", "Low", "Close", "Volume"],
                                     index_col=0)
             else:
-                df = pd.read_csv(dataPath,
-                                    sep=separator, 
+                df = pd.read_csv(loadDataFile.filePath,
+                                    sep=loadDataFile.separator, 
                                     parse_dates=[0], 
-                                    date_format=datetimeFormat, 
+                                    date_format=loadDataFile.timeFormat, 
                                     skiprows=0, 
                                     header=0, 
                                     names=["Time", "Open", "High", "Low", "Close", "Volume"],

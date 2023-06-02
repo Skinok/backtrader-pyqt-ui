@@ -23,6 +23,7 @@ import backtrader as bt
 from CerebroEnhanced import *
 
 import sys, os
+from DataFile import DataFile
 
 from dataManager import DataManager
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/observers')
@@ -38,6 +39,8 @@ from observers.SkinokObserver import SkinokObserver
 from wallet import Wallet
 from userConfig import UserConfig
 
+from PyQt6 import QtCore
+
 class SkinokBacktraderUI:
 
     def __init__(self):
@@ -48,7 +51,7 @@ class SkinokBacktraderUI:
 
         # Init attributes
         self.strategyParameters = {}
-        self.dataframes = {}
+        self.dataFiles = {}
 
         # Global is here to update the Ui in observers easily, if you find a better way, don't hesistate to tell me (Skinok)
         global interface
@@ -82,23 +85,32 @@ class SkinokBacktraderUI:
         isEmpty = True
 
         # Load previous data files
-        for timeframe in self.timeFrameIndex.keys():
+        #for timeframe in self.timeFrameIndex.keys():
 
-            if timeframe in userConfig.data.keys():
-                
-                filePath = userConfig.data[timeframe]['filePath']
-                timeFormat = userConfig.data[timeframe]['timeFormat']
-                separator = userConfig.data[timeframe]['separator']
+        for timeframe in userConfig.data.keys():
 
-                fileName = os.path.basename(filePath)
+            dataFile = DataFile()
+            
+            dataFile.filePath = userConfig.data[timeframe]['filePath']
+            dataFile.fileName = userConfig.data[timeframe]['fileName']
+            dataFile.timeFormat = userConfig.data[timeframe]['timeFormat']
+            dataFile.separator = userConfig.data[timeframe]['separator']
+            dataFile.timeFrame = timeframe
 
-                df, errorMessage = self.dataManager.loadDataFile(filePath,timeFormat, separator)
+            if not dataFile.timeFormat in self.dataFiles:
+                dataFile.dataFrame, errorMessage = self.dataManager.loadDataFrame(dataFile)
 
-                if df is not None:
-                    self.dataframes[fileName] = df
+                if dataFile.dataFrame is not None:
+
                     isEmpty = False
-                else:
-                    print(f" Error loading user data file : {errorMessage}")
+
+                    # REALLY UGLY : it should be a function of user interface
+                    items = self.interface.strategyTesterUI.loadDataFileUI.dataFilesListWidget.findItems(dataFile.fileName, QtCore.Qt.MatchFixedString)
+
+                    if len(items) == 0:
+                        self.interface.strategyTesterUI.loadDataFileUI.dataFilesListWidget.addItem(os.path.basename(dataFile.filePath))
+                    
+                    self.dataFiles[dataFile.timeFrame] = dataFile;
 
         if not isEmpty:
             self.importData()
@@ -140,17 +152,17 @@ class SkinokBacktraderUI:
     def importData(self):
 
         try:
-
-            fileNames = list(self.dataframes.keys())
+            
+            timeFrames = list(self.dataFiles.keys())
                 
             # Sort data by timeframe
             # For cerebro, we need to add lower timeframes first
-            fileNames.sort( key=lambda x: self.timeFrameIndex[self.dataManager.findTimeFrame(self.dataframes[x])] )
+            timeFrames.sort( key=lambda x: self.timeFrameIndex[x] )
 
             # Files should be loaded in the good order
-            for fileName in fileNames:
+            for timeFrame in timeFrames:
                 
-                df = self.dataframes[fileName]
+                df = self.dataFiles[timeFrame].dataFrame
 
                 # Datetime first column : 2012-12-28 17:45:00
                 #self.dataframe['TimeInt'] = pd.to_datetime(self.dataframe.index).astype('int64') # use finplot's internal representation, which is ns
@@ -161,14 +173,11 @@ class SkinokBacktraderUI:
                 # Add data to cerebro : only add data when all files have been selected for multi-timeframes
                 self.cerebro.adddata(self.data)  # Add the data feed
 
-                # Find timeframe
-                timeframe = self.dataManager.findTimeFrame(df)
-
                 # Create the chart window for the good timeframe (if it does not already exists?)
-                self.interface.createChartDock(timeframe)
+                self.interface.createChartDock(timeFrame)
 
                 # Draw charts based on input data
-                self.interface.drawChart(df, timeframe)
+                self.interface.drawChart(df, timeFrame)
 
             # Enable run button
             self.interface.strategyTesterUI.runBacktestBtn.setEnabled(True)
@@ -176,9 +185,9 @@ class SkinokBacktraderUI:
             return True
 
         except AttributeError as e:
-            print("AttributeError error:" + str(e))
+            print("AttributeError error:" + str(e) + " " + str(sys.exc_info()[0]))
         except KeyError as e:
-            print("KeyError error:" + str(e))
+            print("KeyError error:" + str(e) + " " + str(sys.exc_info()[0]))
         except:
             print("Unexpected error:" + str(sys.exc_info()[0]))
             return False
@@ -262,12 +271,11 @@ class SkinokBacktraderUI:
         #self.interface.createTransactionsUI(self.portfolio_transactions)
         self.interface.fillSummaryUI(self.strat_results.stats.broker.cash[0], self.strat_results.stats.broker.value[0], self.strat_results.analyzers.ta.get_analysis())
         self.interface.fillTradesUI(self.strat_results._trades.items())        
-        
+        self.interface.dock_strategyResultsUI.show()
         #self.interface.drawTrades(self.strat_results._trades.items())
         #Orders filters
         self.myOrders = []
         for order in self.strat_results._orders:
-
             if order.status in [order.Completed]:
                 self.myOrders.append(order)
 
@@ -281,7 +289,7 @@ class SkinokBacktraderUI:
         pnl_data['cash'] = self.wallet.cash_list
         
         # really uggly
-        pnl_data['time'] = list(self.dataframes.values())[0].index
+        pnl_data['time'] = list(self.dataFiles.values())[0].dataFrame.index
 
         # draw charts
         df = pd.DataFrame(pnl_data) 

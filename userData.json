@@ -1,12 +1,16 @@
 {
     "M5": {
+        "fileName": "EURUSD_M5.csv",
         "filePath": "C:/perso/trading/anaconda3/backtrader-ichimoku/data/Source 1/EURUSD_M5.csv",
         "separator": ",",
-        "timeFormat": "%Y-%m-%d %H:%M"
+        "timeFormat": "%Y-%m-%d %H:%M",
+        "timeFrame": "M5"
     },
-    "H1": {
-        "filePath": "C:/perso/trading/anaconda3/backtrader-ichimoku/data/Source 1/EURUSD_H1.csv",
+    "M15": {
+        "fileName": "EURUSD_M15.csv",
+        "filePath": "C:/perso/trading/anaconda3/backtrader-ichimoku/data/Source 1/EURUSD_M15.csv",
         "separator": ",",
-        "timeFormat": "%Y-%m-%d %H:%M"
+        "timeFormat": "%Y-%m-%d %H:%M",
+        "timeFrame": "M15"
     }
 }

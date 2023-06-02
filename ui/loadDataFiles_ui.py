@@ -32,6 +32,12 @@ class Ui_Form(object):
         self.gridLayout_2.addWidget(self.importPB, 5, 0, 1, 2)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
+        self.deleteDataFilePB = QtWidgets.QPushButton(parent=Form)
+        self.deleteDataFilePB.setMaximumSize(QtCore.QSize(40, 16777215))
+        self.deleteDataFilePB.setObjectName("deleteDataFilePB")
+        self.verticalLayout.addWidget(self.deleteDataFilePB)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayout.addItem(spacerItem)
         self.gridLayout_2.addLayout(self.verticalLayout, 3, 1, 1, 1)
         self.groupBox = QtWidgets.QGroupBox(parent=Form)
         self.groupBox.setObjectName("groupBox")
@@ -90,8 +96,9 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Import one or multiple data files"))
-        self.label_4.setText(_translate("Form", "List of all files to import in cerebro"))
+        self.label_4.setText(_translate("Form", "List of data files to import"))
         self.importPB.setText(_translate("Form", "Import all data files"))
+        self.deleteDataFilePB.setText(_translate("Form", "X"))
         self.groupBox.setTitle(_translate("Form", "Loading a new data file"))
         self.semicolonRB.setText(_translate("Form", "semicolon"))
         self.label.setText(_translate("Form", "Import a new data file"))
