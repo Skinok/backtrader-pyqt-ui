@@ -43,7 +43,6 @@ class FinplotWindow():
 
         self.last_ax_data_xtick = []
 
-        
         pass
 
     #########

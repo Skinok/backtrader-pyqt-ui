@@ -37,7 +37,7 @@ class UserConfig(Singleton):
         pass
 
     def removeParameter(self, parameter):
-        if parameter in self.data[parameter]:
+        if parameter in self.data:
             del self.data[parameter]
         self.saveConfig()
         pass

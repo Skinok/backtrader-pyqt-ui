@@ -140,6 +140,20 @@ class UserInterface:
 
         pass 
 
+    def deleteChartDock(self, timeframe):
+
+        del self.dockAreaTimeframes[timeframe]
+        del self.dock_charts[timeframe]
+        del self.dock_rsi[timeframe]
+
+        self.fpltWindow[timeframe].resetPlots()
+        del self.fpltWindow[timeframe]
+
+        self.controlPanelLayout.removeWidget(self.timeFramePB[timeframe])
+        del self.timeFramePB[timeframe] 
+
+        pass
+
     #########
     #  Create all main window docks
     #########
@@ -840,13 +854,20 @@ class UserInterface:
 
             if parameterName is not 'model':
                 label = QtWidgets.QLabel(parameterName)
-                lineEdit = QtWidgets.QLineEdit(str(parameterValue))
-                lineEdit.setObjectName(parameterName)
-                
-                # Connect the parameter changed slot
-                lineEdit.textChanged.connect(functools.partial(self.controller.strategyParametersChanged, lineEdit, parameterName, parameterValue))
 
-                self.strategyTesterUI.parametersLayout.addRow(label, lineEdit )
+                if type(parameterValue) == bool:
+                    checkBox = QtWidgets.QCheckBox(str())
+                    checkBox.setObjectName(parameterName)
+                    checkBox.setChecked(parameterValue)
+                    checkBox.stateChanged.connect(functools.partial(self.controller.strategyParametersChanged, checkBox, parameterName, parameterValue))
+                    self.strategyTesterUI.parametersLayout.addRow(label, checkBox )
+
+                else:
+                    lineEdit = QtWidgets.QLineEdit(str(parameterValue))
+                    lineEdit.setObjectName(parameterName)
+                    # Connect the parameter changed slot
+                    lineEdit.textChanged.connect(functools.partial(self.controller.strategyParametersChanged, lineEdit, parameterName, parameterValue))
+                    self.strategyTesterUI.parametersLayout.addRow(label, lineEdit )
 
                 # Save the parameter to inject it in the addStrategy method
                 self.controller.strategyParametersSave(parameterName, parameterValue)
@@ -859,17 +880,3 @@ class UserInterface:
         self.strategyTesterUI.parametersScrollArea.adjustSize()
 
         pass
-
-
-    # Le reste du code de la classe
-    def save_results(self):
-        # Sauvegarde les résultats du backtest dans un fichier CSV
-        stats = self.bt.run() # stats est une série pandas avec les résultats du backtest
-        stats.to_csv("results.csv") # sauvegarde les résultats dans un fichier CSV
-
-    def load_results(self):
-        # Charge les résultats du backtest à partir d'un fichier CSV
-        stats = pd.read_csv("results.csv") # charge les résultats à partir d'un fichier CSV
-        import finplot as fplt # importe la librairie finplot
-        fplt.candlestick_ochl(stats[['Open', 'Close', 'High', 'Low']]) # affiche le graphique du backtest à partir des résultats
-        fplt.show() # montre le graphique

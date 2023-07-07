@@ -114,6 +114,7 @@ class LoadDataFilesUI(QtWidgets.QWidget):
 
         return df
     
+
     def deleteFile(self):
 
         listItems=self.dataFilesListWidget.selectedItems()
@@ -122,13 +123,13 @@ class LoadDataFilesUI(QtWidgets.QWidget):
             itemTaken = self.dataFilesListWidget.takeItem(self.dataFilesListWidget.row(item))
 
             # Delete from dataFrames
-            del self.controller.dataframes[itemTaken.text()]
+            timeFrame = self.controller.datafileName_to_dataFile[itemTaken.text()].timeFrame
 
-            # Delete from Cerebro ?
-
+            # Delete from controler
+            self.controller.removeTimeframe(timeFrame)
 
             # Delete from config
-            self.userConfig.removeParameter(timeframe);
+            self.userConfig.removeParameter(timeFrame)
 
         pass
 

@@ -21,6 +21,7 @@
 #sys.path.append('D:/perso/trading/anaconda3/backtrader2')
 import backtrader as bt
 from CerebroEnhanced import *
+from PyQt6 import QtWidgets
 
 import sys, os
 from DataFile import DataFile
@@ -72,6 +73,8 @@ class SkinokBacktraderUI:
 
         self.dataManager = DataManager()
 
+        self.datafileName_to_dataFile={}
+
         # Restore previous session for faster tests
         self.loadConfig()
 
@@ -87,15 +90,15 @@ class SkinokBacktraderUI:
         # Load previous data files
         #for timeframe in self.timeFrameIndex.keys():
 
-        for timeframe in userConfig.data.keys():
+        for timeFrame in userConfig.data.keys():
 
             dataFile = DataFile()
             
-            dataFile.filePath = userConfig.data[timeframe]['filePath']
-            dataFile.fileName = userConfig.data[timeframe]['fileName']
-            dataFile.timeFormat = userConfig.data[timeframe]['timeFormat']
-            dataFile.separator = userConfig.data[timeframe]['separator']
-            dataFile.timeFrame = timeframe
+            dataFile.filePath = userConfig.data[timeFrame]['filePath']
+            dataFile.fileName = userConfig.data[timeFrame]['fileName']
+            dataFile.timeFormat = userConfig.data[timeFrame]['timeFormat']
+            dataFile.separator = userConfig.data[timeFrame]['separator']
+            dataFile.timeFrame = timeFrame
 
             if not dataFile.timeFormat in self.dataFiles:
                 dataFile.dataFrame, errorMessage = self.dataManager.loadDataFrame(dataFile)
@@ -104,16 +107,31 @@ class SkinokBacktraderUI:
 
                     isEmpty = False
 
+                    self.datafileName_to_dataFile[dataFile.fileName] = dataFile
+
                     # REALLY UGLY : it should be a function of user interface
                     items = self.interface.strategyTesterUI.loadDataFileUI.dataFilesListWidget.findItems(dataFile.fileName, QtCore.Qt.MatchFixedString)
 
                     if len(items) == 0:
-                        self.interface.strategyTesterUI.loadDataFileUI.dataFilesListWidget.addItem(os.path.basename(dataFile.filePath))
+                        self.interface.strategyTesterUI.loadDataFileUI.dataFilesListWidget.addItem(dataFile.fileName)
                     
-                    self.dataFiles[dataFile.timeFrame] = dataFile;
+                    self.dataFiles[dataFile.timeFrame] = dataFile
 
         if not isEmpty:
             self.importData()
+
+        pass
+
+    def removeTimeframe(self, timeFrame):
+
+        # Delete from controler
+        del self.dataFiles[timeFrame]
+
+        # Delete from chart
+        self.interface.deleteChartDock(timeFrame)
+
+        # Delete from Cerebro ?
+        self.resetCerebro()
 
         pass
 
@@ -211,19 +229,21 @@ class SkinokBacktraderUI:
 
         pass
 
-    def strategyParametersChanged(self, lineEdit, parameterName, parameterOldValue):
+    def strategyParametersChanged(self, widget, parameterName, parameterOldValue):
 
         # todo something
-        if len(lineEdit.text()) > 0:
+        if len(widget.text()) > 0:
 
             param = self.strategyClass.params._get(self.strategyClass.params,parameterName)
 
-            if isinstance(param, int):
-                self.strategyParameters[parameterName] = int(lineEdit.text())
+            if isinstance(param, bool):
+                self.strategyParameters[parameterName] = widget.checkState() == QtCore.Qt.CheckState.Checked
+            elif isinstance(param, int):
+                self.strategyParameters[parameterName] = int(widget.text())
             elif isinstance(param, float):
-                self.strategyParameters[parameterName] = float(lineEdit.text())
+                self.strategyParameters[parameterName] = float(widget.text())
             else:
-                self.strategyParameters[parameterName] = lineEdit.text()
+                self.strategyParameters[parameterName] = widget.text()
 
         pass
 

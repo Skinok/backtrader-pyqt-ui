@@ -20,12 +20,13 @@ import backtrader as bt
 
 import metaStrategy as mt
 
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, DQN
 
 import numpy as np
 from enum import Enum
 
 import pandas as pd
+import pandas_ta as ta
 
 from custom_indicators import BollingerBandsBandwitch
 
@@ -40,10 +41,14 @@ class AiStableBaselinesModel(mt.MetaStrategy):
 
     params = (
         ('model', ""),  # Model name
-        ('tradeSize', 5000),
+        ('tradeSize', 10.0),
+        ('use_ATR_SL', True),
         ('atrperiod', 14),  # ATR Period (standard)
-        ('atrdist_SL', 3),   # ATR distance for stop price
-        ('atrdist_TP', 5),   # ATR distance for take profit price
+        ('atrdist_SL', 3.0),   # ATR distance for stop price
+        ('atrdist_TP', 5.0),   # ATR distance for take profit price
+        ('use_Fixed_SL', False),
+        ('fixed_SL', 50.0),   # Fixed distance Stop Loss
+        ('fixed_TP', 100.0),   # Fixed distance Take Profit
     )
 
     def notify_order(self, order):
@@ -60,7 +65,7 @@ class AiStableBaselinesModel(mt.MetaStrategy):
         super().__init__(argv[0])
 
         # Ichi indicator
-        self.ichimoku = bt.ind.Ichimoku()
+        self.ichimoku = bt.ind.Ichimoku(self.data)
 
         # To set the stop price
         self.atr = bt.indicators.ATR(self.data, period=self.p.atrperiod)
@@ -86,6 +91,9 @@ class AiStableBaselinesModel(mt.MetaStrategy):
 
         self.macd = bt.ind.MACDHisto(self.data)
 
+        self.normalization_bounds_df_min = self.loadNormalizationBoundsCsv( "C:/perso/AI/AI_Framework/prepared_data/normalization_bounds_min.csv" ).transpose()
+        self.normalization_bounds_df_max = self.loadNormalizationBoundsCsv( "C:/perso/AI/AI_Framework/prepared_data/normalization_bounds_max.csv" ).transpose()
+
         pass
 
     def start(self):
@@ -93,41 +101,45 @@ class AiStableBaselinesModel(mt.MetaStrategy):
 
         # Load the model    
         self.model = PPO.load(self.p.model)
+        #self.model = DQN.load(self.p.model)
         pass
 
     def next(self):
 
         self.obseravation = self.next_observation()
 
+        # Normalize observation
+        #self.normalizeObservations()
+
         # Do nothing if a parameter is not valid yet (basically wait for all idicators to be loaded)
+        
         if pd.isna(self.obseravation).any():
             print("Waiting indicators")
             return
-
+        
         # Prepare data for Model
         action, _states = self.model.predict(self.obseravation) # deterministic=True
 
         if not self.position:  # not in the market
 
+            # TP & SL calculation
+            loss_dist = self.atr[0] * self.p.atrdist_SL if self.p.use_ATR_SL else self.p.fixed_SL
+            profit_dist = self.atr[0] * self.p.atrdist_TP if self.p.use_ATR_SL else self.p.fixed_TP
+
             if action == Action.SELL.value:
                 self.order = self.sell(size=self.p.tradeSize)
-                ldist = self.atr[0] * self.p.atrdist_SL
-                self.lstop = self.data.close[0] + ldist
-                pdist = self.atr[0] * self.p.atrdist_TP
-                self.take_profit = self.data.close[0] - pdist
+                self.lstop = self.data.close[0] + loss_dist
+                self.take_profit = self.data.close[0] - profit_dist
 
             elif action == Action.BUY.value:
                 self.order = self.buy(size=self.p.tradeSize)
-                ldist = self.atr[0] * self.p.atrdist_SL
-                self.lstop = self.data.close[0] - ldist
-                pdist = self.atr[0] * self.p.atrdist_TP
-                self.take_profit = self.data.close[0] + pdist
+                self.lstop = self.data.close[0] - loss_dist
+                self.take_profit = self.data.close[0] + profit_dist
 
         else:  # in the market
             pclose = self.data.close[0]
-            pstop = self.lstop # seems to be the bug 
 
-            if  (not ((pstop<pclose<self.take_profit)|(pstop>pclose>self.take_profit))):
+            if  (not ((self.lstop<pclose<self.take_profit)|(self.lstop>pclose>self.take_profit))):
                 self.close()  # Close position
 
         pass
@@ -135,21 +147,21 @@ class AiStableBaselinesModel(mt.MetaStrategy):
     # Here you have to transform self object price and indicators into a np.array input for AI Model
     # How you do it depend on your AI Model inputs
     # Strategy is in the data preparation for AI :D
+    # https://stackoverflow.com/questions/53979199/tensorflow-keras-returning-multiple-predictions-while-expecting-one
+
     def next_observation(self):
-
-        # https://stackoverflow.com/questions/53979199/tensorflow-keras-returning-multiple-predictions-while-expecting-one
-
-        # Ichimoku
-        #inputs = [ self.ichimoku.tenkan[0], self.ichimoku.kijun[0], self.ichimoku.senkou[0], self.ichimoku.senkou_lead[0], self.ichimoku.chikou[0] ]
 
         # OHLCV
         inputs = [ self.data.open[0],self.data.high[0],self.data.low[0],self.data.close[0],self.data.volume[0] ]
 
-        # Stochastic
-        inputs = inputs + [self.stochastic.percK[0], self.stochastic.percD[0]]
+        # Ichimoku
+        inputs = inputs + [ self.ichimoku.senkou_span_a[0], self.ichimoku.senkou_span_b[0], self.ichimoku.tenkan_sen[0], self.ichimoku.kijun_sen[0], self.ichimoku.chikou_span[0] ]
 
         # Rsi
         inputs = inputs + [self.rsi.rsi[0]]
+
+        # Stochastic
+        inputs = inputs + [self.stochastic.percK[0], self.stochastic.percD[0]]
 
         # bbands
         inputs = inputs + [self.bbands.bot[0]] # BBL
@@ -181,3 +193,86 @@ class AiStableBaselinesModel(mt.MetaStrategy):
         return np.array(inputs)
 
     pass
+
+
+    def normalizeObservations(self):
+
+        MIN_BITCOIN_VALUE = 10_000.0
+        MAX_BITCOIN_VALUE = 80_000.0
+
+        self.obseravation_normalized = np.empty(len(self.obseravation))
+        try:
+            # Normalize data
+            for index, value in enumerate(self.obseravation):
+                if value < 100.0:
+                    self.obseravation_normalized[index] = (value - 0.0) / (100.0 - 0.0)
+                else:
+                    self.obseravation_normalized[index] = (value - MIN_BITCOIN_VALUE) / (MAX_BITCOIN_VALUE - MIN_BITCOIN_VALUE)
+
+            #self.obseravation_normalized = (self.obseravation-self.normalization_bounds_df_min) / (self.normalization_bounds_df_max-self.normalization_bounds_df_min)
+
+
+        except ValueError as err:
+            return None, "ValueError error:" + str(err)
+        except AttributeError as err:
+            return None, "AttributeError error:" + str(err)
+        except IndexError as err:
+            return None, "IndexError error:" + str(err)
+        except:
+            aie = 1
+
+        pass
+
+    def loadNormalizationBoundsCsv(self, filePath):
+
+        # Try importing data file
+        # We should code a widget that ask for options as : separators, date format, and so on...
+        try:
+
+            # Python contains
+            if pd.__version__<'2.0.0':
+                df = pd.read_csv(filePath, 
+                                    sep=";", 
+                                    parse_dates=None, 
+                                    date_parser=lambda x: pd.to_datetime(x, format=""), 
+                                    skiprows=0, 
+                                    header=None, 
+                                    index_col=0)
+            else:
+                df = pd.read_csv(filePath,
+                                    sep=";", 
+                                    parse_dates=None, 
+                                    date_format="", 
+                                    skiprows=0, 
+                                    header=None, 
+                                    index_col=0)
+
+            return df
+
+        except ValueError as err:
+            return None, "ValueError error:" + str(err)
+        except AttributeError as err:
+            return None, "AttributeError error:" + str(err)
+        except IndexError as err:
+            return None, "IndexError error:" + str(err)
+        
+        pass
+
+
+    # https://stackoverflow.com/questions/53321608/extract-dataframe-from-pandas-datafeed-in-backtrader
+    def __bt_to_pandas__(self, btdata, len):
+        get = lambda mydata: mydata.get(ago=0, size=len)
+
+        fields = {
+            'open': get(btdata.open),
+            'high': get(btdata.high),
+            'low': get(btdata.low),
+            'close': get(btdata.close),
+            'volume': get(btdata.volume)
+        }
+        time = [btdata.num2date(x) for x in get(btdata.datetime)]
+
+        return pd.DataFrame(data=fields, index=time)
+
+    pass
+

@@ -1,16 +1,9 @@
 {
     "M5": {
-        "fileName": "EURUSD_M5.csv",
-        "filePath": "C:/perso/trading/anaconda3/backtrader-ichimoku/data/Source 1/EURUSD_M5.csv",
+        "fileName": "BTC_USDT_USDT-5m-futures-train.csv",
+        "filePath": "C:/perso/AI/AI_Framework/freqtrade_data/binance/futures/BTC_USDT_USDT-5m-futures-train.csv",
         "separator": ",",
-        "timeFormat": "%Y-%m-%d %H:%M",
+        "timeFormat": "%Y-%m-%d %H:%M:%S",
         "timeFrame": "M5"
-    },
-    "M15": {
-        "fileName": "EURUSD_M15.csv",
-        "filePath": "C:/perso/trading/anaconda3/backtrader-ichimoku/data/Source 1/EURUSD_M15.csv",
-        "separator": ",",
-        "timeFormat": "%Y-%m-%d %H:%M",
-        "timeFrame": "M15"
     }
 }

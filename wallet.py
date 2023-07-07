@@ -28,6 +28,7 @@ class Wallet():
 
     def reset(self, startingCash):
 
+        self.starting_cash = startingCash # todo: change it by initial cash settings
         self.current_value = startingCash # todo: change it by initial cash settings
         self.current_cash = startingCash # todo: change it by initial cash settings
         self.current_equity = startingCash # todo: change it by initial cash settings
